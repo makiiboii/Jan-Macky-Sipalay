@@ -1,0 +1,123 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+html {
+  background: #000;
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-black font-sans text-bone antialiased;
+}
+
+::selection {
+  background: #eceae6;
+  color: #000;
+}
+
+:focus-visible {
+  outline: 2px solid #eceae6;
+  outline-offset: 3px;
+}
+
+.font-display {
+  font-family: var(--font-display), Impact, sans-serif;
+  font-stretch: 68%;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: -0.005em;
+}
+
+@layer components {
+  .field {
+    @apply w-full border border-neutral-800 bg-transparent px-3 py-2.5 text-sm text-bone placeholder:text-neutral-600 focus:border-bone focus:outline-none;
+  }
+  .label {
+    @apply mb-2 block text-sm text-smoke;
+  }
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 px-5 py-3 text-sm font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50;
+  }
+  .btn-solid {
+    @apply bg-bone text-black hover:bg-white;
+  }
+  .btn-outline {
+    @apply border border-neutral-700 text-bone hover:border-bone;
+  }
+  .btn-danger {
+    @apply border border-red-900 text-red-400 hover:bg-red-950;
+  }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes line-up {
+  from { transform: translateY(105%); }
+  to { transform: none; }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.5s ease both;
+}
+.animate-fade-up {
+  animation: fade-up 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-delay: var(--d, 0ms);
+}
+
+/* The one orchestrated moment: hero lines rise into place on load. */
+.hero-line {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.04em;
+}
+.hero-line > span {
+  display: block;
+  animation: line-up 0.95s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation-delay: var(--d, 0ms);
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+}

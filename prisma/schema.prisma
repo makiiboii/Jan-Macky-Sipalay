@@ -1,0 +1,55 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Category {
+  VIDEOGRAPHY
+  VIDEO_EDITING
+  PHOTOGRAPHY
+}
+
+enum Role {
+  VIDEOGRAPHER
+  VIDEO_EDITOR
+  PHOTOGRAPHER
+  DIRECTOR
+  COLORIST
+  CAMERA_OPERATOR
+}
+
+model Project {
+  id           String         @id @default(cuid())
+  title        String
+  slug         String         @unique
+  description  String         @default("")
+  category     Category
+  year         Int
+  client       String?
+  featured     Boolean        @default(false)
+  published    Boolean        @default(false)
+  thumbnailUrl String?
+  videoUrl     String?
+  roles        Role[]
+  images       ProjectImage[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  @@index([published, featured])
+  @@index([category])
+}
+
+model ProjectImage {
+  id        String  @id @default(cuid())
+  url       String
+  caption   String?
+  position  Int     @default(0)
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, position])
+}
