@@ -11,16 +11,38 @@ export function VideoEmbed({ url, title }: { url: string; title: string }) {
     );
   }
 
+  const providerLabel =
+    embedInfo.provider === "facebook"
+      ? "Facebook"
+      : embedInfo.provider === "youtube"
+      ? "YouTube"
+      : embedInfo.provider === "vimeo"
+      ? "Vimeo"
+      : "Google Drive";
+
   return (
-    <div className="relative aspect-video overflow-hidden bg-neutral-950">
-      <iframe
-        src={embedInfo.embedUrl}
-        title={`${title} video`}
-        loading="lazy"
-        allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share; fullscreen"
-        allowFullScreen
-        className="absolute inset-0 h-full w-full border-0"
-      />
+    <div className="space-y-3">
+      <div className="relative aspect-video overflow-hidden bg-neutral-950">
+        <iframe
+          src={embedInfo.embedUrl}
+          title={`${title} video`}
+          loading="lazy"
+          allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share; fullscreen"
+          allowFullScreen
+          className="absolute inset-0 h-full w-full border-0"
+        />
+      </div>
+      <div className="flex justify-end">
+        <a
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 text-xs text-smoke transition-colors hover:text-bone"
+        >
+          <span>Watch directly on {providerLabel}</span>
+          <span aria-hidden="true">&rarr;</span>
+        </a>
+      </div>
     </div>
   );
 }
