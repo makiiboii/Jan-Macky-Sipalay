@@ -20,14 +20,29 @@ export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: { default: site.title, template: `%s — ${site.name}` },
   description: site.description,
+  icons: {
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/icon-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+  },
   openGraph: {
     type: "website",
     siteName: site.name,
     title: site.title,
     description: site.description,
     url: "/",
+    images: [{ url: "/og-image.jpg", width: 1200, height: 630, alt: site.title }],
   },
-  twitter: { card: "summary_large_image", title: site.title, description: site.description },
+  twitter: {
+    card: "summary_large_image",
+    title: site.title,
+    description: site.description,
+    images: ["/og-image.jpg"],
+  },
   alternates: { canonical: "/" },
 };
 

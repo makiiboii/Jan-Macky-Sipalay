@@ -75,7 +75,7 @@ body {
   animation-delay: var(--d, 0ms);
 }
 
-/* The one orchestrated moment: hero lines rise into place on load. */
+/* hero-line: overflow container for GSAP yPercent clip */
 .hero-line {
   display: block;
   overflow: hidden;
@@ -83,10 +83,10 @@ body {
 }
 .hero-line > span {
   display: block;
-  animation: line-up 0.95s cubic-bezier(0.2, 0.8, 0.2, 1) both;
-  animation-delay: var(--d, 0ms);
 }
 
+/* GSAP ScrollTrigger reveal — initial state set by GSAP, no CSS needed */
+/* Kept here as a no-JS fallback (noscript block in layout.tsx overrides) */
 .reveal {
   opacity: 0;
   transform: translateY(20px);
@@ -95,6 +95,12 @@ body {
 .reveal.is-visible {
   opacity: 1;
   transform: none;
+}
+
+/* Custom cursor — applied by Cursor.tsx on pointer:fine devices */
+.cursor-none,
+.cursor-none * {
+  cursor: none !important;
 }
 
 .no-scrollbar {
