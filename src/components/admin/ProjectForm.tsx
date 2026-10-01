@@ -11,7 +11,8 @@ import {
   type CategoryValue,
   type RoleValue,
 } from "@/lib/constants";
-import { getGoogleDriveEmbedUrl, resolveImageUrl } from "@/lib/drive";
+import { resolveImageUrl } from "@/lib/drive";
+import { getVideoEmbed } from "@/lib/video";
 import { slugify } from "@/lib/slug";
 
 type ImageRow = { url: string; caption: string };
@@ -54,7 +55,7 @@ export function ProjectForm({ project }: { project?: ProjectFormValues }) {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
 
   const trimmedVideo = videoUrl.trim();
-  const embedUrl = trimmedVideo ? getGoogleDriveEmbedUrl(trimmedVideo) : null;
+  const videoEmbedInfo = trimmedVideo ? getVideoEmbed(trimmedVideo) : null;
 
   function onTitleChange(value: string) {
     setTitle(value);
@@ -225,22 +226,37 @@ export function ProjectForm({ project }: { project?: ProjectFormValues }) {
         </div>
 
         <div>
-          <label htmlFor="video" className="label">Google Drive Video URL</label>
+          <label htmlFor="video" className="label">Video URL (YouTube, Facebook, or Google Drive)</label>
           <input
             id="video"
             value={videoUrl}
             onChange={(e) => setVideoUrl(e.target.value)}
-            placeholder="https://drive.google.com/file/d/YOUR_FILE_ID/view"
+            placeholder="https://www.youtube.com/watch?v=... or Facebook or Drive link"
             className="field"
           />
-          <p className="mt-1 text-xs text-neutral-600">Set the file&rsquo;s sharing to &ldquo;Anyone with the link&rdquo; or visitors will see a Drive error.</p>
+          <p className="mt-1 text-xs text-neutral-600">
+            Paste a link from <strong>YouTube</strong> (videos & shorts), <strong>Facebook</strong> (videos & reels), or <strong>Google Drive</strong> (shared to &ldquo;Anyone with the link&rdquo;).
+          </p>
           {errorFor("videoUrl")}
-          {trimmedVideo && !embedUrl && <p className="mt-2 text-sm text-red-400">That is not a valid Google Drive file link.</p>}
-          {embedUrl && (
+          {trimmedVideo && !videoEmbedInfo && (
+            <p className="mt-2 text-sm text-red-400">
+              Please enter a valid YouTube, Facebook, or Google Drive video link.
+            </p>
+          )}
+          {videoEmbedInfo && (
             <div className="mt-3">
-              <p className="mb-2 break-all text-xs text-neutral-600">Embed URL: {embedUrl}</p>
+              <p className="mb-2 break-all text-xs text-neutral-500">
+                Provider: <span className="uppercase text-bone font-medium">{videoEmbedInfo.provider}</span>
+              </p>
               <div className="relative aspect-video max-w-xl bg-neutral-950">
-                <iframe src={embedUrl} title="Video preview" loading="lazy" allowFullScreen className="absolute inset-0 h-full w-full border-0" />
+                <iframe
+                  src={videoEmbedInfo.embedUrl}
+                  title="Video preview"
+                  loading="lazy"
+                  allowFullScreen
+                  allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share; fullscreen"
+                  className="absolute inset-0 h-full w-full border-0"
+                />
               </div>
             </div>
           )}

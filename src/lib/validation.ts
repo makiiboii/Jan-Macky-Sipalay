@@ -2,6 +2,8 @@ import { z } from "zod";
 import { CATEGORIES, ROLES } from "./constants";
 import { getGoogleDriveFileId } from "./drive";
 
+import { getVideoEmbedUrl } from "./video";
+
 const emptyToNull = <T extends z.ZodTypeAny>(schema: T) =>
   z.preprocess((value) => (value == null || (typeof value === "string" && value.trim() === "") ? null : value), schema.nullable());
 
@@ -29,8 +31,8 @@ export const projectInputSchema = z.object({
       .string()
       .trim()
       .max(2000)
-      .refine((value) => getGoogleDriveFileId(value) !== null, {
-        message: "That is not a valid Google Drive file link.",
+      .refine((value) => getVideoEmbedUrl(value) !== null, {
+        message: "Enter a valid YouTube, Facebook, or Google Drive video link.",
       }),
   ),
   roles: z
