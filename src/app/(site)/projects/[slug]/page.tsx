@@ -52,30 +52,30 @@ export default async function ProjectPage({ params }: Props) {
   const paragraphs = project.description.split(/\n{2,}/).filter(Boolean);
 
   return (
-    <article className="px-5 pb-24 pt-28 md:px-10 md:pb-36 md:pt-36">
+    <article className="px-5 pb-24 pt-24 sm:pt-28 md:px-10 md:pb-36 md:pt-36 max-w-full overflow-hidden">
       <Link href="/#work" className="text-sm text-smoke transition-colors hover:text-bone">
         Back to work
       </Link>
 
-      <h1 className="font-display mt-6 text-[clamp(3rem,11.5vw,11rem)] leading-[0.88]">{project.title}</h1>
+      <h1 className="font-display mt-6 text-[clamp(2.2rem,8.5vw,11rem)] leading-[0.9] break-words">{project.title}</h1>
 
-      <div className="relative mt-10 aspect-[4/3] overflow-hidden bg-neutral-950 sm:aspect-[16/9] md:mt-14">
+      <div className="relative mt-8 sm:mt-10 aspect-[4/3] overflow-hidden bg-neutral-950 sm:aspect-[16/9] md:mt-14">
         <Cover src={project.thumbnailUrl} alt={`${project.title} thumbnail`} sizes="100vw" priority />
       </div>
 
-      <dl className="mt-10 grid grid-cols-2 gap-x-6 gap-y-8 border-b border-line pb-10 md:grid-cols-4">
+      <dl className="mt-8 sm:mt-10 grid grid-cols-2 gap-x-4 gap-y-6 sm:gap-x-6 sm:gap-y-8 border-b border-line pb-10 md:grid-cols-4">
         <div>
           <dt className="text-sm text-smoke">Year</dt>
           <dd className="mt-2 text-lg">{project.year}</dd>
         </div>
         <div>
           <dt className="text-sm text-smoke">Category</dt>
-          <dd className="mt-2 text-lg">{categoryLabel(project.category)}</dd>
+          <dd className="mt-2 text-lg break-words">{categoryLabel(project.category)}</dd>
         </div>
         {project.client && (
           <div>
             <dt className="text-sm text-smoke">Client</dt>
-            <dd className="mt-2 text-lg">{project.client}</dd>
+            <dd className="mt-2 text-lg break-words">{project.client}</dd>
           </div>
         )}
         {project.roles.length > 0 && (

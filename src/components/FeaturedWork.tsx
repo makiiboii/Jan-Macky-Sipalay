@@ -22,7 +22,7 @@ export function FeaturedWork({ project }: { project: ProjectCardData }) {
             />
           </div>
           <div className="mt-5 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-            <h3 className="font-display text-[clamp(2.6rem,8vw,7rem)] leading-[0.9]">{project.title}</h3>
+            <h3 className="font-display text-[clamp(2rem,7vw,7rem)] leading-[0.9] break-words">{project.title}</h3>
             <p className="text-smoke md:pb-2 md:text-right">
               {categoryLabel(project.category)} · {project.year}
               {project.roles.length > 0 && <span className="block">{rolesLabel(project.roles)}</span>}

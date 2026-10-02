@@ -70,11 +70,11 @@ export function Nav() {
       </header>
 
       {open && (
-        <div id="mobile-menu" className="animate-fade-in fixed inset-0 z-40 flex flex-col justify-center bg-black px-5 md:hidden">
-          <ul className="space-y-2">
+        <div id="mobile-menu" className="animate-fade-in fixed inset-0 z-40 flex flex-col justify-center bg-black px-6 md:hidden">
+          <ul className="space-y-4">
             {links.map((link) => (
               <li key={link.href}>
-                <Link href={link.href} onClick={() => setOpen(false)} className="font-display block py-2 text-7xl leading-none">
+                <Link href={link.href} onClick={() => setOpen(false)} className="font-display block py-2 text-5xl sm:text-6xl leading-none">
                   {link.label}
                 </Link>
               </li>

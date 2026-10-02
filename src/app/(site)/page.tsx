@@ -25,9 +25,9 @@ export default async function HomePage() {
       <Hero />
       {featured && <FeaturedWork project={featured} />}
 
-      <section id="work" className="scroll-mt-16 border-t border-line px-5 py-24 md:px-10 md:py-32">
+      <section id="work" className="scroll-mt-16 border-t border-line px-5 py-24 md:px-10 md:py-32 max-w-full overflow-hidden">
         <Reveal>
-          <h2 className="font-display mb-12 text-[clamp(2.8rem,8vw,7.5rem)] leading-[0.9]">Selected work</h2>
+          <h2 className="font-display mb-12 text-[clamp(2.2rem,7.5vw,7.5rem)] leading-[0.9] break-words">Selected work</h2>
         </Reveal>
         {unavailable ? (
           <p className="text-smoke">Projects can&rsquo;t be loaded right now. Please try again in a few minutes.</p>

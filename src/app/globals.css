@@ -9,10 +9,13 @@
 html {
   background: #000;
   scroll-behavior: smooth;
+  overflow-x: hidden;
 }
 
 body {
   @apply bg-black font-sans text-bone antialiased;
+  overflow-x: hidden;
+  width: 100%;
 }
 
 ::selection {
@@ -67,6 +70,23 @@ body {
   to { transform: none; }
 }
 
+@keyframes marquee {
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-50%, 0, 0); }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  animation: marquee var(--marquee-duration, 35s) linear infinite;
+}
+
+.animate-marquee:hover,
+.animate-marquee:active {
+  animation-play-state: paused;
+}
+
 .animate-fade-in {
   animation: fade-in 0.5s ease both;
 }
@@ -79,7 +99,8 @@ body {
 .hero-line {
   display: block;
   overflow: hidden;
-  padding-bottom: 0.04em;
+  padding-top: 0.05em;
+  padding-bottom: 0.1em;
 }
 .hero-line > span {
   display: block;

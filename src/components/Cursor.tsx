@@ -82,13 +82,13 @@ export function Cursor() {
       <div
         ref={ring}
         aria-hidden
-        className="gsap-cursor-ring pointer-events-none fixed left-0 top-0 z-[9999] h-9 w-9 -translate-x-1/2 -translate-y-1/2 rounded-full border border-bone opacity-45 mix-blend-difference"
+        className="gsap-cursor-ring pointer-events-none fixed left-0 top-0 z-[9999] hidden md:block h-9 w-9 -translate-x-1/2 -translate-y-1/2 rounded-full border border-bone opacity-45 mix-blend-difference"
       />
       {/* Instant inner dot */}
       <div
         ref={dot}
         aria-hidden
-        className="gsap-cursor-dot pointer-events-none fixed left-0 top-0 z-[9999] h-[7px] w-[7px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-bone mix-blend-difference"
+        className="gsap-cursor-dot pointer-events-none fixed left-0 top-0 z-[9999] hidden md:block h-[7px] w-[7px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-bone mix-blend-difference"
       />
     </>
   );

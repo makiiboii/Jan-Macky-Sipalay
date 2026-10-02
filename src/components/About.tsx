@@ -5,7 +5,7 @@ import { Reveal } from "./Reveal";
 export function About() {
   const isSvg = site.profileImage.endsWith(".svg");
   return (
-    <section id="about" className="scroll-mt-16 border-t border-line px-5 py-24 md:px-10 md:py-40">
+    <section id="about" className="scroll-mt-16 border-t border-line px-5 py-24 md:px-10 md:py-40 max-w-full overflow-hidden">
       <div className="grid gap-12 md:grid-cols-12 md:gap-10">
         <Reveal className="md:col-span-4">
           <div className="relative aspect-[4/5] overflow-hidden bg-neutral-950">
@@ -21,7 +21,7 @@ export function About() {
         </Reveal>
 
         <Reveal className="md:col-span-7 md:col-start-6" delay={100}>
-          <h2 className="font-display text-[clamp(2.8rem,8vw,7.5rem)] leading-[0.9]">{site.name}</h2>
+          <h2 className="font-display text-[clamp(2.3rem,7.5vw,7.5rem)] leading-[0.9] break-words">{site.name}</h2>
           <ul className="mt-6 space-y-1 text-xl text-bone/90">
             {site.disciplines.map((item) => (
               <li key={item}>{item}</li>

@@ -16,9 +16,9 @@ export function ProjectCard({ project, priority }: { project: ProjectCardData; p
         />
         <div className="absolute inset-0 bg-black/0 transition-colors duration-500 group-hover:bg-black/25" />
       </div>
-      <div className="mt-4 flex items-baseline justify-between gap-6">
-        <h3 className="font-display text-3xl leading-none md:text-4xl">{project.title}</h3>
-        <span className="text-sm tabular-nums text-smoke">{project.year}</span>
+      <div className="mt-4 flex items-baseline justify-between gap-4">
+        <h3 className="font-display text-2xl sm:text-3xl md:text-4xl leading-tight break-words min-w-0">{project.title}</h3>
+        <span className="text-sm tabular-nums text-smoke shrink-0">{project.year}</span>
       </div>
       <p className="mt-2 text-sm text-smoke">
         {categoryLabel(project.category)}
