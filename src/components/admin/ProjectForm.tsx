@@ -14,6 +14,7 @@ import {
 import { resolveImageUrl } from "@/lib/drive";
 import { getVideoEmbed } from "@/lib/video";
 import { slugify } from "@/lib/slug";
+import { cn } from "@/lib/utils";
 
 type ImageRow = { url: string; caption: string };
 
@@ -248,7 +249,14 @@ export function ProjectForm({ project }: { project?: ProjectFormValues }) {
               <p className="mb-2 break-all text-xs text-neutral-500">
                 Provider: <span className="uppercase text-bone font-medium">{videoEmbedInfo.provider}</span>
               </p>
-              <div className="relative aspect-video max-w-xl bg-neutral-950">
+              <div
+                className={cn(
+                  "relative max-w-xl bg-neutral-950 overflow-hidden",
+                  videoEmbedInfo.provider === "drive"
+                    ? "aspect-[4/3] min-h-[260px] sm:min-h-0 sm:aspect-video"
+                    : "aspect-video",
+                )}
+              >
                 <iframe
                   src={videoEmbedInfo.embedUrl}
                   title="Video preview"

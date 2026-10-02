@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import { getVideoEmbed } from "@/lib/video";
 
 export function VideoEmbed({ url, title }: { url: string; title: string }) {
@@ -11,6 +12,8 @@ export function VideoEmbed({ url, title }: { url: string; title: string }) {
     );
   }
 
+  const isDrive = embedInfo.provider === "drive";
+
   const providerLabel =
     embedInfo.provider === "facebook"
       ? "Facebook"
@@ -22,7 +25,14 @@ export function VideoEmbed({ url, title }: { url: string; title: string }) {
 
   return (
     <div className="space-y-3">
-      <div className="relative aspect-video overflow-hidden bg-neutral-950">
+      <div
+        className={cn(
+          "relative overflow-hidden bg-neutral-950",
+          isDrive
+            ? "aspect-[4/3] min-h-[270px] sm:min-h-0 sm:aspect-video"
+            : "aspect-video",
+        )}
+      >
         <iframe
           src={embedInfo.embedUrl}
           title={`${title} video`}
