@@ -19,11 +19,38 @@ export function Portfolio({ projects }: { projects: ProjectCardData[] }) {
 
   const visible = useMemo(() => {
     const term = query.trim().toLowerCase();
-    return projects.filter(
-      (project) =>
-        (filter === "ALL" || project.category === filter) &&
-        (!term || project.title.toLowerCase().includes(term)),
-    );
+    return projects.filter((project) => {
+      const matchesSearch = !term || project.title.toLowerCase().includes(term);
+      if (!matchesSearch) return false;
+      if (filter === "ALL") return true;
+
+      // Matches if category is selected
+      if (project.category === filter) return true;
+
+      // Smart role matching: if you worked as the Video Editor / Colorist, it shows under Video Editing
+      if (
+        filter === "VIDEO_EDITING" &&
+        (project.roles.includes("VIDEO_EDITOR") || project.roles.includes("COLORIST"))
+      ) {
+        return true;
+      }
+      if (
+        filter === "VIDEOGRAPHY" &&
+        (project.roles.includes("VIDEOGRAPHER") ||
+          project.roles.includes("CAMERA_OPERATOR") ||
+          project.roles.includes("DIRECTOR"))
+      ) {
+        return true;
+      }
+      if (filter === "PHOTOGRAPHY" && project.roles.includes("PHOTOGRAPHER")) {
+        return true;
+      }
+      if (filter === "PHOTO_EDITING" && project.roles.includes("PHOTO_EDITOR")) {
+        return true;
+      }
+
+      return false;
+    });
   }, [projects, filter, query]);
 
   // For the infinite filmstrip: duplicate visible list so it loops seamlessly (-50% translation)

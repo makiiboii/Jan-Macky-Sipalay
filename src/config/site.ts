@@ -8,7 +8,7 @@ export const site = {
     "Creative portfolio of Jan Macky Sipalay, showcasing videography, video editing, and photography projects.",
   url: process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
   heroDescription: "Visual storyteller focused on videography, editing, and photography.",
-  disciplines: ["Videographer", "Video Editor", "Photographer"],
+  disciplines: ["Videographer", "Video Editor", "Photographer", "Photo Editor"],
   profileImage: "/maki.jpg",
   about: [
     "I'm Jan Macky Sipalay — a videographer, video editor, and photographer based in the Philippines. I work across events, portraits, and promotional content, and I like being involved from the first shot to the final cut.",
