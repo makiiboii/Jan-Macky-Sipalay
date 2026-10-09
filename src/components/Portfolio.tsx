@@ -161,7 +161,7 @@ export function Portfolio({ projects }: { projects: ProjectCardData[] }) {
           </button>
         </div>
       ) : (
-        <div key={filter} className={cn(filter === "ALL" ? "mt-14 space-y-20 md:mt-20 md:space-y-24" : "mt-10")}>
+        <div key={filter} className={cn(filter === "ALL" ? "mt-9 space-y-12 md:mt-20 md:space-y-24" : "mt-7 sm:mt-10")}>
           {groups.map(({ category, projects: items }, groupIndex) => {
             // Alternate starting direction per category row
             const direction: "left" | "right" = groupIndex % 2 === 0 ? "right" : "left";
@@ -170,21 +170,21 @@ export function Portfolio({ projects }: { projects: ProjectCardData[] }) {
               <section key={category} aria-labelledby={filter === "ALL" ? `category-${category}` : undefined}>
                 {filter === "ALL" && (
                   <Reveal>
-                    <div className="mb-8 flex flex-wrap items-end justify-between gap-x-6 gap-y-3 border-b border-line pb-5 md:mb-10">
-                      <div className="flex items-baseline gap-4">
-                        <span className="text-sm tabular-nums text-muted">{pad(groupIndex + 1)}</span>
-                        <h3 id={`category-${category}`} className="font-display text-[clamp(1.9rem,4vw,3.4rem)] leading-none">
+                    <div className="mb-4 flex flex-wrap items-end justify-between gap-x-4 gap-y-2 border-b border-line pb-3 sm:mb-8 sm:pb-5 md:mb-10">
+                      <div className="flex items-baseline gap-2.5 sm:gap-4">
+                        <span className="text-xs tabular-nums text-muted sm:text-sm">{pad(groupIndex + 1)}</span>
+                        <h3 id={`category-${category}`} className="font-display text-[clamp(1.45rem,4vw,3.4rem)] leading-none">
                           {CATEGORY_LABELS[category]}
                         </h3>
                       </div>
-                      <div className="flex items-center gap-5 text-sm">
+                      <div className="flex items-center gap-3 text-xs sm:gap-5 sm:text-sm">
                         <span className="tabular-nums text-smoke">
                           {pad(items.length)} {items.length === 1 ? "project" : "projects"}
                         </span>
                         <button
                           type="button"
                           onClick={() => showCategory(category)}
-                          className="group inline-flex items-center gap-1.5 border-b border-line pb-0.5 tracking-wide text-bone transition-colors hover:border-bone"
+                          className="group inline-flex items-center gap-1 border-b border-line pb-0.5 tracking-wide text-bone transition-colors hover:border-bone"
                         >
                           View only {CATEGORY_LABELS[category]}
                           <span aria-hidden="true" className="transition-transform group-hover:translate-x-0.5">
@@ -208,7 +208,7 @@ export function Portfolio({ projects }: { projects: ProjectCardData[] }) {
                 ) : viewMode === "carousel" ? (
                   <Filmstrip projects={items} eager={groupIndex === 0} direction={direction} />
                 ) : (
-                  <div className="project-focus-deck grid gap-x-8 gap-y-12 md:grid-cols-2 md:gap-y-14">
+                  <div className="project-focus-deck grid grid-cols-2 gap-x-3.5 gap-y-7 sm:gap-x-8 sm:gap-y-12 md:gap-y-14">
                     {items.map((project, index) => (
                       <Reveal key={project.id} delay={(index % 2) * 90}>
                         <div className="project-focus-item">
@@ -240,7 +240,7 @@ function PortraitVideosShowcase({
 }) {
   if (viewMode === "grid") {
     return (
-      <div className="project-focus-deck grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="project-focus-deck grid grid-cols-2 gap-x-3.5 gap-y-7 sm:grid-cols-2 sm:gap-x-6 sm:gap-y-10 lg:grid-cols-4">
         {projects.map((project, index) => (
           <Reveal key={project.id} delay={(index % 4) * 70}>
             <div className="project-focus-item">
@@ -526,12 +526,12 @@ function PhotographyCarousel({
             dragMovedRef.current = false;
           }
         }}
-        className="project-focus-deck no-scrollbar flex cursor-grab gap-5 overflow-x-auto px-2 py-3 select-none active:cursor-grabbing focus-visible:outline-none"
+        className="project-focus-deck no-scrollbar flex cursor-grab gap-3.5 overflow-x-auto px-1 py-2 select-none active:cursor-grabbing focus-visible:outline-none sm:gap-5 sm:px-2 sm:py-3"
       >
         {photoSlides.map((slide, idx) => (
           <figure
             key={slide.id}
-            className="project-focus-item group relative w-[min(78vw,22rem)] shrink-0 sm:w-[20rem] md:w-[22rem]"
+            className="project-focus-item group relative w-[11rem] shrink-0 sm:w-[18rem] md:w-[22rem]"
           >
             <button
               type="button"
@@ -554,26 +554,26 @@ function PhotographyCarousel({
                 className="h-full w-full object-contain transition-transform duration-700 ease-out group-hover:scale-[1.03]"
               />
               <span className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent opacity-60 transition-opacity duration-300 group-hover:opacity-90" />
-              <span className="absolute left-3 top-3 border border-white/15 bg-black/75 px-2.5 py-1 text-[10px] uppercase tracking-[0.16em] text-bone backdrop-blur-sm">
+              <span className="absolute left-2 top-2 max-w-[85%] truncate border border-white/15 bg-black/75 px-1.5 py-0.5 text-[8px] uppercase tracking-[0.12em] text-bone backdrop-blur-sm sm:left-3 sm:top-3 sm:px-2.5 sm:py-1 sm:text-[10px] sm:tracking-[0.16em]">
                 {slide.projectTitle}
               </span>
-              <span className="absolute bottom-3 left-3 text-[11px] tabular-nums tracking-[0.14em] text-smoke">
+              <span className="absolute bottom-2 left-2 text-[9px] tabular-nums tracking-[0.12em] text-smoke sm:bottom-3 sm:left-3 sm:text-[11px]">
                 {pad(slide.indexInAlbum + 1)} / {pad(slide.totalInAlbum)}
               </span>
-              <span className="absolute bottom-3 right-3 border border-white/20 bg-black/75 px-2.5 py-1 text-[10px] uppercase tracking-[0.16em] text-bone opacity-85 transition-all duration-300 group-hover:border-bone group-hover:bg-bone group-hover:text-black">
+              <span className="absolute bottom-2 right-2 border border-white/20 bg-black/75 px-1.5 py-0.5 text-[8px] uppercase tracking-[0.14em] text-bone opacity-85 transition-all duration-300 group-hover:border-bone group-hover:bg-bone group-hover:text-black sm:bottom-3 sm:right-3 sm:px-2.5 sm:py-1 sm:text-[10px]">
                 Preview
               </span>
             </button>
 
-            <figcaption className="mt-3 flex items-center justify-between gap-3">
-              <span className="truncate text-xs uppercase tracking-[0.14em] text-smoke">
+            <figcaption className="mt-2 flex items-center justify-between gap-2 sm:mt-3 sm:gap-3">
+              <span className="truncate text-[10px] uppercase tracking-[0.12em] text-smoke sm:text-xs sm:tracking-[0.14em]">
                 {slide.projectTitle}
               </span>
               <Link
                 href={`/projects/${slide.projectSlug}`}
-                className="shrink-0 text-xs uppercase tracking-[0.14em] text-muted transition-colors hover:text-bone"
+                className="shrink-0 text-[10px] uppercase tracking-[0.12em] text-muted transition-colors hover:text-bone sm:text-xs sm:tracking-[0.14em]"
               >
-                Open Album &rarr;
+                Album &rarr;
               </Link>
             </figcaption>
           </figure>
@@ -677,14 +677,14 @@ function Filmstrip({
   }, [projects.length, direction]);
 
   return (
-    <div className="mt-4">
+    <div className="mt-2.5 sm:mt-4">
       {projects.length > 1 && (
-        <div className="mb-4 flex justify-end gap-2">
+        <div className="mb-2.5 flex justify-end gap-1.5 sm:mb-4 sm:gap-2">
           <button
             type="button"
             onClick={() => move(-1)}
             aria-label="Previous projects"
-            className="flex h-10 w-10 items-center justify-center border border-line text-base text-smoke transition-colors hover:border-bone hover:text-bone"
+            className="flex h-8 w-8 items-center justify-center border border-line text-sm text-smoke transition-colors hover:border-bone hover:text-bone sm:h-10 sm:w-10 sm:text-base"
           >
             &larr;
           </button>
@@ -692,7 +692,7 @@ function Filmstrip({
             type="button"
             onClick={() => move(1)}
             aria-label="Next projects"
-            className="flex h-10 w-10 items-center justify-center border border-line text-base text-smoke transition-colors hover:border-bone hover:text-bone"
+            className="flex h-8 w-8 items-center justify-center border border-line text-sm text-smoke transition-colors hover:border-bone hover:text-bone sm:h-10 sm:w-10 sm:text-base"
           >
             &rarr;
           </button>
@@ -758,7 +758,7 @@ function Filmstrip({
             event.stopPropagation();
           }
         }}
-        className="project-focus-deck no-scrollbar flex cursor-grab gap-6 overflow-x-auto px-2 py-3 select-none active:cursor-grabbing focus-visible:outline-none"
+        className="project-focus-deck no-scrollbar flex cursor-grab gap-3.5 overflow-x-auto px-1 py-2 select-none active:cursor-grabbing focus-visible:outline-none sm:gap-6 sm:px-2 sm:py-3"
       >
         {projects.map((project, index) => (
           <div
@@ -766,8 +766,8 @@ function Filmstrip({
             className={cn(
               "project-focus-item shrink-0",
               project.category === "PORTRAIT_VIDEOS"
-                ? "w-[min(72vw,18.5rem)]"
-                : "w-[min(82vw,26rem)]",
+                ? "w-[9.25rem] sm:w-[14.5rem] md:w-[18.5rem]"
+                : "w-[13.25rem] sm:w-[20rem] md:w-[26rem]",
             )}
           >
             <ProjectCard project={project} compact priority={eager && index < 2} />

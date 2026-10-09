@@ -35,7 +35,7 @@ export function ProjectCard({
     <div
       className={cn(
         "group relative flex flex-col",
-        isPortrait && !compact && "mx-auto w-full max-w-[21rem]",
+        isPortrait && !compact && "mx-auto w-full max-w-[16rem] sm:max-w-[21rem]",
       )}
     >
       <Link
@@ -56,8 +56,8 @@ export function ProjectCard({
               alt={`${project.title} thumbnail`}
               sizes={
                 isPortrait
-                  ? "(min-width: 1024px) 280px, (min-width: 640px) 45vw, 80vw"
-                  : "(min-width: 768px) 45vw, 92vw"
+                  ? "(min-width: 1024px) 280px, (min-width: 640px) 45vw, 48vw"
+                  : "(min-width: 768px) 45vw, 60vw"
               }
               priority={priority}
               className={cn(
@@ -67,51 +67,51 @@ export function ProjectCard({
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent opacity-70 transition-opacity duration-500 group-hover:opacity-90" />
 
-            <span className="absolute left-3 top-3 border border-white/15 bg-black/75 px-2.5 py-1 text-[10px] uppercase tracking-[0.16em] text-bone backdrop-blur-sm">
+            <span className="absolute left-2 top-2 border border-white/15 bg-black/75 px-1.5 py-0.5 text-[8px] uppercase tracking-[0.14em] text-bone backdrop-blur-sm sm:left-3 sm:top-3 sm:px-2.5 sm:py-1 sm:text-[10px] sm:tracking-[0.16em]">
               {categoryLabel(project.category)}
             </span>
 
             {isPortrait && (
-              <span className="absolute right-3 top-3 border border-white/15 bg-black/75 px-2 py-0.5 text-[10px] uppercase tracking-[0.14em] text-smoke backdrop-blur-sm">
+              <span className="absolute right-2 top-2 border border-white/15 bg-black/75 px-1.5 py-0.5 text-[8px] uppercase tracking-[0.12em] text-smoke backdrop-blur-sm sm:right-3 sm:top-3 sm:px-2 sm:text-[10px]">
                 9:16
               </span>
             )}
 
             {album ? (
               <>
-                <span className="absolute bottom-3 left-3 inline-flex items-center gap-1.5 bg-black/75 px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.14em] text-bone backdrop-blur-sm">
-                  <svg aria-hidden viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" className="h-3.5 w-3.5">
+                <span className="absolute bottom-2 left-2 inline-flex items-center gap-1 bg-black/75 px-1.5 py-0.5 text-[9px] font-medium uppercase tracking-[0.12em] text-bone backdrop-blur-sm sm:bottom-3 sm:left-3 sm:gap-1.5 sm:px-2.5 sm:py-1 sm:text-[11px]">
+                  <svg aria-hidden viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3" className="h-3 w-3 sm:h-3.5 sm:w-3.5">
                     <rect x="1.5" y="4.5" width="10" height="10" />
                     <path d="M4.5 1.5h10v10" />
                   </svg>
                   {photos} {photos === 1 ? "photo" : "photos"}
                 </span>
-                <span className="absolute bottom-3 right-3 border border-white/20 bg-black/75 px-2.5 py-1 text-[10px] font-medium uppercase tracking-[0.18em] text-bone opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                <span className="absolute bottom-2 right-2 border border-white/20 bg-black/75 px-1.5 py-0.5 text-[8px] font-medium uppercase tracking-[0.14em] text-bone opacity-0 transition-opacity duration-300 group-hover:opacity-100 sm:bottom-3 sm:right-3 sm:px-2.5 sm:py-1 sm:text-[10px]">
                   {onOpenAlbum ? "View Photos" : "Open Album"}
                 </span>
               </>
             ) : (
-              <span className="absolute bottom-3 right-3 inline-flex items-center gap-1.5 border border-white/20 bg-black/75 px-2.5 py-1 text-[10px] uppercase tracking-[0.16em] text-bone opacity-85 transition-all duration-300 group-hover:border-bone group-hover:bg-bone group-hover:text-black">
+              <span className="absolute bottom-2 right-2 inline-flex items-center gap-1 border border-white/20 bg-black/75 px-2 py-0.5 text-[8px] uppercase tracking-[0.14em] text-bone opacity-85 transition-all duration-300 group-hover:border-bone group-hover:bg-bone group-hover:text-black sm:bottom-3 sm:right-3 sm:gap-1.5 sm:px-2.5 sm:py-1 sm:text-[10px]">
                 {project.videoUrl ? "Watch" : "View"} &rarr;
               </span>
             )}
           </div>
         </div>
 
-        <div className="mt-4 flex items-baseline justify-between gap-4">
-          <h3 className="font-display min-w-0 break-words text-2xl leading-tight text-bone transition-colors group-hover:text-white sm:text-[1.75rem]">
+        <div className="mt-2.5 flex items-baseline justify-between gap-2 sm:mt-4 sm:gap-4">
+          <h3 className="font-display min-w-0 truncate text-base leading-tight text-bone transition-colors group-hover:text-white sm:whitespace-normal sm:text-2xl md:text-[1.75rem]">
             {project.title}
           </h3>
-          <span className="shrink-0 text-xs tabular-nums text-smoke">{project.year}</span>
+          <span className="shrink-0 text-[10px] tabular-nums text-smoke sm:text-xs">{project.year}</span>
         </div>
 
         {project.description && (
-          <p className="mt-1.5 line-clamp-2 text-xs leading-relaxed text-smoke/90 sm:text-sm">
+          <p className="mt-1 line-clamp-1 text-[11px] leading-relaxed text-smoke/90 sm:mt-1.5 sm:line-clamp-2 sm:text-sm">
             {project.description}
           </p>
         )}
 
-        <p className="mt-2 text-xs leading-relaxed text-muted">
+        <p className="mt-1 truncate text-[10px] leading-relaxed text-muted sm:mt-2 sm:whitespace-normal sm:text-xs">
           {categoryLabel(project.category)}
           {project.roles.length > 0 && <> · {rolesLabel(project.roles)}</>}
         </p>
