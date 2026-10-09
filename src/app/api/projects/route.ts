@@ -4,7 +4,12 @@ import { apiError, handleError, requireAdmin } from "@/lib/api";
 import { isAdmin } from "@/lib/auth";
 import { CATEGORIES, type CategoryValue } from "@/lib/constants";
 import { prisma } from "@/lib/prisma";
-import { generateUniqueSlug, withImages } from "@/lib/projects";
+import {
+  FEATURED_LIMIT_MESSAGE,
+  featuredLimitReached,
+  generateUniqueSlug,
+  withImages,
+} from "@/lib/projects";
 import { projectInputSchema } from "@/lib/validation";
 
 // Public: published projects only. Admin: add ?all=1 to include drafts.
@@ -39,6 +44,8 @@ export async function POST(req: Request) {
     if (denied) return denied;
 
     const { images, slug: requestedSlug, ...data } = projectInputSchema.parse(await req.json());
+    if (data.featured && (await featuredLimitReached())) return apiError(FEATURED_LIMIT_MESSAGE, 409);
+
     const slug = await generateUniqueSlug(requestedSlug || data.title);
 
     const project = await prisma.project.create({

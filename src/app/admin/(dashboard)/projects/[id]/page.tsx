@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ProjectForm } from "@/components/admin/ProjectForm";
-import { getProjectById } from "@/lib/projects";
+import { featuredLimitReached, getProjectById } from "@/lib/projects";
 
 export default async function EditProjectPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const project = await getProjectById(id);
   if (!project) notFound();
+  const limitReached = await featuredLimitReached(id);
 
   return (
     <>
@@ -15,6 +16,7 @@ export default async function EditProjectPage({ params }: { params: Promise<{ id
       </Link>
       <h1 className="font-display mb-10 mt-4 text-5xl leading-none">Edit project</h1>
       <ProjectForm
+        featureLimitReached={limitReached}
         project={{
           id: project.id,
           title: project.title,

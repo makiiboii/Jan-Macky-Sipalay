@@ -4,8 +4,12 @@ export const CATEGORIES = [
   "VIDEO_EDITING",
   "PHOTOGRAPHY",
   "PHOTO_EDITING",
+  "AI_GENERATED",
 ] as const;
 export type CategoryValue = (typeof CATEGORIES)[number];
+
+/** Maximum number of projects shown in "Featured work" on the homepage. */
+export const MAX_FEATURED = 4;
 
 export const ROLES = [
   "VIDEOGRAPHER",
@@ -23,6 +27,7 @@ export const CATEGORY_LABELS: Record<CategoryValue, string> = {
   VIDEO_EDITING: "Video Editing",
   PHOTOGRAPHY: "Photography",
   PHOTO_EDITING: "Photo Editing",
+  AI_GENERATED: "AI Generated",
 };
 
 export const ROLE_LABELS: Record<RoleValue, string> = {

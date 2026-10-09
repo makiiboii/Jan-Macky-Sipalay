@@ -6,6 +6,7 @@ import { useState, type FormEvent } from "react";
 import {
   CATEGORIES,
   CATEGORY_LABELS,
+  MAX_FEATURED,
   ROLES,
   ROLE_LABELS,
   type CategoryValue,
@@ -34,7 +35,7 @@ export type ProjectFormValues = {
   images: ImageRow[];
 };
 
-export function ProjectForm({ project }: { project?: ProjectFormValues }) {
+export function ProjectForm({ project, featureLimitReached = false }: { project?: ProjectFormValues; featureLimitReached?: boolean }) {
   const router = useRouter();
   const [title, setTitle] = useState(project?.title ?? "");
   const [slug, setSlug] = useState(project?.slug ?? "");
@@ -57,6 +58,7 @@ export function ProjectForm({ project }: { project?: ProjectFormValues }) {
 
   const trimmedVideo = videoUrl.trim();
   const videoEmbedInfo = trimmedVideo ? getVideoEmbed(trimmedVideo) : null;
+  const cannotFeature = featureLimitReached && !featured;
 
   function onTitleChange(value: string) {
     setTitle(value);
@@ -273,7 +275,10 @@ export function ProjectForm({ project }: { project?: ProjectFormValues }) {
 
       <section className="border-t border-line pt-10">
         <h2 className="text-lg">Photography gallery</h2>
-        <p className="mt-1 text-sm text-smoke">Photos show in this order on the project page.</p>
+        <p className="mt-1 text-sm text-smoke">
+          Photos show in this order on the project page. Add photos and leave the video URL empty to show this project as
+          a photo album: the thumbnail becomes the album cover and visitors open it to see all the photos.
+        </p>
 
         {images.length > 0 && (
           <ul className="mt-6 space-y-3">
@@ -312,9 +317,10 @@ export function ProjectForm({ project }: { project?: ProjectFormValues }) {
           <input type="checkbox" checked={published} onChange={(e) => setPublished(e.target.checked)} className="h-4 w-4 accent-neutral-200" />
           Published (visible on the site)
         </label>
-        <label className="flex items-center gap-2 text-sm">
-          <input type="checkbox" checked={featured} onChange={(e) => setFeatured(e.target.checked)} className="h-4 w-4 accent-neutral-200" />
+        <label className={`flex items-center gap-2 text-sm ${cannotFeature ? "text-smoke/60" : ""}`}>
+          <input type="checkbox" checked={featured} disabled={cannotFeature} onChange={(e) => setFeatured(e.target.checked)} className="h-4 w-4 accent-neutral-200" />
           Featured on the homepage
+          {cannotFeature && <span>(maximum of {MAX_FEATURED}; unfeature another project first)</span>}
         </label>
       </section>
 

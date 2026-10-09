@@ -2,7 +2,12 @@ import { NextResponse } from "next/server";
 import { apiError, handleError, requireAdmin } from "@/lib/api";
 import { isAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { generateUniqueSlug, withImages } from "@/lib/projects";
+import {
+  FEATURED_LIMIT_MESSAGE,
+  featuredLimitReached,
+  generateUniqueSlug,
+  withImages,
+} from "@/lib/projects";
 import { projectInputSchema, projectPatchSchema } from "@/lib/validation";
 
 type Context = { params: Promise<{ id: string }> };
@@ -31,6 +36,8 @@ export async function PUT(req: Request, { params }: Context) {
 
     const { id } = await params;
     const { images, slug: requestedSlug, ...data } = projectInputSchema.parse(await req.json());
+    if (data.featured && (await featuredLimitReached(id))) return apiError(FEATURED_LIMIT_MESSAGE, 409);
+
     const slug = requestedSlug === undefined ? undefined : await generateUniqueSlug(requestedSlug || data.title, id);
 
     const project = await prisma.project.update({
@@ -59,6 +66,8 @@ export async function PATCH(req: Request, { params }: Context) {
 
     const { id } = await params;
     const data = projectPatchSchema.parse(await req.json());
+    if (data.featured && (await featuredLimitReached(id))) return apiError(FEATURED_LIMIT_MESSAGE, 409);
+
     const project = await prisma.project.update({ where: { id }, data, include: withImages });
     return NextResponse.json({ project });
   } catch (error) {

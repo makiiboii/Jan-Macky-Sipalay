@@ -50,6 +50,9 @@ export default async function ProjectPage({ params }: Props) {
   if (!project) notFound();
 
   const paragraphs = project.description.split(/\n{2,}/).filter(Boolean);
+  // Photo albums open straight to the photos instead of a large thumbnail banner.
+  const album = project.images.length > 0 && !project.videoUrl;
+  const galleryImages = project.images.map(({ id, url, caption }) => ({ id, url, caption }));
 
   return (
     <article className="px-5 pb-24 pt-24 sm:pt-28 md:px-10 md:pb-36 md:pt-36 max-w-full overflow-hidden">
@@ -59,9 +62,11 @@ export default async function ProjectPage({ params }: Props) {
 
       <h1 className="font-display mt-6 text-[clamp(2.2rem,8.5vw,11rem)] leading-[0.9] break-words">{project.title}</h1>
 
-      <div className="relative mt-8 sm:mt-10 aspect-[4/3] overflow-hidden bg-neutral-950 sm:aspect-[16/9] md:mt-14">
-        <Cover src={project.thumbnailUrl} alt={`${project.title} thumbnail`} sizes="100vw" priority />
-      </div>
+      {!album && (
+        <div className="relative mt-8 sm:mt-10 aspect-[4/3] overflow-hidden bg-neutral-950 sm:aspect-[16/9] md:mt-14">
+          <Cover src={project.thumbnailUrl} alt={`${project.title} thumbnail`} sizes="100vw" priority />
+        </div>
+      )}
 
       <dl className="mt-8 sm:mt-10 grid grid-cols-2 gap-x-4 gap-y-6 sm:gap-x-6 sm:gap-y-8 border-b border-line pb-10 md:grid-cols-4">
         <div>
@@ -111,8 +116,16 @@ export default async function ProjectPage({ params }: Props) {
       )}
 
       {project.images.length > 0 && (
-        <section aria-label="Photo gallery" className="mt-16 md:mt-24">
-          <Gallery images={project.images} title={project.title} />
+        <section aria-labelledby="photos-heading" className={album ? "mt-12 md:mt-16" : "mt-16 md:mt-24"}>
+          <div className="mb-6 flex items-baseline justify-between gap-4 md:mb-8">
+            <h2 id="photos-heading" className="font-display text-3xl leading-none md:text-4xl">
+              Photos
+            </h2>
+            <span className="text-sm tabular-nums text-smoke">
+              {String(project.images.length).padStart(2, "0")} · Click a photo to view full screen
+            </span>
+          </div>
+          <Gallery images={galleryImages} title={project.title} />
         </section>
       )}
     </article>

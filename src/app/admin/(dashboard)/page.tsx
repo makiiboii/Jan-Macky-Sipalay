@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import { ProjectRowActions } from "@/components/admin/ProjectRowActions";
-import { CATEGORY_LABELS } from "@/lib/constants";
+import { CATEGORY_LABELS, MAX_FEATURED } from "@/lib/constants";
 import { resolveImageUrl } from "@/lib/drive";
 import { getAdminProjects } from "@/lib/projects";
 
@@ -14,11 +14,18 @@ export default async function AdminHome() {
     console.error(error);
     failed = true;
   }
+  const featuredCount = projects.filter((project) => project.featured).length;
+  const featureLimitReached = featuredCount >= MAX_FEATURED;
 
   return (
     <>
       <div className="flex items-center justify-between gap-4">
-        <h1 className="font-display text-5xl leading-none">Projects</h1>
+        <div>
+          <h1 className="font-display text-5xl leading-none">Projects</h1>
+          <p className="mt-2 text-sm text-smoke">
+            Featured on homepage: {featuredCount} / {MAX_FEATURED}
+          </p>
+        </div>
         <Link href="/admin/projects/new" className="btn btn-solid">
           Add project
         </Link>
@@ -49,7 +56,13 @@ export default async function AdminHome() {
                   {project.featured && " · Featured"}
                 </p>
               </div>
-              <ProjectRowActions id={project.id} slug={project.slug} published={project.published} featured={project.featured} />
+              <ProjectRowActions
+                id={project.id}
+                slug={project.slug}
+                published={project.published}
+                featured={project.featured}
+                featureLimitReached={featureLimitReached}
+              />
             </li>
           ))}
         </ul>

@@ -41,7 +41,7 @@ export function Hero() {
       ref={container}
       className="flex min-h-[100dvh] sm:min-h-[100svh] flex-col justify-center sm:justify-end px-5 pt-20 pb-10 sm:pt-28 sm:pb-14 md:px-10 max-w-full overflow-hidden"
     >
-      <h1 className="font-display text-[clamp(2.5rem,11.5vw,14rem)] sm:text-[clamp(3.4rem,14vw,14rem)] leading-[0.9] break-words">
+      <h1 className="font-display text-[clamp(2.25rem,10vw,4.5rem)] sm:text-[clamp(3rem,7.5vw,7.5rem)] leading-[0.9] break-words">
         {lines.map((line) => (
           <span key={line} className="hero-line">
             <span>{line}</span>

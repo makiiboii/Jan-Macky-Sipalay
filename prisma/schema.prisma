@@ -12,6 +12,7 @@ enum Category {
   VIDEO_EDITING
   PHOTOGRAPHY
   PHOTO_EDITING
+  AI_GENERATED
 }
 
 enum Role {

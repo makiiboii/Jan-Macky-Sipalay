@@ -4,17 +4,22 @@ import { FeaturedWork } from "@/components/FeaturedWork";
 import { Hero } from "@/components/Hero";
 import { Portfolio } from "@/components/Portfolio";
 import { Reveal } from "@/components/Reveal";
-import { getFeaturedProject, getPublishedProjects, type ProjectCardData } from "@/lib/projects";
+import { getFeaturedProjects, getPublishedProjects, type ProjectCardData } from "@/lib/projects";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
+  let featuredProjects: ProjectCardData[] = [];
   let projects: ProjectCardData[] = [];
-  let featured: ProjectCardData | null = null;
   let unavailable = false;
 
   try {
-    [featured, projects] = await Promise.all([getFeaturedProject(), getPublishedProjects()]);
+    const [loadedFeaturedProjects, publishedProjects] = await Promise.all([
+      getFeaturedProjects(),
+      getPublishedProjects(),
+    ]);
+    featuredProjects = loadedFeaturedProjects;
+    projects = publishedProjects;
   } catch (error) {
     console.error("Failed to load projects", error);
     unavailable = true;
@@ -23,7 +28,7 @@ export default async function HomePage() {
   return (
     <>
       <Hero />
-      {featured && <FeaturedWork project={featured} />}
+      {featuredProjects.length > 0 && <FeaturedWork projects={featuredProjects} />}
 
       <section id="work" className="scroll-mt-16 border-t border-line px-5 py-24 md:px-10 md:py-32 max-w-full overflow-hidden">
         <Reveal>

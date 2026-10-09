@@ -4,9 +4,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 
-type Props = { id: string; slug: string; published: boolean; featured: boolean };
+type Props = { id: string; slug: string; published: boolean; featured: boolean; featureLimitReached: boolean };
 
-export function ProjectRowActions({ id, slug, published, featured }: Props) {
+export function ProjectRowActions({ id, slug, published, featured, featureLimitReached }: Props) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState("");
@@ -41,7 +41,12 @@ export function ProjectRowActions({ id, slug, published, featured }: Props) {
       <button disabled={pending} onClick={() => send("PATCH", { published: !published })} className={`btn btn-outline ${small}`}>
         {published ? "Unpublish" : "Publish"}
       </button>
-      <button disabled={pending} onClick={() => send("PATCH", { featured: !featured })} className={`btn btn-outline ${small}`}>
+      <button
+        disabled={pending || (featureLimitReached && !featured)}
+        title={featureLimitReached && !featured ? "Unfeature a project before featuring another." : undefined}
+        onClick={() => send("PATCH", { featured: !featured })}
+        className={`btn btn-outline ${small}`}
+      >
         {featured ? "Unfeature" : "Feature"}
       </button>
       <button
