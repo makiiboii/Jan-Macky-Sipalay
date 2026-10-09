@@ -13,8 +13,8 @@ const pad = (n: number) => String(n).padStart(2, "0");
 
 export function FeaturedWork({ projects }: { projects: ProjectCardData[] }) {
   const trackRef = useRef<HTMLDivElement>(null);
-  const primaryGroupRef = useRef<HTMLDivElement>(null);
   const hoveredRef = useRef(false);
+  const touchingRef = useRef(false);
   const manualPauseUntilRef = useRef(0);
   const dragRef = useRef<{
     pointerId: number;
@@ -23,16 +23,10 @@ export function FeaturedWork({ projects }: { projects: ProjectCardData[] }) {
     moved: boolean;
   } | null>(null);
 
-  function getCycleWidth() {
-    const group = primaryGroupRef.current;
-    if (!group) return 0;
-    return group.offsetWidth + 24;
-  }
-
   function scrollByCards(direction: -1 | 1) {
     const track = trackRef.current;
     if (!track) return;
-    manualPauseUntilRef.current = performance.now() + 1200;
+    manualPauseUntilRef.current = performance.now() + 1400;
     const reduced = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
@@ -78,7 +72,7 @@ export function FeaturedWork({ projects }: { projects: ProjectCardData[] }) {
     }, 0);
   }
 
-  // Smooth continuous 60fps horizontal carousel motion (no duplicate cards), paused on hover/focus/drag
+  // Smooth continuous 60fps horizontal carousel motion (no duplicate cards), paused on mouse hover or active touch
   useEffect(() => {
     const track = trackRef.current;
     if (!track) return;
@@ -94,8 +88,8 @@ export function FeaturedWork({ projects }: { projects: ProjectCardData[] }) {
       const paused =
         dragRef.current !== null ||
         hoveredRef.current ||
-        time < manualPauseUntilRef.current ||
-        track.matches(":focus-within");
+        touchingRef.current ||
+        time < manualPauseUntilRef.current;
 
       if (paused) {
         position = track.scrollLeft;
@@ -170,11 +164,21 @@ export function FeaturedWork({ projects }: { projects: ProjectCardData[] }) {
         role="region"
         aria-label="Featured projects carousel"
         tabIndex={0}
-        onMouseEnter={() => {
-          hoveredRef.current = true;
+        onPointerEnter={(event) => {
+          if (event.pointerType === "mouse") hoveredRef.current = true;
         }}
-        onMouseLeave={() => {
-          hoveredRef.current = false;
+        onPointerLeave={(event) => {
+          if (event.pointerType === "mouse") hoveredRef.current = false;
+        }}
+        onTouchStart={() => {
+          touchingRef.current = true;
+        }}
+        onTouchEnd={() => {
+          touchingRef.current = false;
+          manualPauseUntilRef.current = performance.now() + 1400;
+        }}
+        onTouchCancel={() => {
+          touchingRef.current = false;
         }}
         onKeyDown={(event) => {
           if (event.key === "ArrowLeft") {

@@ -98,12 +98,12 @@ export function Hero({ projects = [] }: { projects?: ProjectCardData[] }) {
       "editorial",
     ];
 
-    const colCount = COLUMN_CONFIGS.length;
-    const minItemsPerCol = 6;
+    const minItemsPerCol = 8;
 
     return COLUMN_CONFIGS.map((config, colIndex) => {
       const colTiles: WallTile[] = [];
-      for (let i = 0; i < Math.max(minItemsPerCol, Math.ceil(rawTiles.length / 2)); i++) {
+      const count = Math.max(minItemsPerCol, Math.ceil(rawTiles.length / 2));
+      for (let i = 0; i < count; i++) {
         const sourceIndex = (colIndex * 3 + i * 2) % rawTiles.length;
         const base = rawTiles[sourceIndex];
         const variedAspect =

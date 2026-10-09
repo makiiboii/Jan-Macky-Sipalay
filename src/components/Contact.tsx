@@ -103,16 +103,18 @@ function ChannelRow({ channel }: { channel: ContactChannel }) {
         href={channel.href || "#contact"}
         target={isMail ? undefined : "_blank"}
         rel={isMail ? undefined : "noopener noreferrer"}
-        className="group flex items-center justify-between gap-4 py-6 transition-colors hover:border-bone"
+        className="group flex items-center justify-between gap-3 py-5 transition-colors hover:border-bone sm:gap-4 sm:py-6"
       >
-        <div className="flex min-w-0 flex-1 items-center gap-4 sm:gap-5">
+        <div className="flex min-w-0 flex-1 items-center gap-3.5 sm:gap-5">
           <ChannelIcon label={channel.label} />
-          <span className="w-24 shrink-0 text-[11px] uppercase tracking-[0.2em] text-smoke transition-colors group-hover:text-bone sm:w-32">
-            {channel.label}
-          </span>
-          <span className="truncate text-sm text-bone transition-colors group-hover:text-white sm:text-base">
-            {displayValue}
-          </span>
+          <div className="flex min-w-0 flex-1 flex-col gap-0.5 sm:flex-row sm:items-center sm:gap-4">
+            <span className="shrink-0 text-[10px] uppercase tracking-[0.2em] text-smoke transition-colors group-hover:text-bone sm:w-32 sm:text-[11px]">
+              {channel.label}
+            </span>
+            <span className="truncate text-sm text-bone transition-colors group-hover:text-white sm:text-base">
+              {displayValue}
+            </span>
+          </div>
         </div>
         <span
           aria-hidden="true"
@@ -134,14 +136,17 @@ export function Contact() {
       const section = sectionRef.current;
       if (!section) return;
 
+      const isMobile = window.innerWidth < 768;
+      const slideOffset = isMobile ? 48 : 90;
+
       const leftItems = section.querySelectorAll<HTMLElement>("[data-contact-left]");
       const rightItems = section.querySelectorAll<HTMLElement>("[data-contact-right]");
       const watermark = watermarkRef.current;
 
-      gsap.set(leftItems, { autoAlpha: 0, x: -90 });
-      gsap.set(rightItems, { autoAlpha: 0, x: 90 });
+      gsap.set(leftItems, { autoAlpha: 0, x: -slideOffset });
+      gsap.set(rightItems, { autoAlpha: 0, x: slideOffset });
       if (watermark) {
-        gsap.set(watermark, { autoAlpha: 0, x: -130 });
+        gsap.set(watermark, { autoAlpha: 0, x: isMobile ? -64 : -130 });
       }
 
       const tl = gsap.timeline({

@@ -23,6 +23,8 @@ function ToolCarousel({
     startScroll: number;
   } | null>(null);
   const hoveredRef = useRef(false);
+  const touchingRef = useRef(false);
+  const manualPauseUntilRef = useRef(0);
 
   function getCycleWidth() {
     const group = primaryGroupRef.current;
@@ -77,11 +79,13 @@ function ToolCarousel({
   function onPointerUp(event: React.PointerEvent<HTMLDivElement>) {
     if (dragRef.current?.pointerId !== event.pointerId) return;
     dragRef.current = null;
+    manualPauseUntilRef.current = performance.now() + 1200;
   }
 
   function stepScroll(stepDir: -1 | 1) {
     const viewport = viewportRef.current;
     if (!viewport) return;
+    manualPauseUntilRef.current = performance.now() + 1200;
     normalizeScroll(viewport);
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     viewport.scrollBy({
@@ -115,7 +119,8 @@ function ToolCarousel({
       const paused =
         dragRef.current !== null ||
         hoveredRef.current ||
-        scrollElement.matches(":focus-within");
+        touchingRef.current ||
+        time < manualPauseUntilRef.current;
 
       if (paused) {
         position = scrollElement.scrollLeft;
@@ -210,11 +215,21 @@ function ToolCarousel({
         role="region"
         aria-label={label}
         tabIndex={0}
-        onMouseEnter={() => {
-          hoveredRef.current = true;
+        onPointerEnter={(event) => {
+          if (event.pointerType === "mouse") hoveredRef.current = true;
         }}
-        onMouseLeave={() => {
-          hoveredRef.current = false;
+        onPointerLeave={(event) => {
+          if (event.pointerType === "mouse") hoveredRef.current = false;
+        }}
+        onTouchStart={() => {
+          touchingRef.current = true;
+        }}
+        onTouchEnd={() => {
+          touchingRef.current = false;
+          manualPauseUntilRef.current = performance.now() + 1200;
+        }}
+        onTouchCancel={() => {
+          touchingRef.current = false;
         }}
         onKeyDown={(event) => {
           if (event.key === "ArrowLeft") {

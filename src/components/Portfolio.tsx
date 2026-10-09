@@ -262,6 +262,7 @@ function PhotographyCarousel({
 }) {
   const trackRef = useRef<HTMLDivElement>(null);
   const hoveredRef = useRef(false);
+  const touchingRef = useRef(false);
   const manualPauseUntilRef = useRef(0);
   const [activeAlbumSlug, setActiveAlbumSlug] = useState<string>("ALL");
   const [lightboxState, setLightboxState] = useState<{
@@ -331,7 +332,7 @@ function PhotographyCarousel({
   function scrollByDirection(stepDir: -1 | 1) {
     const track = trackRef.current;
     if (!track) return;
-    manualPauseUntilRef.current = performance.now() + 1200;
+    manualPauseUntilRef.current = performance.now() + 1400;
     track.scrollBy({
       left: track.clientWidth * 0.72 * stepDir,
       behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
@@ -362,9 +363,9 @@ function PhotographyCarousel({
       const paused =
         isDraggingRef.current ||
         hoveredRef.current ||
+        touchingRef.current ||
         lightboxState !== null ||
-        time < manualPauseUntilRef.current ||
-        track.matches(":focus-within");
+        time < manualPauseUntilRef.current;
 
       if (paused) {
         position = track.scrollLeft;
@@ -459,11 +460,21 @@ function PhotographyCarousel({
         tabIndex={0}
         role="region"
         aria-label="Photography horizontal carousel"
-        onMouseEnter={() => {
-          hoveredRef.current = true;
+        onPointerEnter={(event) => {
+          if (event.pointerType === "mouse") hoveredRef.current = true;
         }}
-        onMouseLeave={() => {
-          hoveredRef.current = false;
+        onPointerLeave={(event) => {
+          if (event.pointerType === "mouse") hoveredRef.current = false;
+        }}
+        onTouchStart={() => {
+          touchingRef.current = true;
+        }}
+        onTouchEnd={() => {
+          touchingRef.current = false;
+          manualPauseUntilRef.current = performance.now() + 1400;
+        }}
+        onTouchCancel={() => {
+          touchingRef.current = false;
         }}
         onKeyDown={(event) => {
           if (event.key === "ArrowLeft") {
@@ -586,6 +597,7 @@ function Filmstrip({
 }) {
   const track = useRef<HTMLDivElement>(null);
   const hoveredRef = useRef(false);
+  const touchingRef = useRef(false);
   const manualPauseUntilRef = useRef(0);
   const dragRef = useRef<{
     pointerId: number;
@@ -596,7 +608,7 @@ function Filmstrip({
 
   function move(stepDir: -1 | 1) {
     if (!track.current) return;
-    manualPauseUntilRef.current = performance.now() + 1200;
+    manualPauseUntilRef.current = performance.now() + 1400;
     track.current.scrollBy({
       left: track.current.clientWidth * 0.72 * stepDir,
       behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
@@ -627,8 +639,8 @@ function Filmstrip({
       const paused =
         dragRef.current !== null ||
         hoveredRef.current ||
-        time < manualPauseUntilRef.current ||
-        scrollElement.matches(":focus-within");
+        touchingRef.current ||
+        time < manualPauseUntilRef.current;
 
       if (paused) {
         position = scrollElement.scrollLeft;
@@ -657,7 +669,7 @@ function Filmstrip({
 
   return (
     <div className="mt-4">
-      {projects.length > 2 && (
+      {projects.length > 1 && (
         <div className="mb-4 flex justify-end gap-2">
           <button
             type="button"
@@ -680,11 +692,21 @@ function Filmstrip({
       <div
         ref={track}
         tabIndex={0}
-        onMouseEnter={() => {
-          hoveredRef.current = true;
+        onPointerEnter={(event) => {
+          if (event.pointerType === "mouse") hoveredRef.current = true;
         }}
-        onMouseLeave={() => {
-          hoveredRef.current = false;
+        onPointerLeave={(event) => {
+          if (event.pointerType === "mouse") hoveredRef.current = false;
+        }}
+        onTouchStart={() => {
+          touchingRef.current = true;
+        }}
+        onTouchEnd={() => {
+          touchingRef.current = false;
+          manualPauseUntilRef.current = performance.now() + 1400;
+        }}
+        onTouchCancel={() => {
+          touchingRef.current = false;
         }}
         onKeyDown={(event) => {
           if (event.key === "ArrowLeft") {
