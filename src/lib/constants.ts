@@ -19,7 +19,7 @@ export const DB_CATEGORIES = [
 export type DbCategoryValue = (typeof DB_CATEGORIES)[number];
 
 /** Maximum number of projects shown in "Featured work" on the homepage. */
-export const MAX_FEATURED = 8;
+export const MAX_FEATURED = 4;
 
 export const ROLES = [
   "VIDEOGRAPHER",

@@ -27,12 +27,8 @@ export default async function HomePage() {
     unavailable = true;
   }
 
-  // Ensure the Featured carousel has enough cards (up to 6) to scroll smoothly on desktop
-  const featuredIds = new Set(featuredProjects.map((project) => project.id));
-  const featuredList = [
-    ...featuredProjects,
-    ...projects.filter((project) => !featuredIds.has(project.id)),
-  ].slice(0, 6);
+  // Only show projects explicitly marked as Featured (up to MAX_FEATURED = 4)
+  const featuredList = featuredProjects.slice(0, 4);
 
   return (
     <>
