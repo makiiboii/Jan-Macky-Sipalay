@@ -34,7 +34,7 @@ export const projectInputSchema = z.object({
   title: z.string().trim().min(1, "Title is required.").max(120),
   slug: z.string().trim().max(140).optional(),
   description: z.string().trim().max(5000).default(""),
-  category: categorySchema.default("VIDEO_EDITING"),
+  category: categorySchema.default("VIDEOGRAPHY"),
   year: z.coerce
     .number()
     .int()

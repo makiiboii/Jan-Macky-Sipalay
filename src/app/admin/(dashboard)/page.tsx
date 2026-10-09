@@ -1,9 +1,6 @@
-/* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
-import { ProjectRowActions } from "@/components/admin/ProjectRowActions";
-import { categoryLabel } from "@/components/ProjectMeta";
+import { AdminDashboardClient } from "@/components/admin/AdminDashboardClient";
 import { MAX_FEATURED } from "@/lib/constants";
-import { resolveImageUrl } from "@/lib/drive";
 import { getAdminProjects } from "@/lib/projects";
 
 export default async function AdminHome() {
@@ -16,19 +13,20 @@ export default async function AdminHome() {
     failed = true;
   }
   const featuredCount = projects.filter((project) => project.featured).length;
-  const featureLimitReached = featuredCount >= MAX_FEATURED;
 
   return (
-    <>
-      <div className="flex items-center justify-between gap-4">
+    <div className="space-y-10">
+      <div className="flex flex-wrap items-end justify-between gap-4 border-b border-line pb-6">
         <div>
-          <h1 className="font-display text-5xl leading-none">Projects</h1>
-          <p className="mt-2 text-sm text-smoke">
-            Featured on homepage: {featuredCount} / {MAX_FEATURED}
+          <p className="text-xs uppercase tracking-[0.18em] text-smoke">
+            Portfolio Management · Curated Featured ({featuredCount}/{MAX_FEATURED})
           </p>
+          <h1 className="font-display mt-2 text-5xl leading-none sm:text-6xl">
+            Projects
+          </h1>
         </div>
         <Link href="/admin/projects/new" className="btn btn-solid">
-          Add project
+          + Add project
         </Link>
       </div>
 
@@ -39,53 +37,8 @@ export default async function AdminHome() {
       ) : projects.length === 0 ? (
         <p className="mt-10 text-smoke">No projects yet. Add your first one.</p>
       ) : (
-        <ul className="mt-10 divide-y divide-line border-y border-line">
-          {projects.map((project) => (
-            <li
-              key={project.id}
-              className="flex flex-col gap-4 py-5 sm:flex-row sm:items-center"
-            >
-              <div className="h-16 w-28 shrink-0 overflow-hidden bg-black">
-                {project.thumbnailUrl && (
-                  <img
-                    src={resolveImageUrl(project.thumbnailUrl)}
-                    alt=""
-                    className="h-full w-full object-cover"
-                    loading="lazy"
-                  />
-                )}
-              </div>
-              <div className="min-w-0 flex-1">
-                <Link
-                  href={`/admin/projects/${project.id}`}
-                  className="block truncate text-lg hover:underline"
-                >
-                  {project.title}
-                </Link>
-                <p className="mt-1 text-sm text-smoke">
-                  {categoryLabel(project.category)} · {project.year} ·{" "}
-                  <span
-                    className={
-                      project.published ? "text-green-400" : "text-amber-400"
-                    }
-                  >
-                    {project.published ? "Published" : "Draft"}
-                  </span>
-                  {project.featured && " · Featured"}
-                </p>
-              </div>
-              <ProjectRowActions
-                id={project.id}
-                slug={project.slug}
-                category={project.category}
-                published={project.published}
-                featured={project.featured}
-                featureLimitReached={featureLimitReached}
-              />
-            </li>
-          ))}
-        </ul>
+        <AdminDashboardClient projects={projects} />
       )}
-    </>
+    </div>
   );
 }

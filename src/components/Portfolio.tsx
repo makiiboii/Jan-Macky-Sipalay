@@ -5,7 +5,12 @@ import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { CATEGORIES, CATEGORY_LABELS, type CategoryValue } from "@/lib/constants";
+import {
+  CATEGORIES,
+  CATEGORY_LABELS,
+  normalizeCategory,
+  type CategoryValue,
+} from "@/lib/constants";
 import { resolveImageUrl } from "@/lib/drive";
 import type { ProjectCardData } from "@/lib/projects";
 import { cn } from "@/lib/utils";
@@ -44,7 +49,9 @@ export function Portfolio({ projects }: { projects: ProjectCardData[] }) {
   const counts = useMemo(() => {
     const result = { ALL: matching.length } as Record<Filter, number>;
     for (const category of CATEGORIES) {
-      result[category] = matching.filter((project) => project.category === category).length;
+      result[category] = matching.filter(
+        (project) => normalizeCategory(project.category) === category,
+      ).length;
     }
     return result;
   }, [matching]);
@@ -55,7 +62,9 @@ export function Portfolio({ projects }: { projects: ProjectCardData[] }) {
     return categories
       .map((category) => ({
         category,
-        projects: matching.filter((project) => project.category === category),
+        projects: matching.filter(
+          (project) => normalizeCategory(project.category) === category,
+        ),
       }))
       .filter((group) => group.projects.length > 0);
   }, [matching, filter]);

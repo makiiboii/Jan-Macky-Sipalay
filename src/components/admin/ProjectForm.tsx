@@ -49,7 +49,7 @@ export function ProjectForm({
   const [slugTouched, setSlugTouched] = useState(Boolean(project));
   const [description, setDescription] = useState(project?.description ?? "");
   const [category, setCategory] = useState<CategoryValue>(
-    project?.category ? normalizeCategory(project.category) : "VIDEO_EDITING",
+    project?.category ? normalizeCategory(project.category) : "VIDEOGRAPHY",
   );
   const [year, setYear] = useState(
     project?.year ?? String(new Date().getFullYear()),
@@ -284,7 +284,9 @@ export function ProjectForm({
                 ? "AI-Generated highlights AI-assisted video, UGC, and generative visual projects."
                 : category === "PHOTOGRAPHY"
                   ? "Photography displays still images and albums with full-screen lightbox viewing."
-                  : "Video Editing showcases horizontal 16:9 films, highlights, and edits."}
+                  : category === "VIDEOGRAPHY"
+                    ? "Videoshoot showcases on-location filming, event coverage, SDEs, and directed shoots."
+                    : "Video Editing showcases horizontal 16:9 cuts, color grading, and post-production edits."}
           </p>
           {errorFor("category")}
         </div>
@@ -369,21 +371,27 @@ export function ProjectForm({
           />
           <p className="mt-1 text-xs text-muted">
             An https:// image link or a Google Drive image link (shared as
-            &ldquo;Anyone with the link&rdquo;).
+            &ldquo;Anyone with the link&rdquo;). Published thumbnails are
+            automatically included in the Hero animated background wall.
           </p>
           {errorFor("thumbnailUrl")}
           {thumbnailUrl.trim() && (
-            <div
-              className={cn(
-                "mt-3 overflow-hidden border border-line bg-black",
-                isPortraitCategory ? " aspect-[9/16] w-36" : "h-36 w-64",
-              )}
-            >
-              <img
-                src={resolveImageUrl(thumbnailUrl.trim())}
-                alt="Thumbnail preview"
-                className="h-full w-full object-cover"
-              />
+            <div className="mt-3 flex flex-wrap items-end gap-3">
+              <div
+                className={cn(
+                  "overflow-hidden border border-line bg-black",
+                  isPortraitCategory ? "aspect-[9/16] w-36" : "h-36 w-64",
+                )}
+              >
+                <img
+                  src={resolveImageUrl(thumbnailUrl.trim())}
+                  alt="Thumbnail preview"
+                  className="h-full w-full object-cover"
+                />
+              </div>
+              <span className="border border-white/15 bg-white/[0.03] px-2.5 py-1 text-[11px] uppercase tracking-[0.14em] text-smoke">
+                {published ? "Active in Hero Thumbnail Wall" : "Will appear in Hero Wall when published"}
+              </span>
             </div>
           )}
         </div>
@@ -556,7 +564,7 @@ export function ProjectForm({
             onChange={(e) => setPublished(e.target.checked)}
             className="h-4 w-4 accent-neutral-200"
           />
-          Published (visible on the site)
+          Published (visible in Selected Work &amp; Hero Wall)
         </label>
         <label
           className={`flex items-center gap-2 text-sm ${cannotFeature ? "text-smoke/60" : ""}`}
@@ -568,10 +576,10 @@ export function ProjectForm({
             onChange={(e) => setFeatured(e.target.checked)}
             className="h-4 w-4 accent-neutral-200"
           />
-          Featured on the homepage
+          Featured in Homepage Curated Showcase (max {MAX_FEATURED})
           {cannotFeature && (
             <span>
-              (maximum of {MAX_FEATURED}; unfeature another project first)
+              — limit of {MAX_FEATURED} reached; unfeature another project first
             </span>
           )}
         </label>
