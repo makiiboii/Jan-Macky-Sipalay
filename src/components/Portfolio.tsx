@@ -153,53 +153,65 @@ export function Portfolio({ projects }: { projects: ProjectCardData[] }) {
         </div>
       ) : (
         <div key={filter} className={cn(filter === "ALL" ? "mt-14 space-y-20 md:mt-20 md:space-y-24" : "mt-10")}>
-          {groups.map(({ category, projects: items }, groupIndex) => (
-            <section key={category} aria-labelledby={filter === "ALL" ? `category-${category}` : undefined}>
-              {filter === "ALL" && (
-                <Reveal>
-                  <div className="mb-8 flex flex-wrap items-end justify-between gap-x-6 gap-y-3 border-b border-line pb-5 md:mb-10">
-                    <div className="flex items-baseline gap-4">
-                      <span className="text-sm tabular-nums text-muted">{pad(groupIndex + 1)}</span>
-                      <h3 id={`category-${category}`} className="font-display text-[clamp(1.9rem,4vw,3.4rem)] leading-none">
-                        {CATEGORY_LABELS[category]}
-                      </h3>
-                    </div>
-                    <div className="flex items-center gap-5 text-sm">
-                      <span className="tabular-nums text-smoke">
-                        {pad(items.length)} {items.length === 1 ? "project" : "projects"}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => showCategory(category)}
-                        className="group inline-flex items-center gap-1.5 border-b border-line pb-0.5 tracking-wide text-bone transition-colors hover:border-bone"
-                      >
-                        View only {CATEGORY_LABELS[category]}
-                        <span aria-hidden="true" className="transition-transform group-hover:translate-x-0.5">
-                          &rarr;
-                        </span>
-                      </button>
-                    </div>
-                  </div>
-                </Reveal>
-              )}
+          {groups.map(({ category, projects: items }, groupIndex) => {
+            // Alternate direction per category row (FeaturedWork above is "left", so groupIndex 0 starts "right", then "left", etc.)
+            const direction: "left" | "right" = groupIndex % 2 === 0 ? "right" : "left";
 
-              {category === "PHOTOGRAPHY" ? (
-                <PhotographyCarousel projects={items} />
-              ) : category === "PORTRAIT_VIDEOS" ? (
-                <PortraitVideosShowcase projects={items} viewMode={viewMode} eager={groupIndex === 0} />
-              ) : viewMode === "carousel" ? (
-                <Filmstrip projects={items} eager={groupIndex === 0} />
-              ) : (
-                <div className="grid gap-x-8 gap-y-12 md:grid-cols-2 md:gap-y-14">
-                  {items.map((project, index) => (
-                    <Reveal key={project.id} delay={(index % 2) * 90}>
-                      <ProjectCard project={project} priority={groupIndex === 0 && index < 2} />
-                    </Reveal>
-                  ))}
-                </div>
-              )}
-            </section>
-          ))}
+            return (
+              <section key={category} aria-labelledby={filter === "ALL" ? `category-${category}` : undefined}>
+                {filter === "ALL" && (
+                  <Reveal>
+                    <div className="mb-8 flex flex-wrap items-end justify-between gap-x-6 gap-y-3 border-b border-line pb-5 md:mb-10">
+                      <div className="flex items-baseline gap-4">
+                        <span className="text-sm tabular-nums text-muted">{pad(groupIndex + 1)}</span>
+                        <h3 id={`category-${category}`} className="font-display text-[clamp(1.9rem,4vw,3.4rem)] leading-none">
+                          {CATEGORY_LABELS[category]}
+                        </h3>
+                      </div>
+                      <div className="flex items-center gap-5 text-sm">
+                        <span className="tabular-nums text-smoke">
+                          {pad(items.length)} {items.length === 1 ? "project" : "projects"}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => showCategory(category)}
+                          className="group inline-flex items-center gap-1.5 border-b border-line pb-0.5 tracking-wide text-bone transition-colors hover:border-bone"
+                        >
+                          View only {CATEGORY_LABELS[category]}
+                          <span aria-hidden="true" className="transition-transform group-hover:translate-x-0.5">
+                            &rarr;
+                          </span>
+                        </button>
+                      </div>
+                    </div>
+                  </Reveal>
+                )}
+
+                {category === "PHOTOGRAPHY" ? (
+                  <PhotographyCarousel projects={items} direction={direction} />
+                ) : category === "PORTRAIT_VIDEOS" ? (
+                  <PortraitVideosShowcase
+                    projects={items}
+                    viewMode={viewMode}
+                    eager={groupIndex === 0}
+                    direction={direction}
+                  />
+                ) : viewMode === "carousel" ? (
+                  <Filmstrip projects={items} eager={groupIndex === 0} direction={direction} />
+                ) : (
+                  <div className="project-focus-deck grid gap-x-8 gap-y-12 md:grid-cols-2 md:gap-y-14">
+                    {items.map((project, index) => (
+                      <Reveal key={project.id} delay={(index % 2) * 90}>
+                        <div className="project-focus-item">
+                          <ProjectCard project={project} priority={groupIndex === 0 && index < 2} />
+                        </div>
+                      </Reveal>
+                    ))}
+                  </div>
+                )}
+              </section>
+            );
+          })}
         </div>
       )}
     </div>
@@ -210,17 +222,21 @@ function PortraitVideosShowcase({
   projects,
   viewMode,
   eager,
+  direction,
 }: {
   projects: ProjectCardData[];
   viewMode: ViewMode;
   eager: boolean;
+  direction: "left" | "right";
 }) {
   if (viewMode === "grid") {
     return (
-      <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="project-focus-deck grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
         {projects.map((project, index) => (
           <Reveal key={project.id} delay={(index % 4) * 70}>
-            <ProjectCard project={project} compact priority={eager && index < 2} />
+            <div className="project-focus-item">
+              <ProjectCard project={project} compact priority={eager && index < 2} />
+            </div>
           </Reveal>
         ))}
       </div>
@@ -232,12 +248,18 @@ function PortraitVideosShowcase({
       <p className="mb-3 text-xs uppercase tracking-[0.16em] text-smoke">
         9:16 Vertical Format · Reels, TikTok &amp; Shorts
       </p>
-      <Filmstrip projects={projects} eager={eager} />
+      <Filmstrip projects={projects} eager={eager} direction={direction} />
     </div>
   );
 }
 
-function PhotographyCarousel({ projects }: { projects: ProjectCardData[] }) {
+function PhotographyCarousel({
+  projects,
+  direction,
+}: {
+  projects: ProjectCardData[];
+  direction: "left" | "right";
+}) {
   const trackRef = useRef<HTMLDivElement>(null);
   const primaryGroupRef = useRef<HTMLDivElement>(null);
   const hoveredRef = useRef(false);
@@ -307,28 +329,38 @@ function PhotographyCarousel({ projects }: { projects: ProjectCardData[] }) {
     return slides;
   }, [projects, activeAlbumSlug]);
 
-  function scrollByDirection(direction: -1 | 1) {
+  function scrollByDirection(stepDir: -1 | 1) {
     const track = trackRef.current;
     if (!track) return;
     manualPauseUntilRef.current = performance.now() + 1200;
     track.scrollBy({
-      left: track.clientWidth * 0.72 * direction,
+      left: track.clientWidth * 0.72 * stepDir,
       behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
     });
   }
 
-  // Smooth horizontal carousel animation for Photography stills
+  // Smooth alternating horizontal carousel animation for Photography stills
   useEffect(() => {
     const track = trackRef.current;
-    if (!track || photoSlides.length < 2) return;
+    if (!track || photoSlides.length < 1) return;
+
     let frame = 0;
     let previousTime = 0;
+    let initialized = false;
     let position = track.scrollLeft;
-    const speedPxPerSec = 30;
+    const speedPxPerSec = 32;
+    const sign = direction === "left" ? 1 : -1;
 
     const animate = (time: number) => {
       const group = primaryGroupRef.current;
       const cycle = group ? group.offsetWidth + 20 : 0;
+
+      if (!initialized && cycle > 0) {
+        position = cycle;
+        track.scrollLeft = position;
+        initialized = true;
+      }
+
       const paused =
         isDraggingRef.current ||
         hoveredRef.current ||
@@ -340,9 +372,11 @@ function PhotographyCarousel({ projects }: { projects: ProjectCardData[] }) {
         position = track.scrollLeft;
       } else if (previousTime && cycle > 0) {
         const dt = Math.min(time - previousTime, 50) / 1000;
-        position += speedPxPerSec * dt;
-        if (position >= cycle) {
+        position += sign * speedPxPerSec * dt;
+        if (position >= cycle * 2) {
           position -= cycle;
+        } else if (position <= 0) {
+          position += cycle;
         }
         track.scrollLeft = position;
       }
@@ -355,13 +389,13 @@ function PhotographyCarousel({ projects }: { projects: ProjectCardData[] }) {
     return () => {
       if (frame) window.cancelAnimationFrame(frame);
     };
-  }, [photoSlides.length, lightboxState]);
+  }, [photoSlides.length, lightboxState, direction]);
 
   const renderSlides = (keyPrefix: string) =>
     photoSlides.map((slide, idx) => (
       <figure
         key={`${keyPrefix}-${slide.id}`}
-        className="group relative w-[min(78vw,22rem)] shrink-0 sm:w-[20rem] md:w-[22rem]"
+        className="project-focus-item group relative w-[min(78vw,22rem)] shrink-0 sm:w-[20rem] md:w-[22rem]"
       >
         <button
           type="button"
@@ -524,14 +558,20 @@ function PhotographyCarousel({ projects }: { projects: ProjectCardData[] }) {
             dragMovedRef.current = false;
           }
         }}
-        className="no-scrollbar flex cursor-grab gap-5 overflow-x-auto pb-4 select-none active:cursor-grabbing focus-visible:outline-none"
+        className="project-focus-deck no-scrollbar flex cursor-grab gap-5 overflow-x-auto px-2 py-3 select-none active:cursor-grabbing focus-visible:outline-none"
       >
         <div ref={primaryGroupRef} className="flex shrink-0 gap-5">
           {renderSlides("primary")}
         </div>
-        {photoSlides.length >= 2 && (
+        <div className="flex shrink-0 gap-5" aria-hidden="true">
+          {renderSlides("loop-1")}
+        </div>
+        <div className="flex shrink-0 gap-5" aria-hidden="true">
+          {renderSlides("loop-2")}
+        </div>
+        {photoSlides.length <= 2 && (
           <div className="flex shrink-0 gap-5" aria-hidden="true">
-            {renderSlides("loop")}
+            {renderSlides("loop-3")}
           </div>
         )}
       </div>
@@ -551,7 +591,15 @@ function PhotographyCarousel({ projects }: { projects: ProjectCardData[] }) {
   );
 }
 
-function Filmstrip({ projects, eager }: { projects: ProjectCardData[]; eager: boolean }) {
+function Filmstrip({
+  projects,
+  eager,
+  direction = "left",
+}: {
+  projects: ProjectCardData[];
+  eager: boolean;
+  direction?: "left" | "right";
+}) {
   const track = useRef<HTMLDivElement>(null);
   const primaryGroupRef = useRef<HTMLDivElement>(null);
   const hoveredRef = useRef(false);
@@ -563,28 +611,37 @@ function Filmstrip({ projects, eager }: { projects: ProjectCardData[]; eager: bo
     moved: boolean;
   } | null>(null);
 
-  function move(direction: -1 | 1) {
+  function move(stepDir: -1 | 1) {
     if (!track.current) return;
     manualPauseUntilRef.current = performance.now() + 1200;
     track.current.scrollBy({
-      left: track.current.clientWidth * 0.72 * direction,
+      left: track.current.clientWidth * 0.72 * stepDir,
       behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
     });
   }
 
   useEffect(() => {
     const scrollElement = track.current;
-    if (!scrollElement || projects.length < 2) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (!scrollElement || projects.length < 1) return;
 
     let frame = 0;
     let previousTime = 0;
+    let initialized = false;
     let position = scrollElement.scrollLeft;
     const speedPxPerSec = 36;
+    const sign = direction === "left" ? 1 : -1;
 
     const animate = (time: number) => {
       const group = primaryGroupRef.current;
       const cycle = group ? group.offsetWidth + 24 : 0;
+
+      if (!initialized && cycle > 0) {
+        // Start in the middle cycle so both left and right directions wrap seamlessly
+        position = cycle;
+        scrollElement.scrollLeft = position;
+        initialized = true;
+      }
+
       const paused =
         dragRef.current !== null ||
         hoveredRef.current ||
@@ -595,9 +652,11 @@ function Filmstrip({ projects, eager }: { projects: ProjectCardData[]; eager: bo
         position = scrollElement.scrollLeft;
       } else if (previousTime && cycle > 0) {
         const dt = Math.min(time - previousTime, 50) / 1000;
-        position += speedPxPerSec * dt;
-        if (position >= cycle) {
+        position += sign * speedPxPerSec * dt;
+        if (position >= cycle * 2) {
           position -= cycle;
+        } else if (position <= 0) {
+          position += cycle;
         }
         scrollElement.scrollLeft = position;
       }
@@ -610,14 +669,14 @@ function Filmstrip({ projects, eager }: { projects: ProjectCardData[]; eager: bo
     return () => {
       if (frame) window.cancelAnimationFrame(frame);
     };
-  }, [projects.length]);
+  }, [projects.length, direction]);
 
   const renderReelCards = (keyPrefix: string) =>
     projects.map((project, index) => (
       <div
         key={`${keyPrefix}-${project.id}`}
         className={cn(
-          "shrink-0",
+          "project-focus-item shrink-0",
           project.category === "PORTRAIT_VIDEOS"
             ? "w-[min(72vw,18.5rem)]"
             : "w-[min(82vw,26rem)]",
@@ -629,23 +688,28 @@ function Filmstrip({ projects, eager }: { projects: ProjectCardData[]; eager: bo
 
   return (
     <div className="mt-4">
-      <div className="mb-4 flex justify-end gap-2">
-        <button
-          type="button"
-          onClick={() => move(-1)}
-          aria-label="Previous projects"
-          className="flex h-10 w-10 items-center justify-center border border-line text-base text-smoke transition-colors hover:border-bone hover:text-bone"
-        >
-          &larr;
-        </button>
-        <button
-          type="button"
-          onClick={() => move(1)}
-          aria-label="Next projects"
-          className="flex h-10 w-10 items-center justify-center border border-line text-base text-smoke transition-colors hover:border-bone hover:text-bone"
-        >
-          &rarr;
-        </button>
+      <div className="mb-4 flex items-center justify-between gap-4">
+        <span className="text-[10px] uppercase tracking-[0.16em] text-smoke/70">
+          {direction === "left" ? "← Sliding Left" : "Sliding Right →"}
+        </span>
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={() => move(-1)}
+            aria-label="Previous projects"
+            className="flex h-10 w-10 items-center justify-center border border-line text-base text-smoke transition-colors hover:border-bone hover:text-bone"
+          >
+            &larr;
+          </button>
+          <button
+            type="button"
+            onClick={() => move(1)}
+            aria-label="Next projects"
+            className="flex h-10 w-10 items-center justify-center border border-line text-base text-smoke transition-colors hover:border-bone hover:text-bone"
+          >
+            &rarr;
+          </button>
+        </div>
       </div>
       <div
         ref={track}
@@ -697,19 +761,20 @@ function Filmstrip({ projects, eager }: { projects: ProjectCardData[]; eager: bo
             event.stopPropagation();
           }
         }}
-        className="no-scrollbar flex cursor-grab gap-6 overflow-x-auto pb-3 select-none active:cursor-grabbing focus-visible:outline-none"
+        className="project-focus-deck no-scrollbar flex cursor-grab gap-6 overflow-x-auto px-2 py-3 select-none active:cursor-grabbing focus-visible:outline-none"
       >
         <div ref={primaryGroupRef} className="flex shrink-0 gap-6">
           {renderReelCards("primary")}
         </div>
-        {projects.length >= 2 && (
+        <div className="flex shrink-0 gap-6" aria-hidden="true">
+          {renderReelCards("loop-1")}
+        </div>
+        <div className="flex shrink-0 gap-6" aria-hidden="true">
+          {renderReelCards("loop-2")}
+        </div>
+        {projects.length <= 2 && (
           <div className="flex shrink-0 gap-6" aria-hidden="true">
-            {renderReelCards("loop-1")}
-          </div>
-        )}
-        {projects.length === 2 && (
-          <div className="flex shrink-0 gap-6" aria-hidden="true">
-            {renderReelCards("loop-2")}
+            {renderReelCards("loop-3")}
           </div>
         )}
       </div>

@@ -134,7 +134,7 @@ export function FeaturedWork({ projects }: { projects: ProjectCardData[] }) {
           key={`${keyPrefix}-${project.id}`}
           data-featured-card={keyPrefix === "primary" ? true : undefined}
           className={cn(
-            "group flex shrink-0 flex-col justify-between border border-line bg-[#080808] p-4 transition-colors hover:border-bone/50",
+            "project-focus-item group flex shrink-0 flex-col justify-between border border-line bg-[#080808] p-4 transition-colors hover:border-bone/60",
             isPortrait
               ? "w-[min(76vw,17.5rem)] sm:w-[18.5rem]"
               : "w-[min(85vw,21.5rem)] sm:w-[23rem] lg:w-[24.5rem]",
@@ -294,7 +294,7 @@ export function FeaturedWork({ projects }: { projects: ProjectCardData[] }) {
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerUp}
-        className="no-scrollbar flex cursor-grab gap-6 overflow-x-auto pb-4 pt-1 select-none active:cursor-grabbing focus-visible:outline-offset-4"
+        className="project-focus-deck no-scrollbar flex cursor-grab gap-6 overflow-x-auto px-2 py-3 select-none active:cursor-grabbing focus-visible:outline-offset-4"
       >
         <div ref={primaryGroupRef} className="flex shrink-0 gap-6">
           {renderCards("primary")}
