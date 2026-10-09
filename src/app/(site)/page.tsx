@@ -36,7 +36,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <Hero />
+      <Hero projects={projects} />
 
       <About />
 
