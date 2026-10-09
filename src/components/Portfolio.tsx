@@ -154,7 +154,7 @@ export function Portfolio({ projects }: { projects: ProjectCardData[] }) {
       ) : (
         <div key={filter} className={cn(filter === "ALL" ? "mt-14 space-y-20 md:mt-20 md:space-y-24" : "mt-10")}>
           {groups.map(({ category, projects: items }, groupIndex) => {
-            // Alternate direction per category row (FeaturedWork above is "left", so groupIndex 0 starts "right", then "left", etc.)
+            // Alternate starting direction per category row
             const direction: "left" | "right" = groupIndex % 2 === 0 ? "right" : "left";
 
             return (
@@ -261,7 +261,6 @@ function PhotographyCarousel({
   direction: "left" | "right";
 }) {
   const trackRef = useRef<HTMLDivElement>(null);
-  const primaryGroupRef = useRef<HTMLDivElement>(null);
   const hoveredRef = useRef(false);
   const manualPauseUntilRef = useRef(0);
   const [activeAlbumSlug, setActiveAlbumSlug] = useState<string>("ALL");
@@ -276,7 +275,7 @@ function PhotographyCarousel({
   const dragStartXRef = useRef(0);
   const dragStartScrollRef = useRef(0);
 
-  // Build flat list of still photography items from the photography projects
+  // Build flat list of unique still photography items from the photography projects (no duplicates)
   const photoSlides = useMemo(() => {
     const filteredProjects =
       activeAlbumSlug === "ALL"
@@ -339,24 +338,23 @@ function PhotographyCarousel({
     });
   }
 
-  // Smooth alternating horizontal carousel animation for Photography stills
+  // Smooth horizontal carousel animation when there are enough photos to scroll
   useEffect(() => {
     const track = trackRef.current;
-    if (!track || photoSlides.length < 1) return;
+    if (!track || photoSlides.length < 2) return;
 
     let frame = 0;
     let previousTime = 0;
     let initialized = false;
     let position = track.scrollLeft;
+    let currentSign = direction === "left" ? 1 : -1;
     const speedPxPerSec = 32;
-    const sign = direction === "left" ? 1 : -1;
 
     const animate = (time: number) => {
-      const group = primaryGroupRef.current;
-      const cycle = group ? group.offsetWidth + 20 : 0;
+      const maxScroll = track.scrollWidth - track.clientWidth;
 
-      if (!initialized && cycle > 0) {
-        position = cycle;
+      if (!initialized && maxScroll > 4) {
+        position = direction === "right" ? maxScroll : 0;
         track.scrollLeft = position;
         initialized = true;
       }
@@ -370,13 +368,15 @@ function PhotographyCarousel({
 
       if (paused) {
         position = track.scrollLeft;
-      } else if (previousTime && cycle > 0) {
+      } else if (previousTime && maxScroll > 4) {
         const dt = Math.min(time - previousTime, 50) / 1000;
-        position += sign * speedPxPerSec * dt;
-        if (position >= cycle * 2) {
-          position -= cycle;
+        position += currentSign * speedPxPerSec * dt;
+        if (position >= maxScroll) {
+          position = maxScroll;
+          currentSign = -1;
         } else if (position <= 0) {
-          position += cycle;
+          position = 0;
+          currentSign = 1;
         }
         track.scrollLeft = position;
       }
@@ -390,60 +390,6 @@ function PhotographyCarousel({
       if (frame) window.cancelAnimationFrame(frame);
     };
   }, [photoSlides.length, lightboxState, direction]);
-
-  const renderSlides = (keyPrefix: string) =>
-    photoSlides.map((slide, idx) => (
-      <figure
-        key={`${keyPrefix}-${slide.id}`}
-        className="project-focus-item group relative w-[min(78vw,22rem)] shrink-0 sm:w-[20rem] md:w-[22rem]"
-      >
-        <button
-          type="button"
-          tabIndex={keyPrefix === "primary" ? undefined : -1}
-          onClick={() =>
-            setLightboxState({
-              images: slide.albumImages,
-              title: slide.projectTitle,
-              index: slide.indexInAlbum,
-            })
-          }
-          aria-label={`Preview ${slide.projectTitle} photo ${slide.indexInAlbum + 1} of ${slide.totalInAlbum}`}
-          className="relative block aspect-[4/5] w-full overflow-hidden border border-line/70 bg-[#080808] text-left focus-visible:outline-offset-4"
-        >
-          <img
-            src={resolveImageUrl(slide.url)}
-            alt={slide.caption || `${slide.projectTitle} photo ${idx + 1}`}
-            loading={keyPrefix === "primary" && idx < 4 ? "eager" : "lazy"}
-            decoding="async"
-            draggable={false}
-            className="h-full w-full object-contain transition-transform duration-700 ease-out group-hover:scale-[1.03]"
-          />
-          <span className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent opacity-60 transition-opacity duration-300 group-hover:opacity-90" />
-          <span className="absolute left-3 top-3 border border-white/15 bg-black/75 px-2.5 py-1 text-[10px] uppercase tracking-[0.16em] text-bone backdrop-blur-sm">
-            {slide.projectTitle}
-          </span>
-          <span className="absolute bottom-3 left-3 text-[11px] tabular-nums tracking-[0.14em] text-smoke">
-            {pad(slide.indexInAlbum + 1)} / {pad(slide.totalInAlbum)}
-          </span>
-          <span className="absolute bottom-3 right-3 border border-white/20 bg-black/75 px-2.5 py-1 text-[10px] uppercase tracking-[0.16em] text-bone opacity-85 transition-all duration-300 group-hover:border-bone group-hover:bg-bone group-hover:text-black">
-            Preview
-          </span>
-        </button>
-
-        <figcaption className="mt-3 flex items-center justify-between gap-3">
-          <span className="truncate text-xs uppercase tracking-[0.14em] text-smoke">
-            {slide.projectTitle}
-          </span>
-          <Link
-            href={`/projects/${slide.projectSlug}`}
-            tabIndex={keyPrefix === "primary" ? undefined : -1}
-            className="shrink-0 text-xs uppercase tracking-[0.14em] text-muted transition-colors hover:text-bone"
-          >
-            Open Album &rarr;
-          </Link>
-        </figcaption>
-      </figure>
-    ));
 
   return (
     <div className="mt-4">
@@ -485,27 +431,29 @@ function PhotographyCarousel({
           })}
         </div>
 
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => scrollByDirection(-1)}
-            aria-label="Previous photos"
-            className="flex h-10 w-10 items-center justify-center border border-line text-base text-smoke transition-colors hover:border-bone hover:text-bone"
-          >
-            &larr;
-          </button>
-          <button
-            type="button"
-            onClick={() => scrollByDirection(1)}
-            aria-label="Next photos"
-            className="flex h-10 w-10 items-center justify-center border border-line text-base text-smoke transition-colors hover:border-bone hover:text-bone"
-          >
-            &rarr;
-          </button>
-        </div>
+        {photoSlides.length > 1 && (
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => scrollByDirection(-1)}
+              aria-label="Previous photos"
+              className="flex h-10 w-10 items-center justify-center border border-line text-base text-smoke transition-colors hover:border-bone hover:text-bone"
+            >
+              &larr;
+            </button>
+            <button
+              type="button"
+              onClick={() => scrollByDirection(1)}
+              aria-label="Next photos"
+              className="flex h-10 w-10 items-center justify-center border border-line text-base text-smoke transition-colors hover:border-bone hover:text-bone"
+            >
+              &rarr;
+            </button>
+          </div>
+        )}
       </div>
 
-      {/* Horizontal Still Photography Carousel */}
+      {/* Horizontal Still Photography Carousel — each photo rendered once */}
       <div
         ref={trackRef}
         tabIndex={0}
@@ -560,20 +508,56 @@ function PhotographyCarousel({
         }}
         className="project-focus-deck no-scrollbar flex cursor-grab gap-5 overflow-x-auto px-2 py-3 select-none active:cursor-grabbing focus-visible:outline-none"
       >
-        <div ref={primaryGroupRef} className="flex shrink-0 gap-5">
-          {renderSlides("primary")}
-        </div>
-        <div className="flex shrink-0 gap-5" aria-hidden="true">
-          {renderSlides("loop-1")}
-        </div>
-        <div className="flex shrink-0 gap-5" aria-hidden="true">
-          {renderSlides("loop-2")}
-        </div>
-        {photoSlides.length <= 2 && (
-          <div className="flex shrink-0 gap-5" aria-hidden="true">
-            {renderSlides("loop-3")}
-          </div>
-        )}
+        {photoSlides.map((slide, idx) => (
+          <figure
+            key={slide.id}
+            className="project-focus-item group relative w-[min(78vw,22rem)] shrink-0 sm:w-[20rem] md:w-[22rem]"
+          >
+            <button
+              type="button"
+              onClick={() =>
+                setLightboxState({
+                  images: slide.albumImages,
+                  title: slide.projectTitle,
+                  index: slide.indexInAlbum,
+                })
+              }
+              aria-label={`Preview ${slide.projectTitle} photo ${slide.indexInAlbum + 1} of ${slide.totalInAlbum}`}
+              className="relative block aspect-[4/5] w-full overflow-hidden border border-line/70 bg-[#080808] text-left focus-visible:outline-offset-4"
+            >
+              <img
+                src={resolveImageUrl(slide.url)}
+                alt={slide.caption || `${slide.projectTitle} photo ${idx + 1}`}
+                loading={idx < 4 ? "eager" : "lazy"}
+                decoding="async"
+                draggable={false}
+                className="h-full w-full object-contain transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+              />
+              <span className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent opacity-60 transition-opacity duration-300 group-hover:opacity-90" />
+              <span className="absolute left-3 top-3 border border-white/15 bg-black/75 px-2.5 py-1 text-[10px] uppercase tracking-[0.16em] text-bone backdrop-blur-sm">
+                {slide.projectTitle}
+              </span>
+              <span className="absolute bottom-3 left-3 text-[11px] tabular-nums tracking-[0.14em] text-smoke">
+                {pad(slide.indexInAlbum + 1)} / {pad(slide.totalInAlbum)}
+              </span>
+              <span className="absolute bottom-3 right-3 border border-white/20 bg-black/75 px-2.5 py-1 text-[10px] uppercase tracking-[0.16em] text-bone opacity-85 transition-all duration-300 group-hover:border-bone group-hover:bg-bone group-hover:text-black">
+                Preview
+              </span>
+            </button>
+
+            <figcaption className="mt-3 flex items-center justify-between gap-3">
+              <span className="truncate text-xs uppercase tracking-[0.14em] text-smoke">
+                {slide.projectTitle}
+              </span>
+              <Link
+                href={`/projects/${slide.projectSlug}`}
+                className="shrink-0 text-xs uppercase tracking-[0.14em] text-muted transition-colors hover:text-bone"
+              >
+                Open Album &rarr;
+              </Link>
+            </figcaption>
+          </figure>
+        ))}
       </div>
 
       {lightboxState && (
@@ -601,7 +585,6 @@ function Filmstrip({
   direction?: "left" | "right";
 }) {
   const track = useRef<HTMLDivElement>(null);
-  const primaryGroupRef = useRef<HTMLDivElement>(null);
   const hoveredRef = useRef(false);
   const manualPauseUntilRef = useRef(0);
   const dragRef = useRef<{
@@ -622,22 +605,21 @@ function Filmstrip({
 
   useEffect(() => {
     const scrollElement = track.current;
-    if (!scrollElement || projects.length < 1) return;
+    if (!scrollElement || projects.length < 2) return;
 
     let frame = 0;
     let previousTime = 0;
     let initialized = false;
     let position = scrollElement.scrollLeft;
+    let currentSign = direction === "left" ? 1 : -1;
     const speedPxPerSec = 36;
-    const sign = direction === "left" ? 1 : -1;
 
     const animate = (time: number) => {
-      const group = primaryGroupRef.current;
-      const cycle = group ? group.offsetWidth + 24 : 0;
+      const maxScroll = scrollElement.scrollWidth - scrollElement.clientWidth;
 
-      if (!initialized && cycle > 0) {
-        // Start in the middle cycle so both left and right directions wrap seamlessly
-        position = cycle;
+      if (!initialized && maxScroll > 4) {
+        // Start at the right end if direction is "right" so it glides rightward
+        position = direction === "right" ? maxScroll : 0;
         scrollElement.scrollLeft = position;
         initialized = true;
       }
@@ -650,13 +632,15 @@ function Filmstrip({
 
       if (paused) {
         position = scrollElement.scrollLeft;
-      } else if (previousTime && cycle > 0) {
+      } else if (previousTime && maxScroll > 4) {
         const dt = Math.min(time - previousTime, 50) / 1000;
-        position += sign * speedPxPerSec * dt;
-        if (position >= cycle * 2) {
-          position -= cycle;
+        position += currentSign * speedPxPerSec * dt;
+        if (position >= maxScroll) {
+          position = maxScroll;
+          currentSign = -1;
         } else if (position <= 0) {
-          position += cycle;
+          position = 0;
+          currentSign = 1;
         }
         scrollElement.scrollLeft = position;
       }
@@ -671,28 +655,10 @@ function Filmstrip({
     };
   }, [projects.length, direction]);
 
-  const renderReelCards = (keyPrefix: string) =>
-    projects.map((project, index) => (
-      <div
-        key={`${keyPrefix}-${project.id}`}
-        className={cn(
-          "project-focus-item shrink-0",
-          project.category === "PORTRAIT_VIDEOS"
-            ? "w-[min(72vw,18.5rem)]"
-            : "w-[min(82vw,26rem)]",
-        )}
-      >
-        <ProjectCard project={project} compact priority={keyPrefix === "primary" && eager && index < 2} />
-      </div>
-    ));
-
   return (
     <div className="mt-4">
-      <div className="mb-4 flex items-center justify-between gap-4">
-        <span className="text-[10px] uppercase tracking-[0.16em] text-smoke/70">
-          {direction === "left" ? "← Sliding Left" : "Sliding Right →"}
-        </span>
-        <div className="flex gap-2">
+      {projects.length > 2 && (
+        <div className="mb-4 flex justify-end gap-2">
           <button
             type="button"
             onClick={() => move(-1)}
@@ -710,7 +676,7 @@ function Filmstrip({
             &rarr;
           </button>
         </div>
-      </div>
+      )}
       <div
         ref={track}
         tabIndex={0}
@@ -763,20 +729,19 @@ function Filmstrip({
         }}
         className="project-focus-deck no-scrollbar flex cursor-grab gap-6 overflow-x-auto px-2 py-3 select-none active:cursor-grabbing focus-visible:outline-none"
       >
-        <div ref={primaryGroupRef} className="flex shrink-0 gap-6">
-          {renderReelCards("primary")}
-        </div>
-        <div className="flex shrink-0 gap-6" aria-hidden="true">
-          {renderReelCards("loop-1")}
-        </div>
-        <div className="flex shrink-0 gap-6" aria-hidden="true">
-          {renderReelCards("loop-2")}
-        </div>
-        {projects.length <= 2 && (
-          <div className="flex shrink-0 gap-6" aria-hidden="true">
-            {renderReelCards("loop-3")}
+        {projects.map((project, index) => (
+          <div
+            key={project.id}
+            className={cn(
+              "project-focus-item shrink-0",
+              project.category === "PORTRAIT_VIDEOS"
+                ? "w-[min(72vw,18.5rem)]"
+                : "w-[min(82vw,26rem)]",
+            )}
+          >
+            <ProjectCard project={project} compact priority={eager && index < 2} />
           </div>
-        )}
+        ))}
       </div>
     </div>
   );
