@@ -29,6 +29,7 @@ export const ROLES = [
   "DIRECTOR",
   "COLORIST",
   "CAMERA_OPERATOR",
+  "AI_CREATIVE_PRODUCER",
 ] as const;
 export type RoleValue = (typeof ROLES)[number];
 
@@ -76,4 +77,5 @@ export const ROLE_LABELS: Record<RoleValue, string> = {
   DIRECTOR: "Director",
   COLORIST: "Colorist",
   CAMERA_OPERATOR: "Camera Operator",
+  AI_CREATIVE_PRODUCER: "AI Creative Producer",
 };
