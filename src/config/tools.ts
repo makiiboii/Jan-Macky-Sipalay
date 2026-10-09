@@ -1,4 +1,4 @@
-import { siClaude, siElevenlabs } from "simple-icons";
+import { siClaude, siDavinciresolve, siElevenlabs } from "simple-icons";
 
 export type CreativeTool = {
   name: string;
@@ -25,6 +25,13 @@ export const editingTools: CreativeTool[] = [
     category: "editing",
     asset: "/tool-logos/after-effects.svg",
     brandColor: "#9999FF",
+  },
+  {
+    name: "DaVinci Resolve",
+    category: "editing",
+    viewBox: "0 0 24 24",
+    svgPath: siDavinciresolve.path,
+    brandColor: "#60A5FA",
   },
   {
     name: "Adobe Photoshop",
