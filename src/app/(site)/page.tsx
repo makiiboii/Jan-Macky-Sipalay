@@ -27,11 +27,18 @@ export default async function HomePage() {
     unavailable = true;
   }
 
-  const featuredList = featuredProjects.length > 0 ? featuredProjects : projects.slice(0, 6);
+  // Ensure the Featured carousel has enough cards (up to 6) to scroll smoothly on desktop
+  const featuredIds = new Set(featuredProjects.map((project) => project.id));
+  const featuredList = [
+    ...featuredProjects,
+    ...projects.filter((project) => !featuredIds.has(project.id)),
+  ].slice(0, 6);
 
   return (
     <>
       <Hero />
+
+      <About />
 
       {!unavailable && featuredList.length > 0 && <FeaturedWork projects={featuredList} />}
 
@@ -39,7 +46,7 @@ export default async function HomePage() {
         <Reveal>
           <div className="mb-10 flex flex-col justify-between gap-5 border-b border-line pb-7 md:mb-14 md:flex-row md:items-end">
             <div>
-              <p className="mb-3 text-xs uppercase tracking-[0.18em] text-smoke">02 / Selected Work</p>
+              <p className="mb-3 text-xs uppercase tracking-[0.18em] text-smoke">03 / Selected Work</p>
               <h2 className="font-display text-5xl leading-none sm:text-6xl">Project Archive</h2>
             </div>
             <p className="max-w-sm text-sm leading-relaxed text-smoke md:text-right">
@@ -57,7 +64,6 @@ export default async function HomePage() {
       </section>
 
       <ToolsShowcase />
-      <About />
       <LocationJourney />
       <Contact />
     </>

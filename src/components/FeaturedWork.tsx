@@ -13,6 +13,9 @@ const pad = (n: number) => String(n).padStart(2, "0");
 
 export function FeaturedWork({ projects }: { projects: ProjectCardData[] }) {
   const trackRef = useRef<HTMLDivElement>(null);
+  const primaryGroupRef = useRef<HTMLDivElement>(null);
+  const hoveredRef = useRef(false);
+  const manualPauseUntilRef = useRef(0);
   const dragRef = useRef<{
     pointerId: number;
     startX: number;
@@ -20,9 +23,16 @@ export function FeaturedWork({ projects }: { projects: ProjectCardData[] }) {
     moved: boolean;
   } | null>(null);
 
+  function getCycleWidth() {
+    const group = primaryGroupRef.current;
+    if (!group) return 0;
+    return group.offsetWidth + 24;
+  }
+
   function scrollByCards(direction: -1 | 1) {
     const track = trackRef.current;
     if (!track) return;
+    manualPauseUntilRef.current = performance.now() + 1200;
     const reduced = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
@@ -68,48 +78,156 @@ export function FeaturedWork({ projects }: { projects: ProjectCardData[] }) {
     }, 0);
   }
 
-  // Slow, controlled auto-advance when overflowing, paused on hover/focus/drag
+  // Smooth continuous 60fps horizontal carousel motion, paused on hover/focus/drag
   useEffect(() => {
     const track = trackRef.current;
-    if (!track || !("IntersectionObserver" in window)) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    if (!track) return;
 
-    let visible = false;
-    let intervalId: ReturnType<typeof setInterval> | null = null;
+    let frame = 0;
+    let previousTime = 0;
+    let position = track.scrollLeft;
+    const speedPxPerSec = 36;
 
-    const tick = () => {
-      if (!visible || !track) return;
-      if (dragRef.current || track.matches(":hover, :focus-within")) return;
-      const maxScroll = track.scrollWidth - track.clientWidth;
-      if (maxScroll <= 12) return;
+    const animate = (time: number) => {
+      const cycle = getCycleWidth();
+      const paused =
+        dragRef.current !== null ||
+        hoveredRef.current ||
+        time < manualPauseUntilRef.current ||
+        track.matches(":focus-within");
 
-      const cardWidth =
-        track.querySelector<HTMLElement>("[data-featured-card]")?.offsetWidth ??
-        340;
-      const next = track.scrollLeft + cardWidth + 24;
-      track.scrollTo({
-        left: next >= maxScroll - 8 ? 0 : next,
-        behavior: "smooth",
-      });
+      if (paused) {
+        position = track.scrollLeft;
+      } else if (previousTime && cycle > 0) {
+        const dt = Math.min(time - previousTime, 50) / 1000;
+        position += speedPxPerSec * dt;
+        if (position >= cycle) {
+          position -= cycle;
+        }
+        track.scrollLeft = position;
+      }
+
+      previousTime = time;
+      frame = window.requestAnimationFrame(animate);
     };
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        visible = entry.isIntersecting;
-      },
-      { threshold: 0.35 },
-    );
-
-    observer.observe(track);
-    intervalId = setInterval(tick, 6500);
-
+    frame = window.requestAnimationFrame(animate);
     return () => {
-      observer.disconnect();
-      if (intervalId) clearInterval(intervalId);
+      if (frame) window.cancelAnimationFrame(frame);
     };
   }, [projects.length]);
 
   if (projects.length === 0) return null;
+
+  const renderCards = (keyPrefix: string) =>
+    projects.map((project, index) => {
+      const cat = normalizeCategory(project.category);
+      const isPortrait = cat === "PORTRAIT_VIDEOS";
+      const summary = project.description?.trim()
+        ? truncate(project.description, 110)
+        : project.roles.length > 0
+          ? rolesLabel(project.roles)
+          : `${categoryLabel(cat)} project`;
+
+      return (
+        <article
+          key={`${keyPrefix}-${project.id}`}
+          data-featured-card={keyPrefix === "primary" ? true : undefined}
+          className={cn(
+            "group flex shrink-0 flex-col justify-between border border-line bg-[#080808] p-4 transition-colors hover:border-bone/50",
+            isPortrait
+              ? "w-[min(76vw,17.5rem)] sm:w-[18.5rem]"
+              : "w-[min(85vw,21.5rem)] sm:w-[23rem] lg:w-[24.5rem]",
+          )}
+        >
+          <div>
+            <Link
+              href={`/projects/${project.slug}`}
+              tabIndex={keyPrefix === "primary" ? undefined : -1}
+              onClick={(e) => {
+                if (dragRef.current?.moved) e.preventDefault();
+              }}
+              className="block overflow-hidden bg-black"
+            >
+              <div
+                className={cn(
+                  "relative w-full overflow-hidden bg-black",
+                  isPortrait ? "aspect-[9/16] max-h-[22rem]" : "aspect-video",
+                )}
+              >
+                <Cover
+                  src={project.thumbnailUrl}
+                  alt={`${project.title} thumbnail`}
+                  sizes={
+                    isPortrait
+                      ? "(min-width: 768px) 280px, 75vw"
+                      : "(min-width: 1024px) 390px, (min-width: 640px) 360px, 85vw"
+                  }
+                  priority={keyPrefix === "primary" && index < 3}
+                  className={cn(
+                    "transition-transform duration-700 ease-out group-hover:scale-[1.03]",
+                    isPortrait ? "object-contain" : "object-cover",
+                  )}
+                />
+                <span className="absolute left-2.5 top-2.5 bg-black/80 px-2 py-0.5 text-[10px] uppercase tracking-[0.14em] text-bone backdrop-blur-sm">
+                  {categoryLabel(cat)}
+                </span>
+              </div>
+            </Link>
+
+            <div className="mt-4 flex items-baseline justify-between gap-3">
+              <Link
+                href={`/projects/${project.slug}`}
+                tabIndex={keyPrefix === "primary" ? undefined : -1}
+                onClick={(e) => {
+                  if (dragRef.current?.moved) e.preventDefault();
+                }}
+                className="min-w-0"
+              >
+                <h3 className="font-display break-words text-2xl leading-tight text-bone transition-colors group-hover:text-white">
+                  {project.title}
+                </h3>
+              </Link>
+              <span className="shrink-0 text-xs tabular-nums text-smoke">
+                {project.year}
+              </span>
+            </div>
+
+            <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-smoke">
+              {summary}
+            </p>
+          </div>
+
+          <div className="mt-4 flex items-center justify-between border-t border-line pt-3 text-xs">
+            <span className="text-muted">
+              {project.videoUrl
+                ? isPortrait
+                  ? "9:16 Portrait Video"
+                  : "16:9 Film"
+                : project._count.images > 0
+                  ? `${project._count.images} Photos`
+                  : "Still Image"}
+            </span>
+            <Link
+              href={`/projects/${project.slug}`}
+              tabIndex={keyPrefix === "primary" ? undefined : -1}
+              onClick={(e) => {
+                if (dragRef.current?.moved) e.preventDefault();
+              }}
+              className="inline-flex items-center gap-1.5 text-bone transition-colors hover:text-white"
+            >
+              <span>Open project</span>
+              <span
+                aria-hidden="true"
+                className="transition-transform group-hover:translate-x-0.5"
+              >
+                &rarr;
+              </span>
+            </Link>
+          </div>
+        </article>
+      );
+    });
 
   return (
     <section
@@ -121,7 +239,7 @@ export function FeaturedWork({ projects }: { projects: ProjectCardData[] }) {
         <div className="mb-8 flex flex-wrap items-end justify-between gap-4 border-b border-line pb-5 md:mb-10">
           <div>
             <p className="mb-2 text-xs uppercase tracking-[0.18em] text-smoke">
-              Curated highlights · {pad(projects.length)}
+              02 / Curated highlights · {pad(projects.length)}
             </p>
             <h2
               id="featured-heading"
@@ -157,6 +275,12 @@ export function FeaturedWork({ projects }: { projects: ProjectCardData[] }) {
         role="region"
         aria-label="Featured projects carousel"
         tabIndex={0}
+        onMouseEnter={() => {
+          hoveredRef.current = true;
+        }}
+        onMouseLeave={() => {
+          hoveredRef.current = false;
+        }}
         onKeyDown={(event) => {
           if (event.key === "ArrowLeft") {
             event.preventDefault();
@@ -170,113 +294,16 @@ export function FeaturedWork({ projects }: { projects: ProjectCardData[] }) {
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerUp}
-        className="no-scrollbar flex snap-x snap-mandatory gap-6 overflow-x-auto pb-4 pt-1 focus-visible:outline-offset-4"
+        className="no-scrollbar flex cursor-grab gap-6 overflow-x-auto pb-4 pt-1 select-none active:cursor-grabbing focus-visible:outline-offset-4"
       >
-        {projects.map((project, index) => {
-          const cat = normalizeCategory(project.category);
-          const isPortrait = cat === "PORTRAIT_VIDEOS";
-          const summary = project.description?.trim()
-            ? truncate(project.description, 110)
-            : project.roles.length > 0
-              ? rolesLabel(project.roles)
-              : `${categoryLabel(cat)} project`;
-
-          return (
-            <article
-              key={project.id}
-              data-featured-card
-              className={cn(
-                "group flex shrink-0 snap-start flex-col justify-between border border-line bg-[#080808] p-4 transition-colors hover:border-bone/50",
-                isPortrait
-                  ? "w-[min(76vw,17.5rem)] sm:w-[18.5rem]"
-                  : "w-[min(85vw,21.5rem)] sm:w-[23rem] lg:w-[24.5rem]",
-              )}
-            >
-              <div>
-                <Link
-                  href={`/projects/${project.slug}`}
-                  onClick={(e) => {
-                    if (dragRef.current?.moved) e.preventDefault();
-                  }}
-                  className="block overflow-hidden bg-black"
-                >
-                  <div
-                    className={cn(
-                      "relative w-full overflow-hidden bg-black",
-                      isPortrait ? "aspect-[9/16] max-h-[22rem]" : "aspect-video",
-                    )}
-                  >
-                    <Cover
-                      src={project.thumbnailUrl}
-                      alt={`${project.title} thumbnail`}
-                      sizes={
-                        isPortrait
-                          ? "(min-width: 768px) 280px, 75vw"
-                          : "(min-width: 1024px) 390px, (min-width: 640px) 360px, 85vw"
-                      }
-                      priority={index < 3}
-                      className={cn(
-                        "transition-transform duration-700 ease-out group-hover:scale-[1.03]",
-                        isPortrait ? "object-contain" : "object-cover",
-                      )}
-                    />
-                    <span className="absolute left-2.5 top-2.5 bg-black/80 px-2 py-0.5 text-[10px] uppercase tracking-[0.14em] text-bone backdrop-blur-sm">
-                      {categoryLabel(cat)}
-                    </span>
-                  </div>
-                </Link>
-
-                <div className="mt-4 flex items-baseline justify-between gap-3">
-                  <Link
-                    href={`/projects/${project.slug}`}
-                    onClick={(e) => {
-                      if (dragRef.current?.moved) e.preventDefault();
-                    }}
-                    className="min-w-0"
-                  >
-                    <h3 className="font-display break-words text-2xl leading-tight text-bone transition-colors group-hover:text-white">
-                      {project.title}
-                    </h3>
-                  </Link>
-                  <span className="shrink-0 text-xs tabular-nums text-smoke">
-                    {project.year}
-                  </span>
-                </div>
-
-                <p className="mt-2 line-clamp-2 text-xs leading-relaxed text-smoke">
-                  {summary}
-                </p>
-              </div>
-
-              <div className="mt-4 flex items-center justify-between border-t border-line pt-3 text-xs">
-                <span className="text-muted">
-                  {project.videoUrl
-                    ? isPortrait
-                      ? "9:16 Portrait Video"
-                      : "16:9 Film"
-                    : project._count.images > 0
-                      ? `${project._count.images} Photos`
-                      : "Still Image"}
-                </span>
-                <Link
-                  href={`/projects/${project.slug}`}
-                  onClick={(e) => {
-                    if (dragRef.current?.moved) e.preventDefault();
-                  }}
-                  className="inline-flex items-center gap-1.5 text-bone transition-colors hover:text-white"
-                >
-                  <span>Open project</span>
-                  <span
-                    aria-hidden="true"
-                    className="transition-transform group-hover:translate-x-0.5"
-                  >
-                    &rarr;
-                  </span>
-                </Link>
-              </div>
-            </article>
-          );
-        })}
+        <div ref={primaryGroupRef} className="flex shrink-0 gap-6">
+          {renderCards("primary")}
+        </div>
+        {projects.length >= 2 && (
+          <div className="flex shrink-0 gap-6" aria-hidden="true">
+            {renderCards("loop")}
+          </div>
+        )}
       </div>
     </section>
   );

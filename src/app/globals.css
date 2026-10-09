@@ -52,11 +52,11 @@ body {
 
 .about-cinematic__grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
-  gap: clamp(2rem, 5vw, 5.5rem);
+  grid-template-columns: minmax(0, 1.18fr) minmax(0, 0.82fr);
+  gap: clamp(2rem, 4.5vw, 5rem);
   align-items: center;
   width: 100%;
-  max-width: 86rem;
+  max-width: 92rem;
   margin-inline: auto;
 }
 
@@ -64,12 +64,25 @@ body {
   position: relative;
   z-index: 1;
   width: 100%;
-  max-width: 38rem;
-  aspect-ratio: 4 / 5;
-  max-height: 76svh;
+  max-width: 48rem;
+  height: clamp(32rem, 84svh, 54rem);
   margin-inline: auto;
-  transform-origin: center;
+  transform-origin: center bottom;
   will-change: transform;
+}
+
+.about-cinematic__portrait-glow {
+  position: absolute;
+  inset: 8% 12% 4%;
+  border-radius: 9999px;
+  background: radial-gradient(
+    circle at 50% 44%,
+    rgba(245, 245, 245, 0.08) 0%,
+    rgba(245, 245, 245, 0.025) 42%,
+    transparent 72%
+  );
+  filter: blur(24px);
+  pointer-events: none;
 }
 
 .about-cinematic__portrait-frame {
@@ -80,7 +93,7 @@ body {
 
 .about-cinematic__portrait img {
   object-fit: contain;
-  object-position: center;
+  object-position: center bottom;
 }
 
 .about-cinematic__copy {
@@ -465,16 +478,24 @@ body {
 }
 
 .tools-carousel__viewport {
-  --tools-gap: 1rem;
+  --tools-gap: 1.15rem;
   display: flex;
+  gap: var(--tools-gap);
   overflow-x: auto;
-  padding-block: 0.25rem;
+  padding-block: 0.35rem;
   scrollbar-width: none;
   overscroll-behavior-x: contain;
   touch-action: pan-x;
   cursor: grab;
   user-select: none;
   -webkit-overflow-scrolling: touch;
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    black 4%,
+    black 96%,
+    transparent
+  );
 }
 
 .tools-carousel__viewport::-webkit-scrollbar {
@@ -692,23 +713,8 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-delay: 0ms !important;
-    transition-duration: 0.01ms !important;
-    transition-delay: 0ms !important;
-  }
   .reveal {
     opacity: 1;
     transform: none;
-  }
-  .earth-journey[data-stage="2"] .earth-stage__location-content,
-  .earth-stage__scroll-line {
-    animation: none;
   }
 }

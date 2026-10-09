@@ -25,7 +25,8 @@ const pad = (n: number) => String(n).padStart(2, "0");
 export function Portfolio({ projects }: { projects: ProjectCardData[] }) {
   const [filter, setFilter] = useState<Filter>("ALL");
   const [query, setQuery] = useState("");
-  const [viewMode, setViewMode] = useState<ViewMode>("grid");
+  // Reel ("carousel") is the standard default view when opened
+  const [viewMode, setViewMode] = useState<ViewMode>("carousel");
   const top = useRef<HTMLDivElement>(null);
 
   const matching = useMemo(() => {
@@ -48,7 +49,7 @@ export function Portfolio({ projects }: { projects: ProjectCardData[] }) {
     return result;
   }, [matching]);
 
-  // "ALL" shows every category that has projects (plus Portrait Videos when selected directly).
+  // "ALL" shows every category that has projects.
   const groups = useMemo(() => {
     const categories = filter === "ALL" ? CATEGORIES : [filter];
     return categories
@@ -59,7 +60,7 @@ export function Portfolio({ projects }: { projects: ProjectCardData[] }) {
       .filter((group) => group.projects.length > 0);
   }, [matching, filter]);
 
-  // Keep GSAP ScrollTrigger positions accurate below #work when filtering or switching views
+  // Keep GSAP ScrollTrigger positions accurate when filtering or switching views
   useEffect(() => {
     const raf = window.requestAnimationFrame(() => {
       ScrollTrigger.refresh();
@@ -118,7 +119,7 @@ export function Portfolio({ projects }: { projects: ProjectCardData[] }) {
             />
           </label>
 
-          {/* View mode toggle: Carousel vs Grid */}
+          {/* View mode toggle: Reel (default) vs Grid */}
           <div role="group" aria-label="Project view" className="flex items-center gap-1 border border-line p-1 text-xs">
             {(["carousel", "grid"] as const).map((mode) => (
               <button
@@ -214,17 +215,7 @@ function PortraitVideosShowcase({
   viewMode: ViewMode;
   eager: boolean;
 }) {
-  const track = useRef<HTMLDivElement>(null);
-
-  function move(direction: -1 | 1) {
-    if (!track.current) return;
-    track.current.scrollBy({
-      left: track.current.clientWidth * 0.75 * direction,
-      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
-    });
-  }
-
-  if (viewMode === "grid" && projects.length <= 4) {
+  if (viewMode === "grid") {
     return (
       <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
         {projects.map((project, index) => (
@@ -238,56 +229,19 @@ function PortraitVideosShowcase({
 
   return (
     <div className="mt-4">
-      <div className="mb-4 flex items-center justify-between gap-4">
-        <p className="text-xs uppercase tracking-[0.16em] text-smoke">
-          9:16 Vertical Format · Reels, TikTok &amp; Shorts
-        </p>
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={() => move(-1)}
-            aria-label="Previous portrait videos"
-            className="flex h-10 w-10 items-center justify-center border border-line text-base text-smoke transition-colors hover:border-bone hover:text-bone"
-          >
-            &larr;
-          </button>
-          <button
-            type="button"
-            onClick={() => move(1)}
-            aria-label="Next portrait videos"
-            className="flex h-10 w-10 items-center justify-center border border-line text-base text-smoke transition-colors hover:border-bone hover:text-bone"
-          >
-            &rarr;
-          </button>
-        </div>
-      </div>
-      <div
-        ref={track}
-        tabIndex={0}
-        aria-label="Portrait videos carousel"
-        onKeyDown={(event) => {
-          if (event.key === "ArrowLeft") {
-            event.preventDefault();
-            move(-1);
-          } else if (event.key === "ArrowRight") {
-            event.preventDefault();
-            move(1);
-          }
-        }}
-        className="no-scrollbar flex snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth pb-3 focus-visible:outline-none"
-      >
-        {projects.map((project, index) => (
-          <div key={project.id} className="w-[min(72vw,18.5rem)] shrink-0 snap-start">
-            <ProjectCard project={project} compact priority={eager && index < 2} />
-          </div>
-        ))}
-      </div>
+      <p className="mb-3 text-xs uppercase tracking-[0.16em] text-smoke">
+        9:16 Vertical Format · Reels, TikTok &amp; Shorts
+      </p>
+      <Filmstrip projects={projects} eager={eager} />
     </div>
   );
 }
 
 function PhotographyCarousel({ projects }: { projects: ProjectCardData[] }) {
   const trackRef = useRef<HTMLDivElement>(null);
+  const primaryGroupRef = useRef<HTMLDivElement>(null);
+  const hoveredRef = useRef(false);
+  const manualPauseUntilRef = useRef(0);
   const [activeAlbumSlug, setActiveAlbumSlug] = useState<string>("ALL");
   const [lightboxState, setLightboxState] = useState<{
     images: GalleryImage[];
@@ -356,11 +310,106 @@ function PhotographyCarousel({ projects }: { projects: ProjectCardData[] }) {
   function scrollByDirection(direction: -1 | 1) {
     const track = trackRef.current;
     if (!track) return;
+    manualPauseUntilRef.current = performance.now() + 1200;
     track.scrollBy({
       left: track.clientWidth * 0.72 * direction,
       behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
     });
   }
+
+  // Smooth horizontal carousel animation for Photography stills
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track || photoSlides.length < 2) return;
+    let frame = 0;
+    let previousTime = 0;
+    let position = track.scrollLeft;
+    const speedPxPerSec = 30;
+
+    const animate = (time: number) => {
+      const group = primaryGroupRef.current;
+      const cycle = group ? group.offsetWidth + 20 : 0;
+      const paused =
+        isDraggingRef.current ||
+        hoveredRef.current ||
+        lightboxState !== null ||
+        time < manualPauseUntilRef.current ||
+        track.matches(":focus-within");
+
+      if (paused) {
+        position = track.scrollLeft;
+      } else if (previousTime && cycle > 0) {
+        const dt = Math.min(time - previousTime, 50) / 1000;
+        position += speedPxPerSec * dt;
+        if (position >= cycle) {
+          position -= cycle;
+        }
+        track.scrollLeft = position;
+      }
+
+      previousTime = time;
+      frame = window.requestAnimationFrame(animate);
+    };
+
+    frame = window.requestAnimationFrame(animate);
+    return () => {
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, [photoSlides.length, lightboxState]);
+
+  const renderSlides = (keyPrefix: string) =>
+    photoSlides.map((slide, idx) => (
+      <figure
+        key={`${keyPrefix}-${slide.id}`}
+        className="group relative w-[min(78vw,22rem)] shrink-0 sm:w-[20rem] md:w-[22rem]"
+      >
+        <button
+          type="button"
+          tabIndex={keyPrefix === "primary" ? undefined : -1}
+          onClick={() =>
+            setLightboxState({
+              images: slide.albumImages,
+              title: slide.projectTitle,
+              index: slide.indexInAlbum,
+            })
+          }
+          aria-label={`Preview ${slide.projectTitle} photo ${slide.indexInAlbum + 1} of ${slide.totalInAlbum}`}
+          className="relative block aspect-[4/5] w-full overflow-hidden border border-line/70 bg-[#080808] text-left focus-visible:outline-offset-4"
+        >
+          <img
+            src={resolveImageUrl(slide.url)}
+            alt={slide.caption || `${slide.projectTitle} photo ${idx + 1}`}
+            loading={keyPrefix === "primary" && idx < 4 ? "eager" : "lazy"}
+            decoding="async"
+            draggable={false}
+            className="h-full w-full object-contain transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+          />
+          <span className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent opacity-60 transition-opacity duration-300 group-hover:opacity-90" />
+          <span className="absolute left-3 top-3 border border-white/15 bg-black/75 px-2.5 py-1 text-[10px] uppercase tracking-[0.16em] text-bone backdrop-blur-sm">
+            {slide.projectTitle}
+          </span>
+          <span className="absolute bottom-3 left-3 text-[11px] tabular-nums tracking-[0.14em] text-smoke">
+            {pad(slide.indexInAlbum + 1)} / {pad(slide.totalInAlbum)}
+          </span>
+          <span className="absolute bottom-3 right-3 border border-white/20 bg-black/75 px-2.5 py-1 text-[10px] uppercase tracking-[0.16em] text-bone opacity-85 transition-all duration-300 group-hover:border-bone group-hover:bg-bone group-hover:text-black">
+            Preview
+          </span>
+        </button>
+
+        <figcaption className="mt-3 flex items-center justify-between gap-3">
+          <span className="truncate text-xs uppercase tracking-[0.14em] text-smoke">
+            {slide.projectTitle}
+          </span>
+          <Link
+            href={`/projects/${slide.projectSlug}`}
+            tabIndex={keyPrefix === "primary" ? undefined : -1}
+            className="shrink-0 text-xs uppercase tracking-[0.14em] text-muted transition-colors hover:text-bone"
+          >
+            Open Album &rarr;
+          </Link>
+        </figcaption>
+      </figure>
+    ));
 
   return (
     <div className="mt-4">
@@ -428,6 +477,12 @@ function PhotographyCarousel({ projects }: { projects: ProjectCardData[] }) {
         tabIndex={0}
         role="region"
         aria-label="Photography horizontal carousel"
+        onMouseEnter={() => {
+          hoveredRef.current = true;
+        }}
+        onMouseLeave={() => {
+          hoveredRef.current = false;
+        }}
         onKeyDown={(event) => {
           if (event.key === "ArrowLeft") {
             event.preventDefault();
@@ -469,58 +524,16 @@ function PhotographyCarousel({ projects }: { projects: ProjectCardData[] }) {
             dragMovedRef.current = false;
           }
         }}
-        className="no-scrollbar flex cursor-grab snap-x snap-mandatory gap-5 overflow-x-auto pb-4 select-none active:cursor-grabbing focus-visible:outline-none"
+        className="no-scrollbar flex cursor-grab gap-5 overflow-x-auto pb-4 select-none active:cursor-grabbing focus-visible:outline-none"
       >
-        {photoSlides.map((slide, idx) => (
-          <figure
-            key={slide.id}
-            className="group relative w-[min(78vw,22rem)] shrink-0 snap-start sm:w-[20rem] md:w-[22rem]"
-          >
-            <button
-              type="button"
-              onClick={() =>
-                setLightboxState({
-                  images: slide.albumImages,
-                  title: slide.projectTitle,
-                  index: slide.indexInAlbum,
-                })
-              }
-              aria-label={`Preview ${slide.projectTitle} photo ${slide.indexInAlbum + 1} of ${slide.totalInAlbum}`}
-              className="relative block aspect-[4/5] w-full overflow-hidden border border-line/70 bg-[#080808] text-left focus-visible:outline-offset-4"
-            >
-              <img
-                src={resolveImageUrl(slide.url)}
-                alt={slide.caption || `${slide.projectTitle} photo ${idx + 1}`}
-                loading={idx < 4 ? "eager" : "lazy"}
-                decoding="async"
-                draggable={false}
-                className="h-full w-full object-contain transition-transform duration-700 ease-out group-hover:scale-[1.03]"
-              />
-              <span className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent opacity-60 transition-opacity duration-300 group-hover:opacity-90" />
-              <span className="absolute left-3 top-3 border border-white/15 bg-black/75 px-2.5 py-1 text-[10px] uppercase tracking-[0.16em] text-bone backdrop-blur-sm">
-                {slide.projectTitle}
-              </span>
-              <span className="absolute bottom-3 left-3 text-[11px] tabular-nums tracking-[0.14em] text-smoke">
-                {pad(slide.indexInAlbum + 1)} / {pad(slide.totalInAlbum)}
-              </span>
-              <span className="absolute bottom-3 right-3 border border-white/20 bg-black/75 px-2.5 py-1 text-[10px] uppercase tracking-[0.16em] text-bone opacity-85 transition-all duration-300 group-hover:border-bone group-hover:bg-bone group-hover:text-black">
-                Preview
-              </span>
-            </button>
-
-            <figcaption className="mt-3 flex items-center justify-between gap-3">
-              <span className="truncate text-xs uppercase tracking-[0.14em] text-smoke">
-                {slide.projectTitle}
-              </span>
-              <Link
-                href={`/projects/${slide.projectSlug}`}
-                className="shrink-0 text-xs uppercase tracking-[0.14em] text-muted transition-colors hover:text-bone"
-              >
-                Open Album &rarr;
-              </Link>
-            </figcaption>
-          </figure>
-        ))}
+        <div ref={primaryGroupRef} className="flex shrink-0 gap-5">
+          {renderSlides("primary")}
+        </div>
+        {photoSlides.length >= 2 && (
+          <div className="flex shrink-0 gap-5" aria-hidden="true">
+            {renderSlides("loop")}
+          </div>
+        )}
       </div>
 
       {lightboxState && (
@@ -540,14 +553,79 @@ function PhotographyCarousel({ projects }: { projects: ProjectCardData[] }) {
 
 function Filmstrip({ projects, eager }: { projects: ProjectCardData[]; eager: boolean }) {
   const track = useRef<HTMLDivElement>(null);
+  const primaryGroupRef = useRef<HTMLDivElement>(null);
+  const hoveredRef = useRef(false);
+  const manualPauseUntilRef = useRef(0);
+  const dragRef = useRef<{
+    pointerId: number;
+    startX: number;
+    startScroll: number;
+    moved: boolean;
+  } | null>(null);
 
   function move(direction: -1 | 1) {
     if (!track.current) return;
+    manualPauseUntilRef.current = performance.now() + 1200;
     track.current.scrollBy({
-      left: track.current.clientWidth * 0.78 * direction,
+      left: track.current.clientWidth * 0.72 * direction,
       behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
     });
   }
+
+  useEffect(() => {
+    const scrollElement = track.current;
+    if (!scrollElement || projects.length < 2) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    let frame = 0;
+    let previousTime = 0;
+    let position = scrollElement.scrollLeft;
+    const speedPxPerSec = 36;
+
+    const animate = (time: number) => {
+      const group = primaryGroupRef.current;
+      const cycle = group ? group.offsetWidth + 24 : 0;
+      const paused =
+        dragRef.current !== null ||
+        hoveredRef.current ||
+        time < manualPauseUntilRef.current ||
+        scrollElement.matches(":focus-within");
+
+      if (paused) {
+        position = scrollElement.scrollLeft;
+      } else if (previousTime && cycle > 0) {
+        const dt = Math.min(time - previousTime, 50) / 1000;
+        position += speedPxPerSec * dt;
+        if (position >= cycle) {
+          position -= cycle;
+        }
+        scrollElement.scrollLeft = position;
+      }
+
+      previousTime = time;
+      frame = window.requestAnimationFrame(animate);
+    };
+
+    frame = window.requestAnimationFrame(animate);
+    return () => {
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, [projects.length]);
+
+  const renderReelCards = (keyPrefix: string) =>
+    projects.map((project, index) => (
+      <div
+        key={`${keyPrefix}-${project.id}`}
+        className={cn(
+          "shrink-0",
+          project.category === "PORTRAIT_VIDEOS"
+            ? "w-[min(72vw,18.5rem)]"
+            : "w-[min(82vw,26rem)]",
+        )}
+      >
+        <ProjectCard project={project} compact priority={keyPrefix === "primary" && eager && index < 2} />
+      </div>
+    ));
 
   return (
     <div className="mt-4">
@@ -572,6 +650,12 @@ function Filmstrip({ projects, eager }: { projects: ProjectCardData[]; eager: bo
       <div
         ref={track}
         tabIndex={0}
+        onMouseEnter={() => {
+          hoveredRef.current = true;
+        }}
+        onMouseLeave={() => {
+          hoveredRef.current = false;
+        }}
         onKeyDown={(event) => {
           if (event.key === "ArrowLeft") {
             event.preventDefault();
@@ -581,21 +665,53 @@ function Filmstrip({ projects, eager }: { projects: ProjectCardData[]; eager: bo
             move(1);
           }
         }}
-        className="no-scrollbar flex snap-x snap-mandatory gap-6 overflow-x-auto scroll-smooth pb-3 focus-visible:outline-none"
+        onPointerDown={(event) => {
+          if (event.pointerType !== "mouse" || event.button !== 0) return;
+          if (!track.current) return;
+          dragRef.current = {
+            pointerId: event.pointerId,
+            startX: event.clientX,
+            startScroll: track.current.scrollLeft,
+            moved: false,
+          };
+        }}
+        onPointerMove={(event) => {
+          const drag = dragRef.current;
+          if (!drag || !track.current || drag.pointerId !== event.pointerId) return;
+          const delta = event.clientX - drag.startX;
+          if (Math.abs(delta) > 6) drag.moved = true;
+          if (drag.moved) track.current.scrollLeft = drag.startScroll - delta;
+        }}
+        onPointerUp={(event) => {
+          if (dragRef.current?.pointerId !== event.pointerId) return;
+          setTimeout(() => {
+            dragRef.current = null;
+          }, 0);
+        }}
+        onPointerCancel={() => {
+          dragRef.current = null;
+        }}
+        onClickCapture={(event) => {
+          if (dragRef.current?.moved) {
+            event.preventDefault();
+            event.stopPropagation();
+          }
+        }}
+        className="no-scrollbar flex cursor-grab gap-6 overflow-x-auto pb-3 select-none active:cursor-grabbing focus-visible:outline-none"
       >
-        {projects.map((project, index) => (
-          <div
-            key={project.id}
-            className={cn(
-              "shrink-0 snap-start",
-              project.category === "PORTRAIT_VIDEOS"
-                ? "w-[min(72vw,18.5rem)]"
-                : "w-[min(82vw,26rem)]",
-            )}
-          >
-            <ProjectCard project={project} compact priority={eager && index < 2} />
+        <div ref={primaryGroupRef} className="flex shrink-0 gap-6">
+          {renderReelCards("primary")}
+        </div>
+        {projects.length >= 2 && (
+          <div className="flex shrink-0 gap-6" aria-hidden="true">
+            {renderReelCards("loop-1")}
           </div>
-        ))}
+        )}
+        {projects.length === 2 && (
+          <div className="flex shrink-0 gap-6" aria-hidden="true">
+            {renderReelCards("loop-2")}
+          </div>
+        )}
       </div>
     </div>
   );

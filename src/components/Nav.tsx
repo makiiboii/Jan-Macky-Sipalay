@@ -6,10 +6,10 @@ import { site } from "@/config/site";
 import { cn } from "@/lib/utils";
 
 const links = [
+  { label: "ABOUT", href: "/#about" },
   { label: "FEATURED", href: "/#featured" },
   { label: "WORK", href: "/#work" },
   { label: "TOOLS", href: "/#tools" },
-  { label: "ABOUT", href: "/#about" },
   { label: "CONTACT", href: "/#contact" },
 ];
 
