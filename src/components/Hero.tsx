@@ -19,11 +19,11 @@ type WallTile = {
 };
 
 const COLUMN_CONFIGS = [
-  { direction: "up" as const, duration: "68s", mobileVisible: true },
-  { direction: "down" as const, duration: "78s", mobileVisible: true },
-  { direction: "up" as const, duration: "62s", mobileVisible: true },
-  { direction: "down" as const, duration: "84s", mobileVisible: false },
-  { direction: "up" as const, duration: "72s", mobileVisible: false },
+  { direction: "up" as const, duration: "42s", mobileVisible: true },
+  { direction: "down" as const, duration: "48s", mobileVisible: true },
+  { direction: "up" as const, duration: "38s", mobileVisible: true },
+  { direction: "down" as const, duration: "52s", mobileVisible: false },
+  { direction: "up" as const, duration: "45s", mobileVisible: false },
 ];
 
 function toLightweightThumb(url: string): string {
@@ -90,19 +90,20 @@ export function Hero({ projects = [] }: { projects?: ProjectCardData[] }) {
 
     // Mix aspect ratios per column so landscape & portrait frames interlock like a cinematic collage
     const aspectPattern: WallTile["aspect"][] = [
-      "landscape",
       "editorial",
       "landscape",
       "portrait",
       "landscape",
       "editorial",
+      "portrait",
     ];
 
-    const minItemsPerCol = 8;
+    // 12 tiles per half-stack ensures the column is tall enough to cover any portrait phone or desktop screen seamlessly
+    const minItemsPerCol = 12;
 
     return COLUMN_CONFIGS.map((config, colIndex) => {
       const colTiles: WallTile[] = [];
-      const count = Math.max(minItemsPerCol, Math.ceil(rawTiles.length / 2));
+      const count = Math.max(minItemsPerCol, rawTiles.length);
       for (let i = 0; i < count; i++) {
         const sourceIndex = (colIndex * 3 + i * 2) % rawTiles.length;
         const base = rawTiles[sourceIndex];
@@ -143,7 +144,7 @@ export function Hero({ projects = [] }: { projects?: ProjectCardData[] }) {
   return (
     <section
       ref={container}
-      className="hero-section relative isolate flex min-h-[82svh] flex-col justify-between overflow-hidden px-5 pb-14 pt-24 sm:px-8 sm:pt-28 md:min-h-[88svh] md:px-10 md:pb-16"
+      className="hero-section relative isolate flex min-h-[100svh] flex-col justify-between overflow-hidden px-5 pb-12 pt-20 sm:px-8 sm:pt-24 md:min-h-[96svh] md:px-10 md:pb-16"
     >
       {/* Layer 0: Multi-Column Animated Project Thumbnail Wall */}
       {columns.length > 0 && (
@@ -177,7 +178,7 @@ export function Hero({ projects = [] }: { projects?: ProjectCardData[] }) {
                   {/* Stack A + Stack B for seamless -50% GPU transform loop */}
                   {[0, 1].map((stackIndex) => (
                     <div key={stackIndex} className="hero-wall__stack">
-                      {column.tiles.map((tile, tileIdx) => (
+                      {column.tiles.map((tile) => (
                         <div
                           key={`${stackIndex}-${tile.id}`}
                           className={cn(
@@ -190,11 +191,7 @@ export function Hero({ projects = [] }: { projects?: ProjectCardData[] }) {
                           <img
                             src={tile.src}
                             alt=""
-                            loading={
-                              stackIndex === 0 && colIdx < 3 && tileIdx < 2
-                                ? "eager"
-                                : "lazy"
-                            }
+                            loading="eager"
                             decoding="async"
                             draggable={false}
                             className="h-full w-full object-cover"
@@ -217,13 +214,14 @@ export function Hero({ projects = [] }: { projects?: ProjectCardData[] }) {
       />
 
       {/* Layer 2: Crisp Foreground Hero Content */}
-      <div className="relative z-10 mb-10 flex items-center justify-between border-b border-white/15 pb-3 text-[11px] uppercase tracking-[0.18em] text-smoke">
+      <div className="relative z-10 flex items-center justify-between border-b border-white/15 pb-3 text-[10px] uppercase tracking-[0.16em] text-bone/80 sm:text-[11px] sm:tracking-[0.18em]">
         <p className="hero-sub">Independent visual creative</p>
         <p className="hero-sub">Digos City · Philippines</p>
       </div>
 
-      <div className="relative z-10 my-auto grid items-end gap-8 py-6 md:grid-cols-12 md:gap-8">
-        <h1 className="font-display text-[clamp(3rem,9vw,7.25rem)] leading-[0.88] text-bone drop-shadow-[0_12px_36px_rgba(0,0,0,0.9)] md:col-span-8">
+      {/* Open visual window on mobile so the moving thumbnail wall is prominently visible */}
+      <div className="relative z-10 mt-auto grid items-end gap-6 pt-28 sm:pt-36 md:my-auto md:grid-cols-12 md:gap-8 md:py-6">
+        <h1 className="font-display text-[clamp(2.85rem,11vw,7.25rem)] leading-[0.88] text-bone drop-shadow-[0_12px_36px_rgba(0,0,0,0.95)] md:col-span-8">
           {lines.map((line) => (
             <span key={line} className="hero-line">
               <span>{line}</span>
@@ -232,13 +230,13 @@ export function Hero({ projects = [] }: { projects?: ProjectCardData[] }) {
         </h1>
 
         <div className="hero-sub max-w-md md:col-span-4 md:pb-1">
-          <p className="text-base leading-relaxed text-bone/90 drop-shadow-[0_4px_18px_rgba(0,0,0,0.85)] sm:text-lg">
+          <p className="text-base leading-relaxed text-bone/95 drop-shadow-[0_4px_18px_rgba(0,0,0,0.9)] sm:text-lg">
             {site.heroDescription}
           </p>
-          <p className="mt-2 text-xs uppercase tracking-[0.14em] text-smoke/80">
+          <p className="mt-2 text-xs uppercase tracking-[0.14em] text-bone/75 drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]">
             {site.disciplines.slice(0, 4).join(" · ")}
           </p>
-          <div className="mt-6 flex flex-wrap items-center gap-4">
+          <div className="mt-6 flex flex-wrap items-center gap-3.5 sm:gap-4">
             <Link
               href="/#work"
               className="btn btn-solid px-6 py-3 text-xs uppercase tracking-[0.16em]"
@@ -247,7 +245,7 @@ export function Hero({ projects = [] }: { projects?: ProjectCardData[] }) {
             </Link>
             <Link
               href="/#contact"
-              className="btn btn-outline bg-black/45 px-6 py-3 text-xs uppercase tracking-[0.16em] backdrop-blur-sm"
+              className="btn btn-outline bg-black/55 px-6 py-3 text-xs uppercase tracking-[0.16em] backdrop-blur-sm"
             >
               Get in touch
             </Link>
