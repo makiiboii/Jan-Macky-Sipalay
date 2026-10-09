@@ -4,7 +4,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { resolveImageUrl } from "@/lib/drive";
 
-type GalleryImage = { id: string; url: string; caption: string | null };
+export type GalleryImage = { id: string; url: string; caption: string | null };
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
@@ -33,7 +33,7 @@ export function Gallery({ images, title }: { images: GalleryImage[]; title: stri
               }}
               onClick={() => setOpen(index)}
               aria-label={`Open photo ${index + 1} of ${images.length}`}
-              className="group relative block w-full cursor-zoom-in overflow-hidden bg-neutral-950"
+              className="group relative block w-full cursor-zoom-in overflow-hidden bg-black"
             >
               <img
                 src={resolveImageUrl(image.url)}
@@ -54,7 +54,7 @@ export function Gallery({ images, title }: { images: GalleryImage[]; title: stri
   );
 }
 
-function Lightbox({
+export function Lightbox({
   images,
   title,
   index,
@@ -109,7 +109,7 @@ function Lightbox({
       role="dialog"
       aria-modal="true"
       aria-label={`${title} photos`}
-      className="animate-fade-in fixed inset-0 z-[100] flex flex-col bg-black/95 backdrop-blur-sm"
+      className="gallery-lightbox animate-fade-in fixed inset-0 z-[100] flex flex-col"
       onTouchStart={(event) => {
         touchStartX.current = event.touches[0].clientX;
       }}

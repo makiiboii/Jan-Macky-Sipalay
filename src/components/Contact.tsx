@@ -12,7 +12,7 @@ function ChannelRow({ channel }: { channel: ContactChannel }) {
       {channel.display.replace(/^https?:\/\/(www\.)?/, "")}
     </a>
   ) : (
-    <span className="text-neutral-600">Not set yet</span>
+    <span className="text-muted">Not set yet</span>
   );
 
   return (
@@ -28,11 +28,22 @@ export function Contact() {
     <section id="contact" className="scroll-mt-16 border-t border-line px-5 py-24 md:px-10 md:py-40 max-w-full overflow-hidden">
       <div className="grid gap-14 md:grid-cols-12 md:gap-10">
         <Reveal className="md:col-span-6">
-          <h2 className="font-display text-[clamp(2.4rem,8.5vw,9.5rem)] leading-[0.9] break-words">Let&rsquo;s make something</h2>
-          <p className="mt-6 max-w-md text-base text-smoke sm:text-lg">{site.contactIntro}</p>
+          <p className="mb-5 text-xs uppercase tracking-[0.18em] text-smoke">05 / Contact</p>
+          <h2 className="font-display max-w-3xl text-5xl leading-[0.92] sm:text-6xl lg:text-7xl">Have a project in mind?</h2>
+          <p className="mt-6 text-xl text-bone sm:text-2xl">Let&rsquo;s make something worth watching.</p>
+          <p className="mt-4 max-w-md text-sm leading-relaxed text-smoke sm:text-base">{site.contactIntro}</p>
+          {emailChannel.href && (
+            <a
+              href={emailChannel.href}
+              className="group mt-7 inline-flex min-h-11 items-center gap-3 border-b border-line pb-2 text-sm text-bone transition-colors hover:border-bone"
+            >
+              Start a conversation
+              <span aria-hidden="true" className="transition-transform group-hover:translate-x-1">&rarr;</span>
+            </a>
+          )}
         </Reveal>
 
-        <Reveal className="md:col-span-5 md:col-start-8" delay={100}>
+        <Reveal className="md:col-span-5 md:col-start-8 md:pt-12" delay={100}>
           <ul className="border-t border-line">
             <ChannelRow channel={emailChannel} />
             {socialChannels.map((channel) => (

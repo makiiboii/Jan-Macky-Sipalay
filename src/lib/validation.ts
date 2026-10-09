@@ -1,27 +1,45 @@
 import { z } from "zod";
-import { CATEGORIES, ROLES } from "./constants";
-import { getGoogleDriveFileId } from "./drive";
-
+import { CATEGORIES, ROLES, normalizeCategory } from "./constants";
 import { getVideoEmbedUrl } from "./video";
 
 const emptyToNull = <T extends z.ZodTypeAny>(schema: T) =>
-  z.preprocess((value) => (value == null || (typeof value === "string" && value.trim() === "") ? null : value), schema.nullable());
+  z.preprocess(
+    (value) =>
+      value == null || (typeof value === "string" && value.trim() === "")
+        ? null
+        : value,
+    schema.nullable(),
+  );
 
 // Only https URLs or site-relative paths. Blocks javascript:, data:, and protocol-relative URLs.
 const safeUrl = z
   .string()
   .trim()
   .max(2000)
-  .refine((value) => (value.startsWith("/") && !value.startsWith("//")) || /^https:\/\//i.test(value), {
-    message: "Use an https:// link or a /path inside the site.",
-  });
+  .refine(
+    (value) =>
+      (value.startsWith("/") && !value.startsWith("//")) ||
+      /^https:\/\//i.test(value),
+    {
+      message: "Use an https:// link or a /path inside the site.",
+    },
+  );
+
+const categorySchema = z.preprocess(
+  (value) => (typeof value === "string" || value == null ? normalizeCategory(value) : value),
+  z.enum(CATEGORIES),
+);
 
 export const projectInputSchema = z.object({
   title: z.string().trim().min(1, "Title is required.").max(120),
   slug: z.string().trim().max(140).optional(),
   description: z.string().trim().max(5000).default(""),
-  category: z.enum(CATEGORIES),
-  year: z.coerce.number().int().min(1990, "Enter a valid year.").max(2100, "Enter a valid year."),
+  category: categorySchema.default("VIDEO_EDITING"),
+  year: z.coerce
+    .number()
+    .int()
+    .min(1990, "Enter a valid year.")
+    .max(2100, "Enter a valid year."),
   client: emptyToNull(z.string().trim().max(120)),
   featured: z.boolean().default(false),
   published: z.boolean().default(false),
@@ -32,7 +50,7 @@ export const projectInputSchema = z.object({
       .trim()
       .max(2000)
       .refine((value) => getVideoEmbedUrl(value) !== null, {
-        message: "Enter a valid YouTube, Facebook, or Google Drive video link.",
+        message: "Enter a valid YouTube, Facebook, Vimeo, or Google Drive video link.",
       }),
   ),
   roles: z
@@ -41,7 +59,12 @@ export const projectInputSchema = z.object({
     .default([])
     .transform((roles) => Array.from(new Set(roles))),
   images: z
-    .array(z.object({ url: safeUrl, caption: emptyToNull(z.string().trim().max(300)) }))
+    .array(
+      z.object({
+        url: safeUrl,
+        caption: emptyToNull(z.string().trim().max(300)),
+      }),
+    )
     .max(200)
     .default([]),
 });
@@ -51,4 +74,5 @@ export type ProjectInput = z.output<typeof projectInputSchema>;
 export const projectPatchSchema = z.object({
   published: z.boolean().optional(),
   featured: z.boolean().optional(),
+  category: categorySchema.optional(),
 });

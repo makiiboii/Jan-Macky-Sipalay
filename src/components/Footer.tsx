@@ -6,7 +6,9 @@ export function Footer() {
       <div className="flex flex-col gap-10 md:flex-row md:items-end md:justify-between">
         <div>
           <p className="font-display text-4xl">{site.shortName}</p>
-          <p className="mt-2 text-smoke">Videographer · Editor · Photographer</p>
+          <p className="mt-2 max-w-md text-sm leading-relaxed text-smoke">
+            Videographer · Editor · Photographer · Motion graphics · AI video
+          </p>
         </div>
         <ul className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
           {socialChannels.map((channel) => (
@@ -16,13 +18,13 @@ export function Footer() {
                   {channel.label}
                 </a>
               ) : (
-                <span className="text-neutral-700">{channel.label}</span>
+                <span className="text-muted">{channel.label}</span>
               )}
             </li>
           ))}
         </ul>
       </div>
-      <p className="mt-10 text-sm text-neutral-600">© {new Date().getFullYear()} {site.name}</p>
+      <p className="mt-10 text-sm text-muted">© {new Date().getFullYear()} {site.name}</p>
     </footer>
   );
 }

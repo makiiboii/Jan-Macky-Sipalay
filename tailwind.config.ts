@@ -5,9 +5,15 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        bone: "#ECEAE6",
-        smoke: "#8C8C8C",
-        line: "#222222",
+        background: "var(--color-background)",
+        primary: "var(--color-text-primary)",
+        secondary: "var(--color-text-secondary)",
+        hover: "var(--color-hover)",
+        muted: "var(--color-muted)",
+        border: "var(--color-border)",
+        bone: "var(--color-text-primary)",
+        smoke: "var(--color-text-secondary)",
+        line: "var(--color-border)",
       },
       fontFamily: {
         sans: ["var(--font-body)", "system-ui", "sans-serif"],

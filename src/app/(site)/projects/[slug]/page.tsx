@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Cover } from "@/components/Cover";
 import { Gallery } from "@/components/Gallery";
 import { categoryLabel } from "@/components/ProjectMeta";
 import { VideoEmbed } from "@/components/VideoEmbed";
 import { site } from "@/config/site";
-import { ROLE_LABELS } from "@/lib/constants";
+import { ROLE_LABELS, normalizeCategory } from "@/lib/constants";
 import { resolveImageUrl } from "@/lib/drive";
 import { getPublishedProjectBySlug } from "@/lib/projects";
 import { truncate } from "@/lib/utils";
@@ -38,9 +37,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: `${project.title} — ${site.name}`,
       description,
       url: `/projects/${project.slug}`,
-      ...(project.thumbnailUrl ? { images: [{ url: resolveImageUrl(project.thumbnailUrl) }] } : {}),
+      ...(project.thumbnailUrl
+        ? { images: [{ url: resolveImageUrl(project.thumbnailUrl) }] }
+        : {}),
     },
-    twitter: { card: "summary_large_image", title: project.title, description },
+    twitter: {
+      card: "summary_large_image",
+      title: project.title,
+      description,
+    },
   };
 }
 
@@ -49,38 +54,53 @@ export default async function ProjectPage({ params }: Props) {
   const project = await getPublishedProjectBySlug(slug);
   if (!project) notFound();
 
+  const normalizedCat = normalizeCategory(project.category);
+  const isPortrait = normalizedCat === "PORTRAIT_VIDEOS";
   const paragraphs = project.description.split(/\n{2,}/).filter(Boolean);
-  // Photo albums open straight to the photos instead of a large thumbnail banner.
-  const album = project.images.length > 0 && !project.videoUrl;
-  const galleryImages = project.images.map(({ id, url, caption }) => ({ id, url, caption }));
+  const hasVideo = Boolean(project.videoUrl);
+
+  // For photography or still-image projects without extra gallery rows, include the thumbnail in the lightbox gallery
+  const galleryImages =
+    project.images.length > 0
+      ? project.images.map(({ id, url, caption }) => ({ id, url, caption }))
+      : !hasVideo && project.thumbnailUrl
+        ? [{ id: project.id, url: project.thumbnailUrl, caption: project.title }]
+        : [];
 
   return (
-    <article className="px-5 pb-24 pt-24 sm:pt-28 md:px-10 md:pb-36 md:pt-36 max-w-full overflow-hidden">
-      <Link href="/#work" className="text-sm text-smoke transition-colors hover:text-bone">
-        Back to work
+    <article className="max-w-full overflow-hidden px-5 pb-24 pt-24 sm:pt-28 md:px-10 md:pb-36 md:pt-36">
+      <Link
+        href="/#work"
+        className="text-sm text-smoke transition-colors hover:text-bone"
+      >
+        &larr; Back to work
       </Link>
 
-      <h1 className="font-display mt-6 text-[clamp(2.2rem,8.5vw,11rem)] leading-[0.9] break-words">{project.title}</h1>
+      <header className="mt-8 border-b border-line pb-8 sm:mt-12 sm:pb-10">
+        <p className="text-xs uppercase tracking-[0.18em] text-smoke">
+          {categoryLabel(normalizedCat)} <span aria-hidden="true">/</span>{" "}
+          {project.year}
+        </p>
+        <h1 className="font-display mt-5 max-w-6xl break-words text-4xl leading-[0.92] sm:text-6xl lg:text-7xl">
+          {project.title}
+        </h1>
+      </header>
 
-      {!album && (
-        <div className="relative mt-8 sm:mt-10 aspect-[4/3] overflow-hidden bg-neutral-950 sm:aspect-[16/9] md:mt-14">
-          <Cover src={project.thumbnailUrl} alt={`${project.title} thumbnail`} sizes="100vw" priority />
-        </div>
-      )}
-
-      <dl className="mt-8 sm:mt-10 grid grid-cols-2 gap-x-4 gap-y-6 sm:gap-x-6 sm:gap-y-8 border-b border-line pb-10 md:grid-cols-4">
+      <dl className="grid grid-cols-2 gap-x-4 gap-y-6 border-b border-line py-7 sm:gap-x-6 sm:gap-y-8 sm:py-8 md:grid-cols-4">
         <div>
           <dt className="text-sm text-smoke">Year</dt>
           <dd className="mt-2 text-lg">{project.year}</dd>
         </div>
         <div>
           <dt className="text-sm text-smoke">Category</dt>
-          <dd className="mt-2 text-lg break-words">{categoryLabel(project.category)}</dd>
+          <dd className="mt-2 break-words text-lg">
+            {categoryLabel(normalizedCat)}
+          </dd>
         </div>
         {project.client && (
           <div>
             <dt className="text-sm text-smoke">Client</dt>
-            <dd className="mt-2 text-lg break-words">{project.client}</dd>
+            <dd className="mt-2 break-words text-lg">{project.client}</dd>
           </div>
         )}
         {project.roles.length > 0 && (
@@ -98,8 +118,14 @@ export default async function ProjectPage({ params }: Props) {
       </dl>
 
       {paragraphs.length > 0 && (
-        <section aria-label="Description" className="mt-10 grid md:grid-cols-12">
-          <div className="max-w-2xl space-y-5 text-lg leading-relaxed text-bone/80 md:col-span-8 md:col-start-5">
+        <section
+          aria-label="Description"
+          className="mt-8 grid gap-6 md:grid-cols-12 md:gap-10"
+        >
+          <h2 className="text-xs uppercase tracking-[0.18em] text-smoke md:col-span-3">
+            About this project
+          </h2>
+          <div className="max-w-2xl space-y-5 text-base leading-relaxed text-bone/80 md:col-span-8 md:col-start-5 md:text-lg">
             {paragraphs.map((paragraph, index) => (
               <p key={index} className="whitespace-pre-line">
                 {paragraph}
@@ -110,19 +136,28 @@ export default async function ProjectPage({ params }: Props) {
       )}
 
       {project.videoUrl && (
-        <section aria-label="Video" className="mt-16 md:mt-24">
-          <VideoEmbed url={project.videoUrl} title={project.title} />
+        <section aria-label="Video" className="mt-12 md:mt-16">
+          <VideoEmbed
+            url={project.videoUrl}
+            title={project.title}
+            posterUrl={project.thumbnailUrl}
+            portrait={isPortrait}
+          />
         </section>
       )}
 
-      {project.images.length > 0 && (
-        <section aria-labelledby="photos-heading" className={album ? "mt-12 md:mt-16" : "mt-16 md:mt-24"}>
+      {galleryImages.length > 0 && (
+        <section aria-labelledby="photos-heading" className="mt-12 md:mt-16">
           <div className="mb-6 flex items-baseline justify-between gap-4 md:mb-8">
-            <h2 id="photos-heading" className="font-display text-3xl leading-none md:text-4xl">
+            <h2
+              id="photos-heading"
+              className="font-display text-3xl leading-none md:text-4xl"
+            >
               Photos
             </h2>
             <span className="text-sm tabular-nums text-smoke">
-              {String(project.images.length).padStart(2, "0")} · Click a photo to view full screen
+              {String(galleryImages.length).padStart(2, "0")} · Click a photo to
+              view full screen
             </span>
           </div>
           <Gallery images={galleryImages} title={project.title} />

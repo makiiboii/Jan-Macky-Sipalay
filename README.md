@@ -106,6 +106,14 @@ Visitors only load the player on the project page.
 - **Animations:** `src/app/globals.css`. They turn off automatically for visitors with reduced-motion enabled.
 - **Roles or categories:** update the enum in `prisma/schema.prisma`, add a migration, and update `src/lib/constants.ts` to match.
 
+## Earth globe textures
+
+`public/textures/earth/earth-daymap.jpg` and `earth-clouds.jpg` are from [Solar System Scope's Solar Textures](https://www.solarsystemscope.com/textures/), distributed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). The location chapter includes the required on-page attribution.
+
+## Creative tool logos
+
+Adobe Premiere Pro, After Effects, Photoshop, and Canva marks in `public/tool-logos/` are from [Devicon](https://github.com/devicons/devicon), distributed under the MIT License (Copyright 2015 konpa). The Claude mark uses [Simple Icons](https://simpleicons.org/) data under CC0. CapCut and Veo use text wordmarks because no exact bundled logo asset was available.
+
 ## Security notes
 
 Passwords are compared in constant time and never stored in code. Sessions are signed JWTs in HTTP-only, SameSite=Lax cookies (Secure in production). Every write endpoint checks the session and the request origin. Input is validated with Zod, image URLs must be `https://` or site-relative, descriptions are rendered as plain text (no HTML), and login attempts are rate limited per IP (in memory, so it resets on restart). Database errors are logged on the server and never shown to visitors.

@@ -12,11 +12,18 @@ export const cardSelect = {
   id: true,
   title: true,
   slug: true,
+  description: true,
   category: true,
   year: true,
+  client: true,
+  featured: true,
   roles: true,
   thumbnailUrl: true,
   videoUrl: true,
+  images: {
+    orderBy: { position: "asc" },
+    select: { id: true, url: true, caption: true },
+  },
   _count: { select: { images: true } },
 } satisfies Prisma.ProjectSelect;
 

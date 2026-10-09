@@ -10,6 +10,7 @@ datasource db {
 enum Category {
   VIDEOGRAPHY
   VIDEO_EDITING
+  PORTRAIT_VIDEOS
   PHOTOGRAPHY
   PHOTO_EDITING
   AI_GENERATED
@@ -23,6 +24,7 @@ enum Role {
   DIRECTOR
   COLORIST
   CAMERA_OPERATOR
+  AI_CREATIVE_PRODUCER
 }
 
 model Project {

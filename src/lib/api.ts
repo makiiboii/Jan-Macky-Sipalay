@@ -46,6 +46,10 @@ export function handleError(error: unknown) {
     if (error.code === "P2025") return apiError("Project not found.", 404);
     if (error.code === "P1001") return apiError("The database is unavailable right now. Try again in a moment.", 503);
   }
+  if (error instanceof Prisma.PrismaClientValidationError) {
+    console.error(error);
+    return apiError("Invalid project data or category value.", 400);
+  }
   console.error(error);
   return apiError("Something went wrong on our side.", 500);
 }

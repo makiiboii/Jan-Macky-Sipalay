@@ -21,7 +21,7 @@ export function Cover({
   className?: string;
 }) {
   if (!src) {
-    return <div className="absolute inset-0 flex items-center justify-center bg-neutral-950 text-sm text-neutral-600">No thumbnail</div>;
+    return <div className="absolute inset-0 flex items-center justify-center bg-black text-sm text-muted">No thumbnail</div>;
   }
   const url = resolveImageUrl(src);
   return (
