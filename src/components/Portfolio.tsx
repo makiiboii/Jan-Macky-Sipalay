@@ -325,6 +325,14 @@ function PhotographyCarousel({
   const dragStartXRef = useRef(0);
   const dragStartScrollRef = useRef(0);
 
+  const [shuffleSeed, setShuffleSeed] = useState<number>(() => randomSeed ?? 42);
+
+  useEffect(() => {
+    if (randomSeed !== undefined) {
+      setShuffleSeed(randomSeed);
+    }
+  }, [randomSeed]);
+
   // Build flat list of all unique still photography items randomized for "ALL STILLS"
   const allStills = useMemo(() => {
     const slides: PhotoSlide[] = [];
@@ -362,8 +370,8 @@ function PhotographyCarousel({
     }
 
     // Shuffled so "ALL STILLS" displays a randomized mix of all shoots rather than upload order
-    return seededShuffle(slides, randomSeed);
-  }, [projects, randomSeed]);
+    return seededShuffle(slides, shuffleSeed);
+  }, [projects, shuffleSeed]);
 
   // Slides displayed in the carousel for the selected tab
   const photoSlides = useMemo(() => {
@@ -481,7 +489,13 @@ function PhotographyCarousel({
         <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
-            onClick={() => setActiveAlbumSlug("ALL")}
+            onClick={() => {
+              if (activeAlbumSlug === "ALL") {
+                setShuffleSeed(Math.floor(Math.random() * 1_000_000));
+              } else {
+                setActiveAlbumSlug("ALL");
+              }
+            }}
             aria-pressed={activeAlbumSlug === "ALL"}
             className={cn(
               "border px-3 py-1.5 text-xs uppercase tracking-[0.16em] transition-colors",
@@ -489,8 +503,9 @@ function PhotographyCarousel({
                 ? "border-bone bg-bone text-black font-medium"
                 : "border-line text-smoke hover:border-bone hover:text-bone",
             )}
+            title={activeAlbumSlug === "ALL" ? "Click to reshuffle" : "Show all stills"}
           >
-            All Stills ({photoSlides.length})
+            All Stills ({allStills.length})
           </button>
           {projects.map((project) => {
             const count = Math.max(project._count.images, 1);
