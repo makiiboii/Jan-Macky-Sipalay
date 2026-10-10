@@ -30,6 +30,8 @@ export default async function HomePage() {
   // Only show projects explicitly marked as Featured (up to MAX_FEATURED = 4)
   const featuredList = featuredProjects.slice(0, 4);
 
+  const photographySeed = Math.floor(Math.random() * 1_000_000);
+
   return (
     <>
       <Hero projects={projects} />
@@ -55,7 +57,7 @@ export default async function HomePage() {
         ) : projects.length === 0 ? (
           <p className="text-smoke">No projects have been published yet.</p>
         ) : (
-          <Portfolio projects={projects} />
+          <Portfolio projects={projects} photographySeed={photographySeed} />
         )}
       </section>
 

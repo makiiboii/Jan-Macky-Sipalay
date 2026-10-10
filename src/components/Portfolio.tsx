@@ -27,7 +27,13 @@ type ViewMode = "carousel" | "grid";
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
-export function Portfolio({ projects }: { projects: ProjectCardData[] }) {
+export function Portfolio({
+  projects,
+  photographySeed,
+}: {
+  projects: ProjectCardData[];
+  photographySeed?: number;
+}) {
   const [filter, setFilter] = useState<Filter>("ALL");
   const [query, setQuery] = useState("");
   // Reel ("carousel") is the standard default view when opened
@@ -198,7 +204,11 @@ export function Portfolio({ projects }: { projects: ProjectCardData[] }) {
                 )}
 
                 {category === "PHOTOGRAPHY" ? (
-                  <PhotographyCarousel projects={items} direction={direction} />
+                  <PhotographyCarousel
+                    projects={items}
+                    direction={direction}
+                    randomSeed={photographySeed}
+                  />
                 ) : category === "PORTRAIT_VIDEOS" ? (
                   <PortraitVideosShowcase
                     projects={items}
@@ -263,12 +273,41 @@ function PortraitVideosShowcase({
   );
 }
 
+function seededShuffle<T>(array: T[], seed: number): T[] {
+  let s = (seed || 1) >>> 0;
+  const rng = () => {
+    let t = (s += 0x6d2b79f5);
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+  const arr = [...array];
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+type PhotoSlide = {
+  id: string;
+  url: string;
+  caption: string | null;
+  projectTitle: string;
+  projectSlug: string;
+  albumImages: GalleryImage[];
+  indexInAlbum: number;
+  totalInAlbum: number;
+};
+
 function PhotographyCarousel({
   projects,
   direction,
+  randomSeed = 42,
 }: {
   projects: ProjectCardData[];
   direction: "left" | "right";
+  randomSeed?: number;
 }) {
   const trackRef = useRef<HTMLDivElement>(null);
   const hoveredRef = useRef(false);
@@ -286,25 +325,11 @@ function PhotographyCarousel({
   const dragStartXRef = useRef(0);
   const dragStartScrollRef = useRef(0);
 
-  // Build flat list of unique still photography items from the photography projects (no duplicates)
-  const photoSlides = useMemo(() => {
-    const filteredProjects =
-      activeAlbumSlug === "ALL"
-        ? projects
-        : projects.filter((project) => project.slug === activeAlbumSlug);
+  // Build flat list of all unique still photography items randomized for "ALL STILLS"
+  const allStills = useMemo(() => {
+    const slides: PhotoSlide[] = [];
 
-    const slides: Array<{
-      id: string;
-      url: string;
-      caption: string | null;
-      projectTitle: string;
-      projectSlug: string;
-      albumImages: GalleryImage[];
-      indexInAlbum: number;
-      totalInAlbum: number;
-    }> = [];
-
-    for (const project of filteredProjects) {
+    for (const project of projects) {
       const albumImages: GalleryImage[] =
         project.images && project.images.length > 0
           ? project.images.map((img) => ({
@@ -336,8 +361,55 @@ function PhotographyCarousel({
       });
     }
 
-    return slides;
-  }, [projects, activeAlbumSlug]);
+    // Shuffled so "ALL STILLS" displays a randomized mix of all shoots rather than upload order
+    return seededShuffle(slides, randomSeed);
+  }, [projects, randomSeed]);
+
+  // Slides displayed in the carousel for the selected tab
+  const photoSlides = useMemo(() => {
+    if (activeAlbumSlug === "ALL") {
+      return allStills;
+    }
+
+    const targetProject = projects.find((project) => project.slug === activeAlbumSlug);
+    if (!targetProject) return [];
+
+    const albumImages: GalleryImage[] =
+      targetProject.images && targetProject.images.length > 0
+        ? targetProject.images.map((img) => ({
+            id: img.id,
+            url: img.url,
+            caption: img.caption || `${targetProject.title}`,
+          }))
+        : targetProject.thumbnailUrl
+          ? [
+              {
+                id: targetProject.id,
+                url: targetProject.thumbnailUrl,
+                caption: targetProject.title,
+              },
+            ]
+          : [];
+
+    return albumImages.map((img, idx) => ({
+      id: `${targetProject.id}-${img.id}`,
+      url: img.url,
+      caption: img.caption,
+      projectTitle: targetProject.title,
+      projectSlug: targetProject.slug,
+      albumImages,
+      indexInAlbum: idx,
+      totalInAlbum: albumImages.length,
+    }));
+  }, [activeAlbumSlug, allStills, projects]);
+
+  // Reset scroll position when switching between album tabs
+  useEffect(() => {
+    const track = trackRef.current;
+    if (track) {
+      track.scrollLeft = 0;
+    }
+  }, [activeAlbumSlug]);
 
   function scrollByDirection(stepDir: -1 | 1) {
     const track = trackRef.current;
@@ -400,7 +472,7 @@ function PhotographyCarousel({
     return () => {
       if (frame) window.cancelAnimationFrame(frame);
     };
-  }, [photoSlides.length, lightboxState, direction]);
+  }, [photoSlides.length, lightboxState, direction, activeAlbumSlug]);
 
   return (
     <div className="mt-4">
