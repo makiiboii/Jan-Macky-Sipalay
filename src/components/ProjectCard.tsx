@@ -24,12 +24,15 @@ export function ProjectCard({
   const album = isPhotoAlbum(project);
   const isPortrait = project.category === "PORTRAIT_VIDEOS";
   const isPhotography = project.category === "PHOTOGRAPHY";
+  const isPoster = project.category === "POSTER_GRAPHICS";
 
   const aspectClass = isPortrait
     ? "aspect-[9/16]"
-    : isPhotography
-      ? "aspect-[3/2]"
-      : "aspect-video";
+    : isPoster
+      ? "aspect-[4/5]"
+      : isPhotography
+        ? "aspect-[3/2]"
+        : "aspect-video";
 
   return (
     <div
@@ -42,7 +45,7 @@ export function ProjectCard({
         href={`/projects/${project.slug}`}
         draggable={false}
         onClick={(event) => {
-          if (onOpenAlbum && (album || isPhotography)) {
+          if (onOpenAlbum && (album || isPhotography || isPoster)) {
             event.preventDefault();
             onOpenAlbum(project);
           }

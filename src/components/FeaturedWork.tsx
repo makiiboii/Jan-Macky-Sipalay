@@ -55,6 +55,7 @@ export function FeaturedWork({ projects }: { projects: ProjectCardData[] }) {
           {featured.map((project, index) => {
             const cat = normalizeCategory(project.category);
             const isPortrait = cat === "PORTRAIT_VIDEOS";
+            const isPoster = cat === "POSTER_GRAPHICS";
             const summary = project.description?.trim()
               ? truncate(project.description, 85)
               : project.roles.length > 0
@@ -86,7 +87,9 @@ export function FeaturedWork({ projects }: { projects: ProjectCardData[] }) {
                           "relative w-full overflow-hidden bg-black",
                           isPortrait
                             ? "mx-auto aspect-[9/16] max-h-[12rem] sm:max-h-[18rem]"
-                            : "aspect-video",
+                            : isPoster
+                              ? "mx-auto aspect-[4/5] max-h-[14rem] sm:max-h-[20rem]"
+                              : "aspect-video",
                         )}
                       >
                         <Cover
@@ -100,7 +103,7 @@ export function FeaturedWork({ projects }: { projects: ProjectCardData[] }) {
                           priority={index < 4}
                           className={cn(
                             "transition-transform duration-700 ease-out group-hover:scale-[1.04]",
-                            isPortrait ? "object-contain" : "object-cover",
+                            isPortrait || isPoster ? "object-contain" : "object-cover",
                           )}
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent opacity-60 transition-opacity duration-300 group-hover:opacity-85" />
@@ -141,7 +144,9 @@ export function FeaturedWork({ projects }: { projects: ProjectCardData[] }) {
                           ? isPortrait
                             ? "9:16 Vertical"
                             : "16:9 Cinema"
-                          : `${Math.max(project._count.images, 1)} Photos`}
+                          : isPoster
+                            ? "Poster Graphic"
+                            : `${Math.max(project._count.images, 1)} Photos`}
                     </span>
                     <Link
                       href={`/projects/${project.slug}`}

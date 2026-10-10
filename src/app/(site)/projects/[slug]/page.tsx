@@ -153,11 +153,10 @@ export default async function ProjectPage({ params }: Props) {
               id="photos-heading"
               className="font-display text-3xl leading-none md:text-4xl"
             >
-              Photos
+              {normalizedCat === "POSTER_GRAPHICS" ? "Posters & Graphics" : "Photos"}
             </h2>
             <span className="text-sm tabular-nums text-smoke">
-              {String(galleryImages.length).padStart(2, "0")} · Click a photo to
-              view full screen
+              {String(galleryImages.length).padStart(2, "0")} · Click to view full screen
             </span>
           </div>
           <Gallery images={galleryImages} title={project.title} />

@@ -282,11 +282,13 @@ export function ProjectForm({
               ? "Portrait Videos use a 9:16 vertical frame ideal for Reels, TikTok, and Shorts."
               : category === "AI_GENERATED"
                 ? "AI-Generated highlights AI-assisted video, UGC, and generative visual projects."
-                : category === "PHOTOGRAPHY"
-                  ? "Photography displays still images and albums with full-screen lightbox viewing."
-                  : category === "VIDEOGRAPHY"
-                    ? "Videoshoot showcases on-location filming, event coverage, SDEs, and directed shoots."
-                    : "Video Editing showcases horizontal 16:9 cuts, color grading, and post-production edits."}
+                : category === "POSTER_GRAPHICS"
+                  ? "Posters & Graphics showcases promotional posters, graphic designs, key visual art, and cover layouts."
+                  : category === "PHOTOGRAPHY"
+                    ? "Photography displays still images and albums with full-screen lightbox viewing."
+                    : category === "VIDEOGRAPHY"
+                      ? "Videoshoot showcases on-location filming, event coverage, SDEs, and directed shoots."
+                      : "Video Editing showcases horizontal 16:9 cuts, color grading, and post-production edits."}
           </p>
           {errorFor("category")}
         </div>

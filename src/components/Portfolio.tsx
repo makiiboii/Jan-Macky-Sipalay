@@ -155,6 +155,7 @@ export function Portfolio({ projects }: { projects: ProjectCardData[] }) {
           <p className="text-smoke">
             No {CATEGORY_LABELS[filter as CategoryValue]} projects published yet.
             {filter === "PORTRAIT_VIDEOS" && " You can add 9:16 vertical videos anytime from the Admin Panel."}
+            {filter === "POSTER_GRAPHICS" && " You can add posters and graphic designs anytime from the Admin Panel."}
           </p>
           <button type="button" onClick={() => setFilter("ALL")} className="btn btn-outline mt-6">
             Show all projects
@@ -767,7 +768,9 @@ function Filmstrip({
               "project-focus-item shrink-0",
               project.category === "PORTRAIT_VIDEOS"
                 ? "w-[9.25rem] sm:w-[14.5rem] md:w-[18.5rem]"
-                : "w-[13.25rem] sm:w-[20rem] md:w-[26rem]",
+                : project.category === "POSTER_GRAPHICS"
+                  ? "w-[10.5rem] sm:w-[16rem] md:w-[20rem]"
+                  : "w-[13.25rem] sm:w-[20rem] md:w-[26rem]",
             )}
           >
             <ProjectCard project={project} compact priority={eager && index < 2} />

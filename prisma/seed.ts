@@ -85,6 +85,18 @@ const projects: Seed[] = [
     ],
   },
   {
+    title: "Cinematic Film Poster",
+    slug: "cinematic-film-poster",
+    category: Category.POSTER_GRAPHICS,
+    roles: [Role.GRAPHIC_DESIGNER],
+    year: 2025,
+    thumbnailUrl: "/samples/portrait-cover.svg",
+    description: `${SAMPLE_NOTE}\n\nKey art, promotional typography, and poster graphic design.`,
+    images: [
+      { url: "/samples/portrait-cover.svg", caption: "Theatrical poster key art" },
+    ],
+  },
+  {
     title: "Music Video Edit (Draft)",
     slug: "music-video-edit-draft",
     category: Category.VIDEO_EDITING,

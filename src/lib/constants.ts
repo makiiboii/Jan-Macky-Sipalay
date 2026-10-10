@@ -4,6 +4,7 @@ export const CATEGORIES = [
   "VIDEO_EDITING",
   "PORTRAIT_VIDEOS",
   "PHOTOGRAPHY",
+  "POSTER_GRAPHICS",
   "AI_GENERATED",
 ] as const;
 export type CategoryValue = (typeof CATEGORIES)[number];
@@ -14,6 +15,7 @@ export const DB_CATEGORIES = [
   "VIDEO_EDITING",
   "PORTRAIT_VIDEOS",
   "PHOTOGRAPHY",
+  "POSTER_GRAPHICS",
   "AI_GENERATED",
   "PHOTO_EDITING",
 ] as const;
@@ -31,6 +33,7 @@ export const ROLES = [
   "COLORIST",
   "CAMERA_OPERATOR",
   "AI_CREATIVE_PRODUCER",
+  "GRAPHIC_DESIGNER",
 ] as const;
 export type RoleValue = (typeof ROLES)[number];
 
@@ -39,12 +42,13 @@ export const CATEGORY_LABELS: Record<CategoryValue, string> = {
   VIDEO_EDITING: "Video Editing",
   PORTRAIT_VIDEOS: "Portrait Videos",
   PHOTOGRAPHY: "Photography",
+  POSTER_GRAPHICS: "Posters & Graphics",
   AI_GENERATED: "AI-Generated",
 };
 
 /**
  * Safely normalizes any database or user-supplied category string into one of the
- * five supported portfolio categories, handling legacy values or missing categories.
+ * supported portfolio categories, handling legacy values or missing categories.
  */
 export function normalizeCategory(value?: string | null): CategoryValue {
   if (!value) return "VIDEOGRAPHY";
@@ -69,6 +73,20 @@ export function normalizeCategory(value?: string | null): CategoryValue {
   }
   if (upper === "PHOTO_EDITING" || upper === "PHOTO EDITING") {
     return "PHOTOGRAPHY";
+  }
+  if (
+    upper === "POSTER_GRAPHICS" ||
+    upper === "POSTERS_GRAPHICS" ||
+    upper === "POSTERS & GRAPHICS" ||
+    upper === "POSTER & GRAPHICS" ||
+    upper === "POSTERS GRAPHICS" ||
+    upper === "POSTER GRAPHICS" ||
+    upper === "POSTERS" ||
+    upper === "POSTER" ||
+    upper === "GRAPHICS" ||
+    upper === "GRAPHIC DESIGN"
+  ) {
+    return "POSTER_GRAPHICS";
   }
   if (upper === "AI-GENERATED" || upper === "AI GENERATED") {
     return "AI_GENERATED";
@@ -101,4 +119,5 @@ export const ROLE_LABELS: Record<RoleValue, string> = {
   COLORIST: "Colorist",
   CAMERA_OPERATOR: "Camera Operator",
   AI_CREATIVE_PRODUCER: "AI Creative Producer",
+  GRAPHIC_DESIGNER: "Graphic Designer",
 };

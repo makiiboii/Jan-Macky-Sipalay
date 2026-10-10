@@ -14,6 +14,7 @@ enum Category {
   PHOTOGRAPHY
   PHOTO_EDITING
   AI_GENERATED
+  POSTER_GRAPHICS
 }
 
 enum Role {
@@ -25,6 +26,7 @@ enum Role {
   COLORIST
   CAMERA_OPERATOR
   AI_CREATIVE_PRODUCER
+  GRAPHIC_DESIGNER
 }
 
 model Project {
