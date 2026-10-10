@@ -10,6 +10,7 @@ export function About() {
   const section = useRef<HTMLElement>(null);
   const stage = useRef<HTMLDivElement>(null);
   const portrait = useRef<HTMLDivElement>(null);
+  const backdropText = useRef<HTMLDivElement>(null);
   const eyebrow = useRef<HTMLParagraphElement>(null);
   const heading = useRef<HTMLHeadingElement>(null);
   const copy = useRef<HTMLDivElement>(null);
@@ -25,6 +26,7 @@ export function About() {
         gsap.set(eyebrow.current, { autoAlpha: 0, y: 18 });
         gsap.set(heading.current, { autoAlpha: 0, y: 24 });
         gsap.set(copy.current, { autoAlpha: 0, y: 24 });
+        gsap.set(backdropText.current, { autoAlpha: 0.35, scale: 0.86 });
 
         const canPinSafely = () =>
           stageEl.scrollHeight <= window.innerHeight + 12;
@@ -46,11 +48,22 @@ export function About() {
 
         timeline
           .fromTo(
+            backdropText.current,
+            { scale: 0.86, autoAlpha: 0.35 },
+            {
+              scale: 1.18,
+              autoAlpha: 0.95,
+              duration: 0.7,
+              ease: "power2.out",
+            },
+            0,
+          )
+          .fromTo(
             portrait.current,
-            { xPercent: 14, scale: 1.18 },
+            { xPercent: 14, scale: 1.14 },
             {
               xPercent: 0,
-              scale: 1.09,
+              scale: 1.05,
               duration: 0.65,
               ease: "power2.out",
             },
@@ -79,6 +92,13 @@ export function About() {
           y: 20,
         });
 
+        // Mobile: keep backdrop text visible and completely static (NO scale up animation)
+        gsap.set(backdropText.current, {
+          autoAlpha: 0.85,
+          scale: 1,
+          clearProps: "scale,transform",
+        });
+
         const timeline = gsap.timeline({
           scrollTrigger: {
             trigger: section.current,
@@ -92,11 +112,10 @@ export function About() {
         timeline
           .fromTo(
             portrait.current,
-            { autoAlpha: 0.5, y: 18, scale: 0.98 },
+            { autoAlpha: 0.6, y: 16 },
             {
               autoAlpha: 1,
               y: 0,
-              scale: 1.06,
               duration: 0.45,
               ease: "power2.out",
             },
@@ -115,6 +134,19 @@ export function About() {
           );
       });
 
+      mm.add("(prefers-reduced-motion: reduce)", () => {
+        gsap.set(
+          [
+            portrait.current,
+            backdropText.current,
+            eyebrow.current,
+            heading.current,
+            copy.current,
+          ],
+          { clearProps: "all", autoAlpha: 1 },
+        );
+      });
+
       ScrollTrigger.refresh();
     },
     { scope: section },
@@ -128,17 +160,32 @@ export function About() {
     >
       <div ref={stage} className="about-cinematic__stage">
         <div className="about-cinematic__grid">
-          <div ref={portrait} className="about-cinematic__portrait">
-            <div className="about-cinematic__portrait-glow" aria-hidden="true" />
-            <div className="about-cinematic__portrait-frame">
-              <Image
-                src={site.profileImage}
-                alt={`Portrait of ${site.name} holding a camera`}
-                fill
-                priority
-                sizes="(min-width: 1024px) 48vw, (min-width: 768px) 52vw, 88vw"
-                className="object-contain object-bottom drop-shadow-[0_24px_48px_rgba(0,0,0,0.85)]"
-              />
+          <div className="about-cinematic__visual">
+            {/* Big typographic backdrop behind portrait */}
+            <div
+              ref={backdropText}
+              className="about-cinematic__backdrop-text"
+              aria-hidden="true"
+            >
+              <span className="about-cinematic__backdrop-line">CREATE</span>
+              <span className="about-cinematic__backdrop-line about-cinematic__backdrop-line--mid">
+                WITH
+              </span>
+              <span className="about-cinematic__backdrop-line">MACKY</span>
+            </div>
+
+            <div ref={portrait} className="about-cinematic__portrait">
+              <div className="about-cinematic__portrait-glow" aria-hidden="true" />
+              <div className="about-cinematic__portrait-frame">
+                <Image
+                  src={site.profileImage}
+                  alt={`Portrait of ${site.name} holding a camera`}
+                  fill
+                  priority
+                  sizes="(min-width: 1024px) 48vw, (min-width: 768px) 52vw, 88vw"
+                  className="object-contain object-bottom drop-shadow-[0_24px_48px_rgba(0,0,0,0.85)]"
+                />
+              </div>
             </div>
           </div>
 

@@ -88,8 +88,9 @@ function ToolCarousel({
     manualPauseUntilRef.current = performance.now() + 1200;
     normalizeScroll(viewport);
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const distance = typeof window !== "undefined" && window.innerWidth < 768 ? 140 : 220;
     viewport.scrollBy({
-      left: stepDir * 220,
+      left: stepDir * distance,
       behavior: reduced ? "auto" : "smooth",
     });
   }
