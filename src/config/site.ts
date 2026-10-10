@@ -6,7 +6,7 @@ export const site = {
   title: "Jan Macky Sipalay — Independent Visual Creative",
   description:
     "Portfolio of Jan Macky Sipalay, featuring videography, editing, photography, motion graphics, and AI-assisted video.",
-  url: process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
+  url: process.env.NEXT_PUBLIC_SITE_URL || "https://www.cre8withmaki.com",
   heroDescription: "Videography, editing, photography, and visual storytelling.",
   disciplines: ["Videographer", "Video Editor", "Photographer", "Photo Editor", "Motion Graphics Artist", "Graphic Designer", "AI Video Creator"],
   profileImage: "/maki.png",

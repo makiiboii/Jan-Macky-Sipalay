@@ -72,7 +72,7 @@ If you change `prisma/schema.prisma`, create a new migration with `npx prisma mi
 1. **Create a project.** Push this folder to a GitHub repository. In Railway choose *New Project → Deploy from GitHub repo* and pick it.
 2. **Add PostgreSQL.** In the project canvas choose *New → Database → Add PostgreSQL*.
 3. **Connect the app to the database.** Open your app service → *Variables* → *New Variable* → *Add Reference*, and reference `DATABASE_URL` from the Postgres service.
-4. **Set environment variables** on the app service: `ADMIN_PASSWORD`, `SESSION_SECRET` (32+ random characters), and `NEXT_PUBLIC_SITE_URL` (your final URL, for example `https://janmacky.com`; set it before the build because it is baked in at build time).
+4. **Set environment variables** on the app service: `ADMIN_PASSWORD`, `SESSION_SECRET` (32+ random characters), and `NEXT_PUBLIC_SITE_URL` (your final URL: `https://www.cre8withmaki.com`; set it before the build because it is baked in at build time).
 5. **Migrations.** `railway.json` runs `npx prisma migrate deploy` on every start, so tables are created or updated automatically.
 6. **Seed (optional, once).** Install the CLI (`npm i -g @railway/cli`), run `railway login` and `railway link`, then run `railway run npm run db:seed`. This needs the database's *public* connection URL locally, so if it fails to connect, copy `DATABASE_PUBLIC_URL` from the Postgres service and run `DATABASE_URL="<that value>" npm run db:seed`. Delete the sample projects in the admin once you have real ones.
 7. **Deploy.** Railway builds and deploys on every push. Under *Settings → Networking* click *Generate Domain* to get a public URL.
