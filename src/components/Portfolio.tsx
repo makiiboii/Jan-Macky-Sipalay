@@ -854,7 +854,7 @@ function Filmstrip({
             key={project.id}
             className={cn(
               "project-focus-item shrink-0",
-              isProjectPortrait(project)
+              project.category === "PORTRAIT_VIDEOS"
                 ? "w-[9.25rem] sm:w-[14.5rem] md:w-[18.5rem]"
                 : project.category === "POSTER_GRAPHICS"
                   ? "w-[10.5rem] sm:w-[16rem] md:w-[20rem]"

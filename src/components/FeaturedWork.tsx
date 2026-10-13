@@ -85,28 +85,56 @@ export function FeaturedWork({ projects }: { projects: ProjectCardData[] }) {
                       <div
                         className={cn(
                           "relative w-full overflow-hidden bg-black",
-                          isPortrait
+                          isPortrait && cat === "PORTRAIT_VIDEOS"
                             ? "mx-auto aspect-[9/16] max-h-[12rem] sm:max-h-[18rem]"
                             : isPoster
                               ? "mx-auto aspect-[4/5] max-h-[14rem] sm:max-h-[20rem]"
                               : "aspect-video",
                         )}
                       >
-                        <Cover
-                          src={project.thumbnailUrl}
-                          alt={`${project.title} thumbnail`}
-                          sizes={
-                            count >= 4
-                              ? "(min-width: 1024px) 24vw, 48vw"
-                              : "(min-width: 768px) 44vw, 48vw"
-                          }
-                          priority={index < 4}
-                          className={cn(
-                            "transition-transform duration-700 ease-out group-hover:scale-[1.04]",
-                            isPortrait || isPoster ? "object-contain" : "object-cover",
-                          )}
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent opacity-60 transition-opacity duration-300 group-hover:opacity-85" />
+                        {isPortrait && cat !== "PORTRAIT_VIDEOS" ? (
+                          <>
+                            <Cover
+                              src={project.thumbnailUrl}
+                              alt=""
+                              sizes="120px"
+                              aria-hidden="true"
+                              className="object-cover blur-xl opacity-35 scale-125 brightness-75 pointer-events-none"
+                            />
+                            <div className="absolute inset-0 bg-black/40 pointer-events-none" />
+                            <div className="relative mx-auto flex h-full w-full items-center justify-center p-1 sm:p-1.5 pointer-events-none">
+                              <div className="relative h-full aspect-[9/16] overflow-hidden rounded-[2px] border border-white/15 bg-black shadow-2xl">
+                                <Cover
+                                  src={project.thumbnailUrl}
+                                  alt={`${project.title} thumbnail`}
+                                  sizes={
+                                    count >= 4
+                                      ? "(min-width: 1024px) 24vw, 48vw"
+                                      : "(min-width: 768px) 44vw, 48vw"
+                                  }
+                                  priority={index < 4}
+                                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+                                />
+                              </div>
+                            </div>
+                          </>
+                        ) : (
+                          <Cover
+                            src={project.thumbnailUrl}
+                            alt={`${project.title} thumbnail`}
+                            sizes={
+                              count >= 4
+                                ? "(min-width: 1024px) 24vw, 48vw"
+                                : "(min-width: 768px) 44vw, 48vw"
+                            }
+                            priority={index < 4}
+                            className={cn(
+                              "transition-transform duration-700 ease-out group-hover:scale-[1.04]",
+                              isPortrait || isPoster ? "object-contain" : "object-cover",
+                            )}
+                          />
+                        )}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent opacity-60 transition-opacity duration-300 group-hover:opacity-85 pointer-events-none" />
 
                         {/* Subtle Play / View Badge */}
                         <span className="absolute bottom-1.5 right-1.5 inline-flex items-center gap-1 border border-white/20 bg-black/80 px-1.5 py-0.5 text-[7px] uppercase tracking-[0.12em] text-bone backdrop-blur-sm transition-colors group-hover:border-bone group-hover:bg-bone group-hover:text-black sm:bottom-2.5 sm:right-2.5 sm:gap-1.5 sm:px-2.5 sm:py-1 sm:text-[9px] sm:tracking-[0.16em]">

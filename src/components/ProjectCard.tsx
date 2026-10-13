@@ -23,11 +23,17 @@ export function ProjectCard({
 }) {
   const photos = project._count.images;
   const album = isPhotoAlbum(project);
-  const isPortrait = isProjectPortrait(project);
+  const isPortraitProject = isProjectPortrait(project);
+  const isPortraitCategory = project.category === "PORTRAIT_VIDEOS";
   const isPhotography = project.category === "PHOTOGRAPHY";
   const isPoster = project.category === "POSTER_GRAPHICS";
 
-  const aspectClass = isPortrait
+  // Only the dedicated PORTRAIT_VIDEOS section uses a 9:16 vertical card frame.
+  // In all other categories (AI-Generated, Videoshoot, Video Editing, etc.),
+  // cards use the standard 16:9 landscape frame so every card in the row is completely uniform.
+  const isPortraitFrame = isPortraitCategory;
+
+  const aspectClass = isPortraitFrame
     ? "aspect-[9/16]"
     : isPoster
       ? "aspect-[4/5]"
@@ -39,7 +45,7 @@ export function ProjectCard({
     <div
       className={cn(
         "group relative flex flex-col",
-        isPortrait && !compact && "mx-auto w-full max-w-[16rem] sm:max-w-[21rem]",
+        isPortraitFrame && !compact && "mx-auto w-full max-w-[16rem] sm:max-w-[21rem]",
       )}
     >
       <Link
@@ -55,27 +61,54 @@ export function ProjectCard({
       >
         <div className="relative">
           <div className={cn("relative overflow-hidden border border-line/70 bg-black", aspectClass)}>
-            <Cover
-              src={project.thumbnailUrl}
-              alt={`${project.title} thumbnail`}
-              sizes={
-                isPortrait
-                  ? "(min-width: 1024px) 280px, (min-width: 640px) 45vw, 48vw"
-                  : "(min-width: 768px) 45vw, 60vw"
-              }
-              priority={priority}
-              className={cn(
-                "transition-transform duration-700 ease-out group-hover:scale-[1.03]",
-                isPortrait ? "object-contain bg-[#080808]" : "object-cover",
-              )}
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent opacity-70 transition-opacity duration-500 group-hover:opacity-90" />
+            {isPortraitProject && !isPortraitFrame ? (
+              <>
+                {/* Ambient blurred backdrop of the portrait thumbnail filling the 16:9 landscape frame */}
+                <Cover
+                  src={project.thumbnailUrl}
+                  alt=""
+                  sizes="120px"
+                  aria-hidden="true"
+                  className="object-cover blur-xl opacity-35 scale-125 brightness-75 pointer-events-none"
+                />
+                <div className="absolute inset-0 bg-black/40 pointer-events-none" />
+
+                {/* Centered crisp 9:16 portrait thumbnail fitting cleanly inside the uniform 16:9 landscape card */}
+                <div className="relative mx-auto flex h-full w-full items-center justify-center p-1 sm:p-1.5 pointer-events-none">
+                  <div className="relative h-full aspect-[9/16] overflow-hidden rounded-[2px] border border-white/15 bg-black shadow-2xl">
+                    <Cover
+                      src={project.thumbnailUrl}
+                      alt={`${project.title} thumbnail`}
+                      sizes="(min-width: 768px) 30vw, 45vw"
+                      priority={priority}
+                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+                    />
+                  </div>
+                </div>
+              </>
+            ) : (
+              <Cover
+                src={project.thumbnailUrl}
+                alt={`${project.title} thumbnail`}
+                sizes={
+                  isPortraitFrame
+                    ? "(min-width: 1024px) 280px, (min-width: 640px) 45vw, 48vw"
+                    : "(min-width: 768px) 45vw, 60vw"
+                }
+                priority={priority}
+                className={cn(
+                  "transition-transform duration-700 ease-out group-hover:scale-[1.03]",
+                  isPortraitFrame ? "object-contain bg-[#080808]" : "object-cover",
+                )}
+              />
+            )}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent opacity-70 transition-opacity duration-500 group-hover:opacity-90 pointer-events-none" />
 
             <span className="absolute left-2 top-2 border border-white/15 bg-black/75 px-1.5 py-0.5 text-[8px] uppercase tracking-[0.14em] text-bone backdrop-blur-sm sm:left-3 sm:top-3 sm:px-2.5 sm:py-1 sm:text-[10px] sm:tracking-[0.16em]">
               {categoryLabel(project.category)}
             </span>
 
-            {isPortrait && (
+            {isPortraitProject && (
               <span className="absolute right-2 top-2 border border-white/15 bg-black/75 px-1.5 py-0.5 text-[8px] uppercase tracking-[0.12em] text-smoke backdrop-blur-sm sm:right-3 sm:top-3 sm:px-2 sm:text-[10px]">
                 9:16
               </span>
