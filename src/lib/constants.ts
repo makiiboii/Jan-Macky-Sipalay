@@ -2,10 +2,10 @@
 export const CATEGORIES = [
   "VIDEOGRAPHY",
   "VIDEO_EDITING",
-  "PORTRAIT_VIDEOS",
+  "AI_GENERATED",
   "PHOTOGRAPHY",
   "POSTER_GRAPHICS",
-  "AI_GENERATED",
+  "PORTRAIT_VIDEOS",
 ] as const;
 export type CategoryValue = (typeof CATEGORIES)[number];
 
@@ -13,10 +13,10 @@ export type CategoryValue = (typeof CATEGORIES)[number];
 export const DB_CATEGORIES = [
   "VIDEOGRAPHY",
   "VIDEO_EDITING",
-  "PORTRAIT_VIDEOS",
+  "AI_GENERATED",
   "PHOTOGRAPHY",
   "POSTER_GRAPHICS",
-  "AI_GENERATED",
+  "PORTRAIT_VIDEOS",
   "PHOTO_EDITING",
 ] as const;
 export type DbCategoryValue = (typeof DB_CATEGORIES)[number];
@@ -40,10 +40,10 @@ export type RoleValue = (typeof ROLES)[number];
 export const CATEGORY_LABELS: Record<CategoryValue, string> = {
   VIDEOGRAPHY: "Videoshoot",
   VIDEO_EDITING: "Video Editing",
-  PORTRAIT_VIDEOS: "Portrait Videos",
+  AI_GENERATED: "AI-Generated",
   PHOTOGRAPHY: "Photography",
   POSTER_GRAPHICS: "Posters & Graphics",
-  AI_GENERATED: "AI-Generated",
+  PORTRAIT_VIDEOS: "Portrait Videos",
 };
 
 /**
