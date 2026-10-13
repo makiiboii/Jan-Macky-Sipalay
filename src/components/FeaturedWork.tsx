@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { MAX_FEATURED, normalizeCategory } from "@/lib/constants";
+import { MAX_FEATURED, isProjectPortrait, normalizeCategory } from "@/lib/constants";
 import type { ProjectCardData } from "@/lib/projects";
 import { cn, truncate } from "@/lib/utils";
 import { Cover } from "./Cover";
@@ -54,7 +54,7 @@ export function FeaturedWork({ projects }: { projects: ProjectCardData[] }) {
         >
           {featured.map((project, index) => {
             const cat = normalizeCategory(project.category);
-            const isPortrait = cat === "PORTRAIT_VIDEOS";
+            const isPortrait = isProjectPortrait(project);
             const isPoster = cat === "POSTER_GRAPHICS";
             const summary = project.description?.trim()
               ? truncate(project.description, 85)

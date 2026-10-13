@@ -30,6 +30,7 @@ export type ProjectFormValues = {
   client: string;
   featured: boolean;
   published: boolean;
+  isPortrait?: boolean;
   thumbnailUrl: string;
   videoUrl: string;
   roles: RoleValue[];
@@ -51,6 +52,12 @@ export function ProjectForm({
   const [category, setCategory] = useState<CategoryValue>(
     project?.category ? normalizeCategory(project.category) : "VIDEOGRAPHY",
   );
+  const [isPortrait, setIsPortrait] = useState<boolean>(() => {
+    if (project?.isPortrait !== undefined) return project.isPortrait;
+    if (project?.category === "PORTRAIT_VIDEOS") return true;
+    if (project?.videoUrl && /\/(shorts|reel|reels)\//i.test(project.videoUrl)) return true;
+    return false;
+  });
   const [year, setYear] = useState(
     project?.year ?? String(new Date().getFullYear()),
   );
@@ -70,7 +77,7 @@ export function ProjectForm({
   const trimmedVideo = videoUrl.trim();
   const videoEmbedInfo = trimmedVideo ? getVideoEmbed(trimmedVideo) : null;
   const cannotFeature = featureLimitReached && !featured;
-  const isPortraitCategory = category === "PORTRAIT_VIDEOS";
+  const isPortraitActive = isPortrait || category === "PORTRAIT_VIDEOS";
 
   function onTitleChange(value: string) {
     setTitle(value);
@@ -135,6 +142,7 @@ export function ProjectForm({
             client,
             featured,
             published,
+            isPortrait: isPortraitActive,
             thumbnailUrl,
             videoUrl,
             roles,
@@ -242,7 +250,11 @@ export function ProjectForm({
             id="category"
             name="category"
             value={category}
-            onChange={(e) => setCategory(normalizeCategory(e.target.value))}
+            onChange={(e) => {
+              const next = normalizeCategory(e.target.value);
+              setCategory(next);
+              if (next === "PORTRAIT_VIDEOS") setIsPortrait(true);
+            }}
             className="field bg-[#050505] text-bone"
           >
             {CATEGORIES.map((item) => (
@@ -265,7 +277,10 @@ export function ProjectForm({
                 key={item}
                 type="button"
                 aria-pressed={category === item}
-                onClick={() => setCategory(item)}
+                onClick={() => {
+                  setCategory(item);
+                  if (item === "PORTRAIT_VIDEOS") setIsPortrait(true);
+                }}
                 className={cn(
                   "border px-3 py-1.5 text-xs uppercase tracking-wider transition-colors",
                   category === item
@@ -278,8 +293,8 @@ export function ProjectForm({
             ))}
           </div>
           <p className="mt-1.5 text-xs text-muted">
-            {isPortraitCategory
-              ? "Portrait Videos use a 9:16 vertical frame ideal for Reels, TikTok, and Shorts."
+            {isPortraitActive
+              ? "Portrait mode active: 9:16 vertical frame for Reels, TikTok, Shorts, and vertical thumbnails."
               : category === "AI_GENERATED"
                 ? "AI-Generated highlights AI-assisted video, UGC, and generative visual projects."
                 : category === "POSTER_GRAPHICS"
@@ -288,9 +303,54 @@ export function ProjectForm({
                     ? "Photography displays still images and albums with full-screen lightbox viewing."
                     : category === "VIDEOGRAPHY"
                       ? "Videoshoot showcases on-location filming, event coverage, SDEs, and directed shoots."
-                      : "Video Editing showcases horizontal 16:9 cuts, color grading, and post-production edits."}
+                      : "Video Editing showcases cuts, color grading, and post-production edits."}
           </p>
           {errorFor("category")}
+        </div>
+
+        {/* Video & Thumbnail Orientation Selector */}
+        <div className="md:col-span-2 rounded border border-line/60 bg-white/[0.015] p-4 sm:p-5">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <span className="block text-xs font-semibold uppercase tracking-[0.16em] text-bone">
+                Video &amp; Thumbnail Orientation
+              </span>
+              <p className="mt-1 text-xs text-muted">
+                Choose <strong>9:16 Portrait</strong> to post vertical Reels, TikToks, Shorts, or vertical thumbnails in <em>any</em> category (Videoshoot, Video Editing, AI-Generated, etc.).
+              </p>
+            </div>
+
+            <div className="flex shrink-0 items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setIsPortrait(false)}
+                aria-pressed={!isPortraitActive}
+                className={cn(
+                  "inline-flex items-center gap-2 border px-3.5 py-2 text-xs uppercase tracking-wider transition-colors",
+                  !isPortraitActive
+                    ? "border-bone bg-bone font-semibold text-black"
+                    : "border-line text-smoke hover:border-bone hover:text-bone",
+                )}
+              >
+                <span className="inline-block h-2.5 w-4 border border-current" aria-hidden="true" />
+                16:9 Landscape
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsPortrait(true)}
+                aria-pressed={isPortraitActive}
+                className={cn(
+                  "inline-flex items-center gap-2 border px-3.5 py-2 text-xs uppercase tracking-wider transition-colors",
+                  isPortraitActive
+                    ? "border-bone bg-bone font-semibold text-black"
+                    : "border-line text-smoke hover:border-bone hover:text-bone",
+                )}
+              >
+                <span className="inline-block h-3.5 w-2 border border-current" aria-hidden="true" />
+                9:16 Portrait
+              </button>
+            </div>
+          </div>
         </div>
 
         <div>
@@ -382,18 +442,26 @@ export function ProjectForm({
               <div
                 className={cn(
                   "overflow-hidden border border-line bg-black",
-                  isPortraitCategory ? "aspect-[9/16] w-36" : "h-36 w-64",
+                  isPortraitActive ? "aspect-[9/16] w-36" : "h-36 w-64",
                 )}
               >
                 <img
                   src={resolveImageUrl(thumbnailUrl.trim())}
                   alt="Thumbnail preview"
-                  className="h-full w-full object-cover"
+                  className={cn(
+                    "h-full w-full",
+                    isPortraitActive ? "object-contain bg-[#080808]" : "object-cover",
+                  )}
                 />
               </div>
-              <span className="border border-white/15 bg-white/[0.03] px-2.5 py-1 text-[11px] uppercase tracking-[0.14em] text-smoke">
-                {published ? "Active in Hero Thumbnail Wall" : "Will appear in Hero Wall when published"}
-              </span>
+              <div className="space-y-1">
+                <span className="block border border-white/15 bg-white/[0.03] px-2.5 py-1 text-[11px] uppercase tracking-[0.14em] text-smoke">
+                  Format: {isPortraitActive ? "9:16 Portrait" : "16:9 Landscape"}
+                </span>
+                <span className="block border border-white/15 bg-white/[0.03] px-2.5 py-1 text-[11px] uppercase tracking-[0.14em] text-smoke">
+                  {published ? "Active in Hero Thumbnail Wall" : "Will appear in Hero Wall when published"}
+                </span>
+              </div>
             </div>
           )}
         </div>
@@ -405,13 +473,19 @@ export function ProjectForm({
           <input
             id="video"
             value={videoUrl}
-            onChange={(e) => setVideoUrl(e.target.value)}
+            onChange={(e) => {
+              const val = e.target.value;
+              setVideoUrl(val);
+              if (/\/(shorts|reel|reels)\//i.test(val)) {
+                setIsPortrait(true);
+              }
+            }}
             placeholder="https://www.youtube.com/watch?v=... or Facebook or Drive link"
             className="field"
           />
           <p className="mt-1 text-xs text-muted">
-            Paste a link from <strong>YouTube</strong> (videos & shorts),{" "}
-            <strong>Facebook</strong> (videos & reels), <strong>Vimeo</strong>,
+            Paste a link from <strong>YouTube</strong> (videos &amp; shorts),{" "}
+            <strong>Facebook</strong> (videos &amp; reels), <strong>Vimeo</strong>,
             or <strong>Google Drive</strong> (shared to &ldquo;Anyone with the
             link&rdquo;).
           </p>
@@ -424,16 +498,21 @@ export function ProjectForm({
           )}
           {videoEmbedInfo && (
             <div className="mt-3">
-              <p className="mb-2 break-all text-xs text-muted">
-                Provider:{" "}
-                <span className="font-medium uppercase text-bone">
-                  {videoEmbedInfo.provider}
+              <div className="mb-2 flex items-center justify-between text-xs text-muted">
+                <span>
+                  Provider:{" "}
+                  <strong className="uppercase text-bone">
+                    {videoEmbedInfo.provider}
+                  </strong>
                 </span>
-              </p>
+                <span className="uppercase tracking-wider text-smoke">
+                  {isPortraitActive ? "9:16 Portrait Preview" : "16:9 Landscape Preview"}
+                </span>
+              </div>
               <div
                 className={cn(
                   "relative overflow-hidden border border-line bg-black",
-                  isPortraitCategory
+                  isPortraitActive
                     ? "aspect-[9/16] max-w-[260px]"
                     : "aspect-video max-w-xl",
                 )}

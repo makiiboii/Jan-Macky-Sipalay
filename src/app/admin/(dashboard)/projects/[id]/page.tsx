@@ -34,6 +34,7 @@ export default async function EditProjectPage({
           client: project.client ?? "",
           featured: project.featured,
           published: project.published,
+          isPortrait: project.isPortrait,
           thumbnailUrl: project.thumbnailUrl ?? "",
           videoUrl: project.videoUrl ?? "",
           roles: project.roles,

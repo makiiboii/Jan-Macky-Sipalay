@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { isProjectPortrait } from "@/lib/constants";
 import type { ProjectCardData } from "@/lib/projects";
 import { cn } from "@/lib/utils";
 import { Cover } from "./Cover";
@@ -22,7 +23,7 @@ export function ProjectCard({
 }) {
   const photos = project._count.images;
   const album = isPhotoAlbum(project);
-  const isPortrait = project.category === "PORTRAIT_VIDEOS";
+  const isPortrait = isProjectPortrait(project);
   const isPhotography = project.category === "PHOTOGRAPHY";
   const isPoster = project.category === "POSTER_GRAPHICS";
 

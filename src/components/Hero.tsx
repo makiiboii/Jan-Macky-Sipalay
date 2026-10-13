@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import { site } from "@/config/site";
+import { isProjectPortrait } from "@/lib/constants";
 import { resolveImageUrl } from "@/lib/drive";
 import { gsap } from "@/lib/gsap";
 import type { ProjectCardData } from "@/lib/projects";
@@ -57,11 +58,13 @@ export function Hero({ projects = [] }: { projects?: ProjectCardData[] }) {
         if (!seen.has(src)) {
           seen.add(src);
           const aspect: WallTile["aspect"] =
-            project.category === "PORTRAIT_VIDEOS"
+            isProjectPortrait(project)
               ? "portrait"
               : project.category === "PHOTOGRAPHY"
                 ? "editorial"
-                : "landscape";
+                : project.category === "POSTER_GRAPHICS"
+                  ? "portrait"
+                  : "landscape";
           rawTiles.push({
             id: `thumb-${project.id}`,
             src,

@@ -5,7 +5,7 @@ import { Gallery } from "@/components/Gallery";
 import { categoryLabel } from "@/components/ProjectMeta";
 import { VideoEmbed } from "@/components/VideoEmbed";
 import { site } from "@/config/site";
-import { ROLE_LABELS, normalizeCategory } from "@/lib/constants";
+import { ROLE_LABELS, isProjectPortrait, normalizeCategory } from "@/lib/constants";
 import { resolveImageUrl } from "@/lib/drive";
 import { getPublishedProjectBySlug } from "@/lib/projects";
 import { truncate } from "@/lib/utils";
@@ -55,7 +55,7 @@ export default async function ProjectPage({ params }: Props) {
   if (!project) notFound();
 
   const normalizedCat = normalizeCategory(project.category);
-  const isPortrait = normalizedCat === "PORTRAIT_VIDEOS";
+  const isPortrait = isProjectPortrait(project);
   const paragraphs = project.description.split(/\n{2,}/).filter(Boolean);
   const hasVideo = Boolean(project.videoUrl);
 

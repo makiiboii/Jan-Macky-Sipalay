@@ -10,6 +10,7 @@ import {
   CATEGORIES,
   CATEGORY_LABELS,
   MAX_FEATURED,
+  isProjectPortrait,
   normalizeCategory,
   type CategoryValue,
 } from "@/lib/constants";
@@ -321,7 +322,7 @@ export function AdminDashboardClient({
           <ul className="divide-y divide-line border-b border-line">
             {filteredProjects.map((project) => {
               const cat = normalizeCategory(project.category);
-              const isPortrait = cat === "PORTRAIT_VIDEOS";
+              const isPortrait = isProjectPortrait(project);
               const inHeroWall =
                 project.published &&
                 Boolean(project.thumbnailUrl || project.images.length > 0);
@@ -342,7 +343,10 @@ export function AdminDashboardClient({
                         <img
                           src={resolveImageUrl(project.thumbnailUrl)}
                           alt=""
-                          className="h-full w-full object-cover"
+                          className={cn(
+                            "h-full w-full",
+                            isPortrait ? "object-contain bg-[#080808]" : "object-cover",
+                          )}
                           loading="lazy"
                         />
                       ) : (
@@ -360,6 +364,11 @@ export function AdminDashboardClient({
                         >
                           {project.title}
                         </Link>
+                        {isPortrait && (
+                          <span className="border border-white/20 bg-white/[0.05] px-2 py-0.5 text-[10px] uppercase tracking-[0.14em] text-smoke">
+                            9:16 Portrait
+                          </span>
+                        )}
                         {project.featured && (
                           <span className="border border-bone/50 bg-bone/10 px-2 py-0.5 text-[10px] uppercase tracking-[0.14em] text-bone">
                             Featured

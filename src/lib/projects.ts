@@ -17,6 +17,7 @@ export const cardSelect = {
   year: true,
   client: true,
   featured: true,
+  isPortrait: true,
   roles: true,
   thumbnailUrl: true,
   videoUrl: true,

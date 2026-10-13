@@ -102,9 +102,21 @@ export function normalizeCategory(value?: string | null): CategoryValue {
 }
 
 /**
- * Returns the database categories that match a normalized frontend category filter
- * so legacy database rows still appear under the appropriate category tab.
+ * Returns true if a project is in 9:16 portrait orientation (vertical Reels, Shorts, TikTok)
+ * based on explicit isPortrait flag, PORTRAIT_VIDEOS category, or vertical video URL.
  */
+export function isProjectPortrait(project?: {
+  category?: string | null;
+  isPortrait?: boolean | null;
+  videoUrl?: string | null;
+} | null): boolean {
+  if (!project) return false;
+  if (project.isPortrait === true) return true;
+  if (project.category === "PORTRAIT_VIDEOS") return true;
+  if (project.videoUrl && /\/(shorts|reel|reels)\//i.test(project.videoUrl)) return true;
+  return false;
+}
+
 export function matchingDbCategories(category: CategoryValue): DbCategoryValue[] {
   if (category === "PHOTOGRAPHY") return ["PHOTOGRAPHY", "PHOTO_EDITING"];
   return [category];

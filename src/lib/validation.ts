@@ -43,6 +43,7 @@ export const projectInputSchema = z.object({
   client: emptyToNull(z.string().trim().max(120)),
   featured: z.boolean().default(false),
   published: z.boolean().default(false),
+  isPortrait: z.boolean().default(false),
   thumbnailUrl: emptyToNull(safeUrl),
   videoUrl: emptyToNull(
     z
@@ -74,5 +75,6 @@ export type ProjectInput = z.output<typeof projectInputSchema>;
 export const projectPatchSchema = z.object({
   published: z.boolean().optional(),
   featured: z.boolean().optional(),
+  isPortrait: z.boolean().optional(),
   category: categorySchema.optional(),
 });
