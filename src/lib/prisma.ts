@@ -1,6 +1,6 @@
 import { PrismaClient } from "@prisma/client";
 
-const SCHEMA_VERSION = "2026-10-10-ai-role-and-portrait-videos";
+const SCHEMA_VERSION = "2026-10-13-site-visit-stats";
 
 const globalForPrisma = globalThis as unknown as {
   prisma?: PrismaClient;

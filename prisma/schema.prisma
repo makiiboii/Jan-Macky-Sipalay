@@ -60,3 +60,18 @@ model ProjectImage {
 
   @@index([projectId, position])
 }
+
+model SiteStat {
+  key       String   @id
+  value     Int      @default(0)
+  updatedAt DateTime @updatedAt
+}
+
+model SiteVisit {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  path      String?  @default("/")
+  userAgent String?
+
+  @@index([createdAt])
+}
