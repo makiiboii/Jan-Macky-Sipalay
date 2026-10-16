@@ -296,7 +296,7 @@ export function ProjectForm({
             {isPortraitActive
               ? "Portrait mode active: 9:16 vertical frame for Reels, TikTok, Shorts, and vertical thumbnails."
               : category === "AI_GENERATED"
-                ? "AI-Generated highlights AI-assisted video, UGC, and generative visual projects."
+                ? "AI Generated Hybrid Editing highlights AI-assisted video, UGC, and generative visual projects."
                 : category === "POSTER_GRAPHICS"
                   ? "Posters & Graphics showcases promotional posters, graphic designs, key visual art, and cover layouts."
                   : category === "PHOTOGRAPHY"
@@ -316,7 +316,7 @@ export function ProjectForm({
                 Video &amp; Thumbnail Orientation
               </span>
               <p className="mt-1 text-xs text-muted">
-                Choose <strong>9:16 Portrait</strong> to post vertical Reels, TikToks, Shorts, or vertical thumbnails in <em>any</em> category (Videoshoot, Video Editing, AI-Generated, etc.).
+                Choose <strong>9:16 Portrait</strong> to post vertical Reels, TikToks, Shorts, or vertical thumbnails in <em>any</em> category (Videoshoot, Video Editing, AI Generated Hybrid Editing, etc.).
               </p>
             </div>
 

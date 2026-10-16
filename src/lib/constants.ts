@@ -40,7 +40,7 @@ export type RoleValue = (typeof ROLES)[number];
 export const CATEGORY_LABELS: Record<CategoryValue, string> = {
   VIDEOGRAPHY: "Videoshoot",
   VIDEO_EDITING: "Video Editing",
-  AI_GENERATED: "AI-Generated",
+  AI_GENERATED: "AI Generated Hybrid Editing",
   PHOTOGRAPHY: "Photography",
   POSTER_GRAPHICS: "Posters & Graphics",
   PORTRAIT_VIDEOS: "Portrait Videos",
@@ -88,7 +88,14 @@ export function normalizeCategory(value?: string | null): CategoryValue {
   ) {
     return "POSTER_GRAPHICS";
   }
-  if (upper === "AI-GENERATED" || upper === "AI GENERATED") {
+  if (
+    upper === "AI-GENERATED" ||
+    upper === "AI GENERATED" ||
+    upper === "AI GENERATED HYBRID EDITING" ||
+    upper === "AI-GENERATED HYBRID EDITING" ||
+    upper === "AI HYBRID EDITING" ||
+    upper === "HYBRID EDITING"
+  ) {
     return "AI_GENERATED";
   }
   if (

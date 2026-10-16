@@ -104,7 +104,7 @@ export function ProjectCard({
             )}
             <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent opacity-70 transition-opacity duration-500 group-hover:opacity-90 pointer-events-none" />
 
-            <span className="absolute left-2 top-2 border border-white/15 bg-black/75 px-1.5 py-0.5 text-[8px] uppercase tracking-[0.14em] text-bone backdrop-blur-sm sm:left-3 sm:top-3 sm:px-2.5 sm:py-1 sm:text-[10px] sm:tracking-[0.16em]">
+            <span className="absolute left-2 top-2 max-w-[70%] truncate border border-white/15 bg-black/75 px-1.5 py-0.5 text-[8px] uppercase tracking-[0.14em] text-bone backdrop-blur-sm sm:left-3 sm:top-3 sm:px-2.5 sm:py-1 sm:text-[10px] sm:tracking-[0.16em]">
               {categoryLabel(project.category)}
             </span>
 
