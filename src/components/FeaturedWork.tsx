@@ -25,8 +25,8 @@ export function FeaturedWork({ projects }: { projects: ProjectCardData[] }) {
       aria-labelledby="featured-heading"
       className="scroll-mt-16 border-t border-line px-3.5 py-10 sm:px-6 sm:py-16 md:px-10 md:py-20"
     >
-      {/* Deck container: constrained to max-w-5xl for portrait videos so cards stay compact & elegant */}
-      <div className={cn("mx-auto", anyPortrait ? "max-w-5xl" : "max-w-6xl")}>
+      {/* Deck container: responsive max width keeping 6 portrait cards compact & elegant */}
+      <div className={cn("mx-auto", anyPortrait ? (count >= 6 ? "max-w-7xl" : "max-w-5xl") : "max-w-6xl")}>
         <Reveal>
           <div className="mb-4 flex flex-wrap items-end justify-between gap-2.5 border-b border-line pb-3 sm:mb-6 sm:pb-4 md:mb-8">
             <div>
@@ -49,11 +49,13 @@ export function FeaturedWork({ projects }: { projects: ProjectCardData[] }) {
 
         <div
           className={cn(
-            "project-focus-deck grid gap-2.5 sm:gap-4 md:gap-5",
+            "project-focus-deck grid gap-2.5 sm:gap-3.5 md:gap-4",
             count === 1 && "mx-auto max-w-md grid-cols-1",
             count === 2 && "mx-auto max-w-2xl grid-cols-2",
             count === 3 && "grid-cols-2 lg:grid-cols-3",
-            count >= 4 && "grid-cols-2 lg:grid-cols-4",
+            count === 4 && "grid-cols-2 lg:grid-cols-4",
+            count === 5 && "grid-cols-2 sm:grid-cols-3 lg:grid-cols-5",
+            count >= 6 && "grid-cols-2 sm:grid-cols-3 lg:grid-cols-6",
           )}
         >
           {featured.map((project, index) => {
@@ -107,9 +109,11 @@ export function FeaturedWork({ projects }: { projects: ProjectCardData[] }) {
                             src={project.thumbnailUrl}
                             alt={`${project.title} thumbnail`}
                             sizes={
-                              count >= 4
-                                ? "(min-width: 1024px) 20vw, 44vw"
-                                : "(min-width: 768px) 38vw, 44vw"
+                              count >= 6
+                                ? "(min-width: 1024px) 16vw, 44vw"
+                                : count >= 4
+                                  ? "(min-width: 1024px) 20vw, 44vw"
+                                  : "(min-width: 768px) 38vw, 44vw"
                             }
                             priority={index < 4}
                             className={cn(

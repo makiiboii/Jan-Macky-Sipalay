@@ -6,6 +6,7 @@ import { LocationJourney } from "@/components/LocationJourney";
 import { Portfolio } from "@/components/Portfolio";
 import { Reveal } from "@/components/Reveal";
 import { ToolsShowcase } from "@/components/ToolsShowcase";
+import { MAX_FEATURED } from "@/lib/constants";
 import { getFeaturedProjects, getPublishedProjects, type ProjectCardData } from "@/lib/projects";
 
 export const dynamic = "force-dynamic";
@@ -28,7 +29,7 @@ export default async function HomePage() {
   }
 
   // Only show projects explicitly marked as Featured (up to MAX_FEATURED = 4)
-  const featuredList = featuredProjects.slice(0, 4);
+  const featuredList = featuredProjects.slice(0, MAX_FEATURED);
 
   const photographySeed = Math.floor(Math.random() * 1_000_000);
 
