@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { isProjectPortrait } from "@/lib/constants";
+import { resolveImageUrl } from "@/lib/drive";
 import type { ProjectCardData } from "@/lib/projects";
 import { cn } from "@/lib/utils";
+import { getDirectVideoUrl } from "@/lib/video";
 import { Cover } from "./Cover";
 import { categoryLabel, rolesLabel } from "./ProjectMeta";
 
@@ -27,6 +29,7 @@ export function ProjectCard({
   const isPortraitCategory = project.category === "PORTRAIT_VIDEOS";
   const isPhotography = project.category === "PHOTOGRAPHY";
   const isPoster = project.category === "POSTER_GRAPHICS";
+  const directVideo = project.videoUrl ? getDirectVideoUrl(project.videoUrl) : null;
 
   // Only the dedicated PORTRAIT_VIDEOS section uses a 9:16 vertical card frame.
   // In all other categories (AI-Generated, Videoshoot, Video Editing, etc.),
@@ -63,29 +66,68 @@ export function ProjectCard({
           <div className={cn("relative overflow-hidden border border-line/70 bg-black", aspectClass)}>
             {isPortraitProject && !isPortraitFrame ? (
               <>
-                {/* Ambient blurred backdrop of the portrait thumbnail filling the 16:9 landscape frame */}
-                <Cover
-                  src={project.thumbnailUrl}
-                  alt=""
-                  sizes="120px"
-                  aria-hidden="true"
-                  className="object-cover blur-xl opacity-35 scale-125 brightness-75 pointer-events-none"
-                />
+                {/* Ambient blurred backdrop of the portrait thumbnail/video filling the 16:9 landscape frame */}
+                {directVideo ? (
+                  <video
+                    src={directVideo}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    aria-hidden="true"
+                    className="absolute inset-0 h-full w-full object-cover blur-xl opacity-35 scale-125 brightness-75 pointer-events-none"
+                  />
+                ) : (
+                  <Cover
+                    src={project.thumbnailUrl}
+                    alt=""
+                    sizes="120px"
+                    aria-hidden="true"
+                    className="object-cover blur-xl opacity-35 scale-125 brightness-75 pointer-events-none"
+                  />
+                )}
                 <div className="absolute inset-0 bg-black/40 pointer-events-none" />
 
-                {/* Centered crisp 9:16 portrait thumbnail fitting cleanly inside the uniform 16:9 landscape card */}
+                {/* Centered crisp 9:16 portrait thumbnail/video fitting cleanly inside the uniform 16:9 landscape card */}
                 <div className="relative mx-auto flex h-full w-full items-center justify-center p-1 sm:p-1.5 pointer-events-none">
                   <div className="relative h-full aspect-[9/16] overflow-hidden rounded-[2px] border border-white/15 bg-black shadow-2xl">
-                    <Cover
-                      src={project.thumbnailUrl}
-                      alt={`${project.title} thumbnail`}
-                      sizes="(min-width: 768px) 30vw, 45vw"
-                      priority={priority}
-                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
-                    />
+                    {directVideo ? (
+                      <video
+                        src={directVideo}
+                        autoPlay
+                        muted
+                        loop
+                        playsInline
+                        preload="metadata"
+                        poster={project.thumbnailUrl ? resolveImageUrl(project.thumbnailUrl) : undefined}
+                        className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+                      />
+                    ) : (
+                      <Cover
+                        src={project.thumbnailUrl}
+                        alt={`${project.title} thumbnail`}
+                        sizes="(min-width: 768px) 30vw, 45vw"
+                        priority={priority}
+                        className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+                      />
+                    )}
                   </div>
                 </div>
               </>
+            ) : directVideo ? (
+              <video
+                src={directVideo}
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="metadata"
+                poster={project.thumbnailUrl ? resolveImageUrl(project.thumbnailUrl) : undefined}
+                className={cn(
+                  "h-full w-full transition-transform duration-700 ease-out group-hover:scale-[1.03]",
+                  isPortraitFrame ? "object-contain bg-[#080808]" : "object-cover",
+                )}
+              />
             ) : (
               <Cover
                 src={project.thumbnailUrl}
@@ -128,8 +170,15 @@ export function ProjectCard({
                 </span>
               </>
             ) : (
-              <span className="absolute bottom-2 right-2 inline-flex items-center gap-1 border border-white/20 bg-black/75 px-2 py-0.5 text-[8px] uppercase tracking-[0.14em] text-bone opacity-85 transition-all duration-300 group-hover:border-bone group-hover:bg-bone group-hover:text-black sm:bottom-3 sm:right-3 sm:gap-1.5 sm:px-2.5 sm:py-1 sm:text-[10px]">
-                {project.videoUrl ? "Watch" : "View"} &rarr;
+              <span className="absolute bottom-2 right-2 inline-flex items-center gap-1.5 border border-white/20 bg-black/75 px-2 py-0.5 text-[8px] uppercase tracking-[0.14em] text-bone opacity-85 transition-all duration-300 group-hover:border-bone group-hover:bg-bone group-hover:text-black sm:bottom-3 sm:right-3 sm:px-2.5 sm:py-1 sm:text-[10px]">
+                {directVideo ? (
+                  <>
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    Autoplay &rarr;
+                  </>
+                ) : (
+                  <>{project.videoUrl ? "Watch" : "View"} &rarr;</>
+                )}
               </span>
             )}
           </div>

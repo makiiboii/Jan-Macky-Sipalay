@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { gsap } from "@/lib/gsap";
 
 const INTERACTIVE_SELECTOR = [
   "a[href]",
@@ -24,177 +23,133 @@ const TEXT_FIELD_SELECTOR = [
 ].join(", ");
 
 /**
- * Custom Pen Tool cursor inspired by Adobe Photoshop / Illustrator vector workflow.
+ * High-performance, zero-delay Pen Tool cursor.
+ * - 0ms input latency: hardware-synchronized direct GPU translate3d tracking (no animation lag or low-pass delay).
+ * - Ultra-lightweight: zero GSAP ticker loops or frame allocations during pointer movement.
+ * - Smart event throttling: DOM element hierarchy is inspected only when crossing element boundaries.
  * - Activates only on fine-pointer devices with hover support and no reduced-motion preference.
  * - Preserves native I-beam cursor on text inputs and textareas.
- * - Shows a subtle vector anchor-point node at the nib tip when hovering interactive elements.
  */
 export function Cursor() {
   const wrapperRef = useRef<HTMLDivElement>(null);
-  const nibGroupRef = useRef<SVGGElement>(null);
-  const anchorNodeRef = useRef<SVGRectElement>(null);
 
   useEffect(() => {
-    const mm = gsap.matchMedia();
+    // Only activate on devices with fine pointer (mouse/pen), hover capability, and no reduced motion
+    const query = "(pointer: fine) and (hover: hover) and (prefers-reduced-motion: no-preference)";
+    const mql = window.matchMedia(query);
+    if (!mql.matches) return;
 
-    mm.add(
-      "(pointer: fine) and (hover: hover) and (prefers-reduced-motion: no-preference)",
-      () => {
-        const wrapper = wrapperRef.current;
-        const nibGroup = nibGroupRef.current;
-        const anchorNode = anchorNodeRef.current;
-        if (!wrapper || !nibGroup || !anchorNode) return;
+    const wrapper = wrapperRef.current;
+    if (!wrapper) return;
 
-        document.documentElement.classList.add("cursor-none");
+    document.documentElement.classList.add("cursor-none");
 
-        let hasMoved = false;
-        let isHoveringInteractive = false;
-        let isOverTextField = false;
-        let isPressed = false;
+    let isVisible = false;
+    let isHovering = false;
+    let isOverText = false;
+    let isPressed = false;
+    let lastTarget: EventTarget | null = null;
 
-        gsap.set(wrapper, { autoAlpha: 0 });
-        gsap.set(anchorNode, { scale: 0, transformOrigin: "50% 50%" });
-        gsap.set(nibGroup, { x: 0, y: 0, scale: 1, transformOrigin: "3px 3px" });
+    const updateTargetState = (target: EventTarget | null) => {
+      if (!target || target === lastTarget) return;
+      lastTarget = target;
 
-        const xTo = gsap.quickTo(wrapper, "x", {
-          duration: 0.065,
-          ease: "power3.out",
-        });
-        const yTo = gsap.quickTo(wrapper, "y", {
-          duration: 0.065,
-          ease: "power3.out",
-        });
+      const element = target instanceof Element ? target : null;
+      if (!element) return;
 
-        const syncCursorState = () => {
-          if (isOverTextField) {
-            gsap.to(wrapper, {
-              autoAlpha: 0,
-              duration: 0.14,
-              ease: "power2.out",
-              overwrite: "auto",
-            });
-            return;
-          }
+      const nextText = Boolean(element.closest(TEXT_FIELD_SELECTOR));
+      const nextHover = !nextText && Boolean(element.closest(INTERACTIVE_SELECTOR));
 
-          if (hasMoved) {
-            gsap.to(wrapper, {
-              autoAlpha: 1,
-              duration: 0.16,
-              ease: "power2.out",
-              overwrite: "auto",
-            });
-          }
+      if (nextText !== isOverText) {
+        isOverText = nextText;
+        wrapper.classList.toggle("is-hidden", nextText);
+      }
 
-          const targetScale = isPressed ? 0.92 : isHoveringInteractive ? 1.1 : 1;
-          const targetOffset = isHoveringInteractive ? 2.2 : 0;
+      if (nextHover !== isHovering) {
+        isHovering = nextHover;
+        wrapper.classList.toggle("is-hovering", nextHover);
+      }
+    };
 
-          gsap.to(nibGroup, {
-            x: targetOffset,
-            y: targetOffset,
-            scale: targetScale,
-            duration: 0.18,
-            ease: "power2.out",
-            overwrite: true,
-          });
+    const onPointerMove = (e: PointerEvent) => {
+      if (e.pointerType && e.pointerType !== "mouse" && e.pointerType !== "pen") {
+        return;
+      }
 
-          gsap.to(anchorNode, {
-            scale: isHoveringInteractive ? (isPressed ? 0.85 : 1) : 0,
-            duration: 0.16,
-            ease: "power2.out",
-            overwrite: true,
-          });
-        };
+      // Direct zero-delay hardware positioning: pen tip is at (3, 3) inside SVG,
+      // so translate by (clientX - 3, clientY - 3) places the exact nib tip at (clientX, clientY).
+      wrapper.style.transform = `translate3d(${e.clientX - 3}px, ${e.clientY - 3}px, 0)`;
 
-        const updateTargetState = (target: EventTarget | null) => {
-          const element = target instanceof Element ? target : null;
-          const nextTextField = Boolean(element?.closest(TEXT_FIELD_SELECTOR));
-          const nextInteractive =
-            !nextTextField && Boolean(element?.closest(INTERACTIVE_SELECTOR));
+      if (!isVisible) {
+        isVisible = true;
+        wrapper.classList.add("is-visible");
+      }
 
-          if (
-            nextTextField !== isOverTextField ||
-            nextInteractive !== isHoveringInteractive
-          ) {
-            isOverTextField = nextTextField;
-            isHoveringInteractive = nextInteractive;
-            syncCursorState();
-          }
-        };
+      // If returning from text field or hidden state, ensure visibility
+      if (isOverText) {
+        updateTargetState(e.target);
+      } else if (wrapper.classList.contains("is-hidden")) {
+        wrapper.classList.remove("is-hidden");
+      }
 
-        const onPointerMove = (e: PointerEvent) => {
-          if (e.pointerType && e.pointerType !== "mouse" && e.pointerType !== "pen") {
-            return;
-          }
+      // Only check target hierarchy if the pointer crossed into a new DOM element
+      if (e.target !== lastTarget) {
+        updateTargetState(e.target);
+      }
+    };
 
-          if (!hasMoved) {
-            hasMoved = true;
-            gsap.set(wrapper, { x: e.clientX, y: e.clientY });
-          } else {
-            xTo(e.clientX);
-            yTo(e.clientY);
-          }
+    const onPointerOver = (e: PointerEvent) => {
+      updateTargetState(e.target);
+    };
 
-          updateTargetState(e.target);
-          if (!isOverTextField) {
-            gsap.to(wrapper, {
-              autoAlpha: 1,
-              duration: 0.14,
-              ease: "power2.out",
-              overwrite: "auto",
-            });
-          }
-        };
+    const onPointerDown = (e: PointerEvent) => {
+      if (e.button !== 0) return;
+      isPressed = true;
+      wrapper.classList.add("is-pressed");
+    };
 
-        const onPointerOver = (e: PointerEvent) => {
-          updateTargetState(e.target);
-        };
+    const onPointerUp = () => {
+      if (!isPressed) return;
+      isPressed = false;
+      wrapper.classList.remove("is-pressed");
+    };
 
-        const onPointerDown = (e: PointerEvent) => {
-          if (e.button !== 0) return;
-          isPressed = true;
-          syncCursorState();
-        };
+    const onWindowLeave = () => {
+      wrapper.classList.add("is-hidden");
+      lastTarget = null;
+    };
 
-        const onPointerUp = () => {
-          if (!isPressed) return;
-          isPressed = false;
-          syncCursorState();
-        };
+    const onWindowEnter = () => {
+      if (!isOverText) {
+        wrapper.classList.remove("is-hidden");
+      }
+    };
 
-        const onWindowLeave = () => {
-          gsap.to(wrapper, {
-            autoAlpha: 0,
-            duration: 0.15,
-            ease: "power2.out",
-            overwrite: "auto",
-          });
-        };
+    window.addEventListener("pointermove", onPointerMove, { passive: true });
+    document.addEventListener("pointerover", onPointerOver, { passive: true });
+    window.addEventListener("pointerdown", onPointerDown, { passive: true });
+    window.addEventListener("pointerup", onPointerUp, { passive: true });
+    document.documentElement.addEventListener("mouseleave", onWindowLeave);
+    document.documentElement.addEventListener("mouseenter", onWindowEnter);
+    window.addEventListener("blur", onWindowLeave);
 
-        window.addEventListener("pointermove", onPointerMove, { passive: true });
-        document.addEventListener("pointerover", onPointerOver, { passive: true });
-        window.addEventListener("pointerdown", onPointerDown, { passive: true });
-        window.addEventListener("pointerup", onPointerUp, { passive: true });
-        document.documentElement.addEventListener("mouseleave", onWindowLeave);
-
-        return () => {
-          window.removeEventListener("pointermove", onPointerMove);
-          document.removeEventListener("pointerover", onPointerOver);
-          window.removeEventListener("pointerdown", onPointerDown);
-          window.removeEventListener("pointerup", onPointerUp);
-          document.documentElement.removeEventListener("mouseleave", onWindowLeave);
-          document.documentElement.classList.remove("cursor-none");
-        };
-      },
-    );
-
-    return () => mm.revert();
+    return () => {
+      window.removeEventListener("pointermove", onPointerMove);
+      document.removeEventListener("pointerover", onPointerOver);
+      window.removeEventListener("pointerdown", onPointerDown);
+      window.removeEventListener("pointerup", onPointerUp);
+      document.documentElement.removeEventListener("mouseleave", onWindowLeave);
+      document.documentElement.removeEventListener("mouseenter", onWindowEnter);
+      window.removeEventListener("blur", onWindowLeave);
+      document.documentElement.classList.remove("cursor-none");
+    };
   }, []);
 
   return (
     <div
       ref={wrapperRef}
       aria-hidden="true"
-      className="gsap-pen-cursor pointer-events-none fixed left-0 top-0 z-[9999] hidden -translate-x-[3px] -translate-y-[3px] select-none opacity-0 md:block"
+      className="pen-cursor pointer-events-none fixed left-0 top-0 z-[99999] hidden select-none md:block"
     >
       <svg
         width="26"
@@ -206,7 +161,7 @@ export function Cursor() {
       >
         {/* Vector anchor point square at the exact hotspot (3, 3) when hovering clickable elements */}
         <rect
-          ref={anchorNodeRef}
+          className="pen-cursor__anchor"
           x="1"
           y="1"
           width="4"
@@ -217,7 +172,7 @@ export function Cursor() {
         />
 
         {/* Adobe Pen Tool nib angled at -45 deg with its tip anchored at (3, 3) */}
-        <g ref={nibGroupRef}>
+        <g className="pen-cursor__nib">
           <g transform="translate(3 3) rotate(-45)">
             {/* Pen nib body */}
             <path

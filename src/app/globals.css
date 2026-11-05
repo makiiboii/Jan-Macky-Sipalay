@@ -919,24 +919,78 @@ body {
   transform: none;
 }
 
-/* Custom cursor — applied by Cursor.tsx on pointer:fine devices */
-.cursor-none,
-.cursor-none *:not(input):not(textarea):not([contenteditable="true"]) {
+/* Custom Pen Tool cursor — high-performance zero-delay rules */
+html.cursor-none,
+html.cursor-none * {
   cursor: none !important;
 }
 
-.cursor-none input:not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="checkbox"]):not([type="radio"]),
-.cursor-none textarea,
-.cursor-none [contenteditable="true"] {
+html.cursor-none input:not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="checkbox"]):not([type="radio"]),
+html.cursor-none textarea,
+html.cursor-none [contenteditable="true"] {
   cursor: text !important;
 }
 
-.cursor-none input[type="button"],
-.cursor-none input[type="submit"],
-.cursor-none input[type="reset"],
-.cursor-none input[type="checkbox"],
-.cursor-none input[type="radio"] {
+html.cursor-none input[type="button"],
+html.cursor-none input[type="submit"],
+html.cursor-none input[type="reset"],
+html.cursor-none input[type="checkbox"],
+html.cursor-none input[type="radio"] {
   cursor: none !important;
+}
+
+/* Hardware-accelerated Pen Tool cursor styles */
+.pen-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 99999;
+  pointer-events: none;
+  user-select: none;
+  opacity: 0;
+  will-change: transform;
+  contain: layout style paint;
+  transition: opacity 120ms ease;
+}
+
+.pen-cursor.is-visible {
+  opacity: 1;
+}
+
+.pen-cursor.is-hidden {
+  opacity: 0 !important;
+}
+
+.pen-cursor__anchor {
+  transform-origin: 3px 3px;
+  transform: scale(0);
+  opacity: 0;
+  transition: transform 140ms cubic-bezier(0.16, 1, 0.3, 1), opacity 120ms ease;
+  will-change: transform, opacity;
+}
+
+.pen-cursor.is-hovering .pen-cursor__anchor {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.pen-cursor.is-hovering.is-pressed .pen-cursor__anchor {
+  transform: scale(0.82);
+}
+
+.pen-cursor__nib {
+  transform-origin: 3px 3px;
+  transform: translate(0, 0) scale(1);
+  transition: transform 140ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+
+.pen-cursor.is-hovering .pen-cursor__nib {
+  transform: translate(2px, 2px) scale(1.1);
+}
+
+.pen-cursor.is-pressed .pen-cursor__nib {
+  transform: translate(1px, 1px) scale(0.92);
 }
 
 .no-scrollbar {

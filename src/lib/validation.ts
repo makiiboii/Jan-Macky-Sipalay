@@ -51,7 +51,7 @@ export const projectInputSchema = z.object({
       .trim()
       .max(2000)
       .refine((value) => getVideoEmbedUrl(value) !== null, {
-        message: "Enter a valid YouTube, Facebook, Vimeo, or Google Drive video link.",
+        message: "Enter a valid YouTube, Facebook, Vimeo, Google Drive, or direct video link.",
       }),
   ),
   roles: z

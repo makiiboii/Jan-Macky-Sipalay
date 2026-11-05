@@ -67,12 +67,31 @@ export function Portfolio({
   const groups = useMemo(() => {
     const categories = filter === "ALL" ? CATEGORIES : [filter];
     return categories
-      .map((category) => ({
-        category,
-        projects: matching.filter(
+      .map((category) => {
+        let items = matching.filter(
           (project) => normalizeCategory(project.category) === category,
-        ),
-      }))
+        );
+
+        // Pin direct autoplay video ads to the front of AI Videos category
+        if (category === "AI_GENERATED") {
+          items = [...items].sort((a, b) => {
+            const aIsPinned = Boolean(
+              a.videoUrl && a.videoUrl.startsWith("/videos/maison-cosmetics/"),
+            );
+            const bIsPinned = Boolean(
+              b.videoUrl && b.videoUrl.startsWith("/videos/maison-cosmetics/"),
+            );
+            if (aIsPinned && !bIsPinned) return -1;
+            if (!aIsPinned && bIsPinned) return 1;
+            return 0;
+          });
+        }
+
+        return {
+          category,
+          projects: items,
+        };
+      })
       .filter((group) => group.projects.length > 0);
   }, [matching, filter]);
 

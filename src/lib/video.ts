@@ -1,6 +1,6 @@
 import { getGoogleDriveEmbedUrl } from "./drive";
 
-export type VideoProvider = "youtube" | "facebook" | "drive" | "vimeo";
+export type VideoProvider = "youtube" | "facebook" | "drive" | "vimeo" | "direct";
 
 export type VideoEmbedInfo = {
   embedUrl: string;
@@ -8,20 +8,16 @@ export type VideoEmbedInfo = {
 };
 
 /**
- * Extracts YouTube video ID and builds privacy-enhanced embed URL.
- * Handles:
- *  - https://www.youtube.com/watch?v=ID
- *  - https://youtu.be/ID
- *  - https://www.youtube.com/embed/ID
- *  - https://www.youtube.com/shorts/ID
- *  - https://m.youtube.com/watch?v=ID
+ * Extracts YouTube video ID and builds privacy-enhanced embed URL with autoplay parameters.
  */
-export function getYouTubeEmbedUrl(url: string): string | null {
+export function getYouTubeEmbedUrl(url: string, autoPlay = true): string | null {
   try {
     const parsed = new URL(url.trim());
+    const params = autoPlay ? "?autoplay=1&mute=1&playsinline=1&rel=0" : "?rel=0";
+
     if (parsed.hostname === "youtu.be") {
       const id = parsed.pathname.slice(1).split("/")[0]?.split("?")[0];
-      return id ? `https://www.youtube-nocookie.com/embed/${id}` : null;
+      return id ? `https://www.youtube-nocookie.com/embed/${id}${params}` : null;
     }
 
     const ytHosts = new Set([
@@ -34,15 +30,15 @@ export function getYouTubeEmbedUrl(url: string): string | null {
     if (ytHosts.has(parsed.hostname)) {
       if (parsed.pathname === "/watch") {
         const id = parsed.searchParams.get("v");
-        return id ? `https://www.youtube-nocookie.com/embed/${id}` : null;
+        return id ? `https://www.youtube-nocookie.com/embed/${id}${params}` : null;
       }
       if (parsed.pathname.startsWith("/embed/")) {
         const id = parsed.pathname.split("/")[2]?.split("?")[0];
-        return id ? `https://www.youtube-nocookie.com/embed/${id}` : null;
+        return id ? `https://www.youtube-nocookie.com/embed/${id}${params}` : null;
       }
       if (parsed.pathname.startsWith("/shorts/")) {
         const id = parsed.pathname.split("/")[2]?.split("?")[0];
-        return id ? `https://www.youtube-nocookie.com/embed/${id}` : null;
+        return id ? `https://www.youtube-nocookie.com/embed/${id}${params}` : null;
       }
     }
     return null;
@@ -53,13 +49,8 @@ export function getYouTubeEmbedUrl(url: string): string | null {
 
 /**
  * Builds Facebook video embed player URL.
- * Handles:
- *  - https://www.facebook.com/watch/?v=ID
- *  - https://www.facebook.com/{user}/videos/{id}
- *  - https://www.facebook.com/reel/{id}
- *  - https://fb.watch/{id}
  */
-export function getFacebookEmbedUrl(url: string): string | null {
+export function getFacebookEmbedUrl(url: string, autoPlay = true): string | null {
   try {
     const parsed = new URL(url.trim());
     const fbHosts = new Set([
@@ -72,27 +63,31 @@ export function getFacebookEmbedUrl(url: string): string | null {
 
     if (!fbHosts.has(parsed.hostname)) return null;
 
-    // Use official Facebook video plugin
+    const autoplayParam = autoPlay ? "&autoplay=true&mute=1" : "";
     return `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(
       url.trim(),
-    )}&show_text=0`;
+    )}&show_text=0${autoplayParam}`;
   } catch {
     return null;
   }
 }
 
 /**
- * Extracts Vimeo video ID.
+ * Extracts Vimeo video ID with autoplay parameters.
  */
-export function getVimeoEmbedUrl(url: string): string | null {
+export function getVimeoEmbedUrl(url: string, autoPlay = true): string | null {
   try {
     const parsed = new URL(url.trim());
+    const params = autoPlay ? "?autoplay=1&muted=1&playsinline=1&autopause=0" : "";
     if (parsed.hostname === "vimeo.com" || parsed.hostname === "www.vimeo.com") {
       const match = parsed.pathname.match(/\/(\d+)/);
-      return match ? `https://player.vimeo.com/video/${match[1]}` : null;
+      return match ? `https://player.vimeo.com/video/${match[1]}${params}` : null;
     }
     if (parsed.hostname === "player.vimeo.com") {
-      return url.trim();
+      const sep = url.includes("?") ? "&" : "?";
+      return autoPlay
+        ? `${url.trim()}${sep}autoplay=1&muted=1&playsinline=1&autopause=0`
+        : url.trim();
     }
     return null;
   } catch {
@@ -101,28 +96,69 @@ export function getVimeoEmbedUrl(url: string): string | null {
 }
 
 /**
- * Detects the video provider and returns the appropriate iframe embed URL.
+ * Checks if a URL points directly to an HTML5 video file or streaming CDN.
+ * Handles both absolute URLs (https://...) and relative paths (/videos/...).
  */
-export function getVideoEmbed(url?: string | null): VideoEmbedInfo | null {
+export function getDirectVideoUrl(url: string): string | null {
+  try {
+    const trimmed = url.trim();
+    if (!trimmed) return null;
+
+    // Support relative paths, e.g. /videos/maison-cosmetics/volufine.mp4
+    if (
+      trimmed.startsWith("/") &&
+      (trimmed.endsWith(".mp4") ||
+        trimmed.endsWith(".webm") ||
+        trimmed.endsWith(".ogg") ||
+        trimmed.endsWith(".mov"))
+    ) {
+      return trimmed;
+    }
+
+    const parsed = new URL(trimmed);
+    const path = parsed.pathname.toLowerCase();
+    const isVideoFile =
+      path.endsWith(".mp4") ||
+      path.endsWith(".webm") ||
+      path.endsWith(".ogg") ||
+      path.endsWith(".mov") ||
+      path.includes("/video/upload/") ||
+      parsed.hostname.includes("streamable.com") ||
+      parsed.hostname.includes("mux.com") ||
+      parsed.hostname.includes("stream.cloudflare.com");
+
+    return isVideoFile ? trimmed : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Detects the video provider and returns the appropriate iframe embed or direct video URL.
+ */
+export function getVideoEmbed(url?: string | null, autoPlay = true): VideoEmbedInfo | null {
   if (!url || typeof url !== "string") return null;
   const trimmed = url.trim();
   if (!trimmed) return null;
 
-  const yt = getYouTubeEmbedUrl(trimmed);
+  const yt = getYouTubeEmbedUrl(trimmed, autoPlay);
   if (yt) return { embedUrl: yt, provider: "youtube" };
 
-  const fb = getFacebookEmbedUrl(trimmed);
+  const direct = getDirectVideoUrl(trimmed);
+  if (direct) return { embedUrl: direct, provider: "direct" };
+
+  const vimeo = getVimeoEmbedUrl(trimmed, autoPlay);
+  if (vimeo) return { embedUrl: vimeo, provider: "vimeo" };
+
+  const fb = getFacebookEmbedUrl(trimmed, autoPlay);
   if (fb) return { embedUrl: fb, provider: "facebook" };
 
   const drive = getGoogleDriveEmbedUrl(trimmed);
   if (drive) return { embedUrl: drive, provider: "drive" };
 
-  const vimeo = getVimeoEmbedUrl(trimmed);
-  if (vimeo) return { embedUrl: vimeo, provider: "vimeo" };
-
   return null;
 }
 
-export function getVideoEmbedUrl(url?: string | null): string | null {
-  return getVideoEmbed(url)?.embedUrl ?? null;
+export function getVideoEmbedUrl(url?: string | null, autoPlay = true): string | null {
+  return getVideoEmbed(url, autoPlay)?.embedUrl ?? null;
 }

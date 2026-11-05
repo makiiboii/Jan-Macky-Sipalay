@@ -492,8 +492,7 @@ export function ProjectForm({
           {errorFor("videoUrl")}
           {trimmedVideo && !videoEmbedInfo && (
             <p className="mt-2 text-sm text-red-400">
-              Please enter a valid YouTube, Facebook, Vimeo, or Google Drive
-              video link.
+              Please enter a valid YouTube, Vimeo, Facebook, Google Drive, or direct MP4/WebM video link.
             </p>
           )}
           {videoEmbedInfo && (
@@ -502,7 +501,7 @@ export function ProjectForm({
                 <span>
                   Provider:{" "}
                   <strong className="uppercase text-bone">
-                    {videoEmbedInfo.provider}
+                    {videoEmbedInfo.provider === "direct" ? "Direct MP4 Video" : videoEmbedInfo.provider}
                   </strong>
                 </span>
                 <span className="uppercase tracking-wider text-smoke">
@@ -517,14 +516,22 @@ export function ProjectForm({
                     : "aspect-video max-w-xl",
                 )}
               >
-                <iframe
-                  src={videoEmbedInfo.embedUrl}
-                  title="Video preview"
-                  loading="lazy"
-                  allowFullScreen
-                  allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share; fullscreen"
-                  className="absolute inset-0 h-full w-full border-0"
-                />
+                {videoEmbedInfo.provider === "direct" ? (
+                  <video
+                    src={videoEmbedInfo.embedUrl}
+                    controls
+                    className="absolute inset-0 h-full w-full object-contain bg-black"
+                  />
+                ) : (
+                  <iframe
+                    src={videoEmbedInfo.embedUrl}
+                    title="Video preview"
+                    loading="lazy"
+                    allowFullScreen
+                    allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share; fullscreen"
+                    className="absolute inset-0 h-full w-full border-0"
+                  />
+                )}
               </div>
             </div>
           )}
