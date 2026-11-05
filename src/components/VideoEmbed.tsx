@@ -64,6 +64,7 @@ export function VideoEmbed({
             loop
             playsInline
             controls
+            preload="metadata"
             poster={posterUrl || undefined}
             className="absolute inset-0 h-full w-full object-contain bg-black"
           />
@@ -84,7 +85,7 @@ export function VideoEmbed({
           {isPortrait ? "9:16 Portrait Format" : "16:9 Landscape Format"}
           {autoPlay && (
             <span className="ml-2 lowercase text-smoke/70 tracking-normal">
-              · autoplays muted
+              • autoplays muted
             </span>
           )}
         </span>

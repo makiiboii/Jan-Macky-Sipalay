@@ -868,21 +868,24 @@ function Filmstrip({
         }}
         className="project-focus-deck no-scrollbar flex cursor-grab gap-3.5 overflow-x-auto px-1 py-2 select-none active:cursor-grabbing focus-visible:outline-none sm:gap-6 sm:px-2 sm:py-3"
       >
-        {projects.map((project, index) => (
-          <div
-            key={project.id}
-            className={cn(
-              "project-focus-item shrink-0",
-              project.category === "PORTRAIT_VIDEOS"
-                ? "w-[9.25rem] sm:w-[14.5rem] md:w-[18.5rem]"
-                : project.category === "POSTER_GRAPHICS"
-                  ? "w-[10.5rem] sm:w-[16rem] md:w-[20rem]"
-                  : "w-[13.25rem] sm:w-[20rem] md:w-[26rem]",
-            )}
-          >
-            <ProjectCard project={project} compact priority={eager && index < 2} />
-          </div>
-        ))}
+        {projects.map((project, index) => {
+          const isPortrait = isProjectPortrait(project) || project.category === "PORTRAIT_VIDEOS";
+          return (
+            <div
+              key={project.id}
+              className={cn(
+                "project-focus-item shrink-0",
+                isPortrait
+                  ? "w-[9.25rem] sm:w-[14.5rem] md:w-[18.5rem]"
+                  : project.category === "POSTER_GRAPHICS"
+                    ? "w-[10.5rem] sm:w-[16rem] md:w-[20rem]"
+                    : "w-[13.25rem] sm:w-[20rem] md:w-[26rem]",
+              )}
+            >
+              <ProjectCard project={project} compact priority={eager && index < 2} />
+            </div>
+          );
+        })}
       </div>
     </div>
   );

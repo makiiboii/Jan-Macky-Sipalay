@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import { isProjectPortrait } from "@/lib/constants";
 import { resolveImageUrl } from "@/lib/drive";
@@ -6,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { getDirectVideoUrl } from "@/lib/video";
 import { Cover } from "./Cover";
 import { categoryLabel, rolesLabel } from "./ProjectMeta";
+import { SmartAutoplayVideo } from "./SmartAutoplayVideo";
 
 /** A project with gallery photos and no video is shown as a photo album ("folder"). */
 export function isPhotoAlbum(project: Pick<ProjectCardData, "videoUrl" | "_count">) {
@@ -31,10 +34,8 @@ export function ProjectCard({
   const isPoster = project.category === "POSTER_GRAPHICS";
   const directVideo = project.videoUrl ? getDirectVideoUrl(project.videoUrl) : null;
 
-  // Only the dedicated PORTRAIT_VIDEOS section uses a 9:16 vertical card frame.
-  // In all other categories (AI-Generated, Videoshoot, Video Editing, etc.),
-  // cards use the standard 16:9 landscape frame so every card in the row is completely uniform.
-  const isPortraitFrame = isPortraitCategory;
+  // Portrait frame is used for ALL portrait projects (including AI-Generated 9:16 vertical videos)
+  const isPortraitFrame = isPortraitProject || isPortraitCategory;
 
   const aspectClass = isPortraitFrame
     ? "aspect-[9/16]"
@@ -64,69 +65,11 @@ export function ProjectCard({
       >
         <div className="relative">
           <div className={cn("relative overflow-hidden border border-line/70 bg-black", aspectClass)}>
-            {isPortraitProject && !isPortraitFrame ? (
-              <>
-                {/* Ambient blurred backdrop of the portrait thumbnail/video filling the 16:9 landscape frame */}
-                {directVideo ? (
-                  <video
-                    src={directVideo}
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    aria-hidden="true"
-                    className="absolute inset-0 h-full w-full object-cover blur-xl opacity-35 scale-125 brightness-75 pointer-events-none"
-                  />
-                ) : (
-                  <Cover
-                    src={project.thumbnailUrl}
-                    alt=""
-                    sizes="120px"
-                    aria-hidden="true"
-                    className="object-cover blur-xl opacity-35 scale-125 brightness-75 pointer-events-none"
-                  />
-                )}
-                <div className="absolute inset-0 bg-black/40 pointer-events-none" />
-
-                {/* Centered crisp 9:16 portrait thumbnail/video fitting cleanly inside the uniform 16:9 landscape card */}
-                <div className="relative mx-auto flex h-full w-full items-center justify-center p-1 sm:p-1.5 pointer-events-none">
-                  <div className="relative h-full aspect-[9/16] overflow-hidden rounded-[2px] border border-white/15 bg-black shadow-2xl">
-                    {directVideo ? (
-                      <video
-                        src={directVideo}
-                        autoPlay
-                        muted
-                        loop
-                        playsInline
-                        preload="metadata"
-                        poster={project.thumbnailUrl ? resolveImageUrl(project.thumbnailUrl) : undefined}
-                        className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
-                      />
-                    ) : (
-                      <Cover
-                        src={project.thumbnailUrl}
-                        alt={`${project.title} thumbnail`}
-                        sizes="(min-width: 768px) 30vw, 45vw"
-                        priority={priority}
-                        className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
-                      />
-                    )}
-                  </div>
-                </div>
-              </>
-            ) : directVideo ? (
-              <video
+            {directVideo ? (
+              <SmartAutoplayVideo
                 src={directVideo}
-                autoPlay
-                muted
-                loop
-                playsInline
-                preload="metadata"
                 poster={project.thumbnailUrl ? resolveImageUrl(project.thumbnailUrl) : undefined}
-                className={cn(
-                  "h-full w-full transition-transform duration-700 ease-out group-hover:scale-[1.03]",
-                  isPortraitFrame ? "object-contain bg-[#080808]" : "object-cover",
-                )}
+                className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
               />
             ) : (
               <Cover
@@ -140,7 +83,7 @@ export function ProjectCard({
                 priority={priority}
                 className={cn(
                   "transition-transform duration-700 ease-out group-hover:scale-[1.03]",
-                  isPortraitFrame ? "object-contain bg-[#080808]" : "object-cover",
+                  isPortraitFrame ? "object-cover" : isPoster ? "object-contain" : "object-cover",
                 )}
               />
             )}
@@ -174,7 +117,7 @@ export function ProjectCard({
                 {directVideo ? (
                   <>
                     <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                    Autoplay &rarr;
+                    Watch &rarr;
                   </>
                 ) : (
                   <>{project.videoUrl ? "Watch" : "View"} &rarr;</>
@@ -199,7 +142,7 @@ export function ProjectCard({
 
         <p className="mt-1 truncate text-[10px] leading-relaxed text-muted sm:mt-2 sm:whitespace-normal sm:text-xs">
           {categoryLabel(project.category)}
-          {project.roles.length > 0 && <> · {rolesLabel(project.roles)}</>}
+          {project.roles.length > 0 && <> • {rolesLabel(project.roles)}</>}
         </p>
       </Link>
     </div>
