@@ -34,8 +34,10 @@ export function ProjectCard({
   const isPoster = project.category === "POSTER_GRAPHICS";
   const directVideo = project.videoUrl ? getDirectVideoUrl(project.videoUrl) : null;
 
-  // Portrait frame is used for ALL portrait projects (including AI-Generated 9:16 vertical videos)
-  const isPortraitFrame = isPortraitProject || isPortraitCategory;
+  // Only the dedicated PORTRAIT_VIDEOS section uses a 9:16 vertical card frame.
+  // In all other categories (AI Generated, Video Editing, etc.), cards use the standard uniform 16:9
+  // landscape frame so every card in the row is completely balanced, aligned, and cohesive.
+  const isPortraitFrame = isPortraitCategory;
 
   const aspectClass = isPortraitFrame
     ? "aspect-[9/16]"
@@ -65,11 +67,47 @@ export function ProjectCard({
       >
         <div className="relative">
           <div className={cn("relative overflow-hidden border border-line/70 bg-black", aspectClass)}>
-            {directVideo ? (
+            {isPortraitProject && !isPortraitFrame ? (
+              <div className="relative flex h-full w-full items-center justify-center bg-[#070707]">
+                {/* Subtle static blurred poster backdrop (lightweight image, no duplicate video decoding) */}
+                {project.thumbnailUrl && (
+                  <Cover
+                    src={project.thumbnailUrl}
+                    alt=""
+                    sizes="120px"
+                    aria-hidden="true"
+                    className="object-cover blur-xl opacity-30 scale-125 brightness-50 pointer-events-none"
+                  />
+                )}
+                <div className="absolute inset-0 bg-black/40 pointer-events-none" />
+
+                {/* Centered crisp 9:16 vertical video preserving full framing and uniform 16:9 row alignment */}
+                <div className="relative h-full aspect-[9/16] overflow-hidden rounded-[2px] border border-white/10 bg-black shadow-2xl">
+                  {directVideo ? (
+                    <SmartAutoplayVideo
+                      src={directVideo}
+                      poster={project.thumbnailUrl ? resolveImageUrl(project.thumbnailUrl, 700) : undefined}
+                      className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                    />
+                  ) : (
+                    <Cover
+                      src={project.thumbnailUrl}
+                      alt={`${project.title} thumbnail`}
+                      sizes="(min-width: 768px) 30vw, 45vw"
+                      priority={priority}
+                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+                    />
+                  )}
+                </div>
+              </div>
+            ) : directVideo ? (
               <SmartAutoplayVideo
                 src={directVideo}
-                poster={project.thumbnailUrl ? resolveImageUrl(project.thumbnailUrl) : undefined}
-                className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                poster={project.thumbnailUrl ? resolveImageUrl(project.thumbnailUrl, 700) : undefined}
+                className={cn(
+                  "h-full w-full transition-transform duration-700 ease-out group-hover:scale-[1.03]",
+                  isPortraitFrame ? "object-cover" : "object-cover",
+                )}
               />
             ) : (
               <Cover

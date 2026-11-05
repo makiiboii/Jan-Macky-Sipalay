@@ -869,13 +869,13 @@ function Filmstrip({
         className="project-focus-deck no-scrollbar flex cursor-grab gap-3.5 overflow-x-auto px-1 py-2 select-none active:cursor-grabbing focus-visible:outline-none sm:gap-6 sm:px-2 sm:py-3"
       >
         {projects.map((project, index) => {
-          const isPortrait = isProjectPortrait(project) || project.category === "PORTRAIT_VIDEOS";
+          const isDedicatedPortraitSection = project.category === "PORTRAIT_VIDEOS";
           return (
             <div
               key={project.id}
               className={cn(
                 "project-focus-item shrink-0",
-                isPortrait
+                isDedicatedPortraitSection
                   ? "w-[8.5rem] sm:w-[12rem] md:w-[15rem]"
                   : project.category === "POSTER_GRAPHICS"
                     ? "w-[10.5rem] sm:w-[16rem] md:w-[20rem]"
