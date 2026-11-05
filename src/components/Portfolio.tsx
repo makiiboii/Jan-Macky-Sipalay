@@ -654,9 +654,9 @@ function PhotographyCarousel({
               className="relative block aspect-[4/5] w-full overflow-hidden border border-line/70 bg-[#080808] text-left focus-visible:outline-offset-4"
             >
               <img
-                src={resolveImageUrl(slide.url)}
+                src={resolveImageUrl(slide.url, 600)}
                 alt={slide.caption || `${slide.projectTitle} photo ${idx + 1}`}
-                loading={idx < 4 ? "eager" : "lazy"}
+                loading={idx < 2 ? "eager" : "lazy"}
                 decoding="async"
                 draggable={false}
                 className="h-full w-full object-contain transition-transform duration-700 ease-out group-hover:scale-[1.03]"

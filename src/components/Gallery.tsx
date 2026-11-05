@@ -36,7 +36,7 @@ export function Gallery({ images, title }: { images: GalleryImage[]; title: stri
               className="group relative block w-full cursor-zoom-in overflow-hidden bg-black"
             >
               <img
-                src={resolveImageUrl(image.url)}
+                src={resolveImageUrl(image.url, 700)}
                 alt={image.caption || `${title} photo ${index + 1}`}
                 loading="lazy"
                 decoding="async"
@@ -100,7 +100,7 @@ export function Lightbox({
     if (count < 2) return;
     for (const i of [(index + 1) % count, (index - 1 + count) % count]) {
       const preload = new window.Image();
-      preload.src = resolveImageUrl(images[i].url);
+      preload.src = resolveImageUrl(images[i].url, 1600);
     }
   }, [index, count, images]);
 
@@ -142,7 +142,7 @@ export function Lightbox({
       >
         <img
           key={image.id}
-          src={resolveImageUrl(image.url)}
+          src={resolveImageUrl(image.url, 1600)}
           alt={image.caption || `${title} photo ${index + 1}`}
           className="animate-fade-in max-h-[calc(100dvh-9rem)] max-w-full object-contain"
         />

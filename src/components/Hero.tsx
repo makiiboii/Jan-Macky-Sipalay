@@ -28,8 +28,7 @@ const COLUMN_CONFIGS = [
 ];
 
 function toLightweightThumb(url: string): string {
-  const resolved = resolveImageUrl(url);
-  return resolved.replace("&sz=w2000", "&sz=w700");
+  return resolveImageUrl(url, 600);
 }
 
 export function Hero({ projects = [] }: { projects?: ProjectCardData[] }) {

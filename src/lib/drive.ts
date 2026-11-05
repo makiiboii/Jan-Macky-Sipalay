@@ -28,8 +28,12 @@ export function getGoogleDriveEmbedUrl(url: string): string | null {
   return id ? `https://drive.google.com/file/d/${id}/preview` : null;
 }
 
-/** Turns a Google Drive image link into a directly displayable URL. Other URLs pass through. */
-export function resolveImageUrl(url: string): string {
+/**
+ * Turns a Google Drive image link into a fast, directly displayable thumbnail URL.
+ * Defaults to 700px width for fast loading on cards and preview grids.
+ * Use 1600 or 2000 for high-resolution fullscreen lightboxes.
+ */
+export function resolveImageUrl(url: string, size: number = 700): string {
   const id = getGoogleDriveFileId(url);
-  return id ? `https://drive.google.com/thumbnail?id=${id}&sz=w2000` : url;
+  return id ? `https://drive.google.com/thumbnail?id=${id}&sz=w${size}` : url;
 }
