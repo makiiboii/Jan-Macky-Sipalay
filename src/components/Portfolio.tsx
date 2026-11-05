@@ -876,7 +876,7 @@ function Filmstrip({
               className={cn(
                 "project-focus-item shrink-0",
                 isPortrait
-                  ? "w-[9.25rem] sm:w-[14.5rem] md:w-[18.5rem]"
+                  ? "w-[8.5rem] sm:w-[12rem] md:w-[15rem]"
                   : project.category === "POSTER_GRAPHICS"
                     ? "w-[10.5rem] sm:w-[16rem] md:w-[20rem]"
                     : "w-[13.25rem] sm:w-[20rem] md:w-[26rem]",

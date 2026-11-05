@@ -17,29 +17,31 @@ export function FeaturedWork({ projects }: { projects: ProjectCardData[] }) {
   if (featured.length === 0) return null;
 
   const count = featured.length;
+  const anyPortrait = featured.some((p) => isProjectPortrait(p));
 
   return (
     <section
       id="featured"
       aria-labelledby="featured-heading"
-      className="scroll-mt-16 border-t border-line px-4 py-12 sm:px-5 sm:py-16 md:px-10 md:py-24"
+      className="scroll-mt-16 border-t border-line px-3.5 py-10 sm:px-6 sm:py-16 md:px-10 md:py-20"
     >
-      <div className="mx-auto max-w-7xl">
+      {/* Deck container: constrained to max-w-5xl for portrait videos so cards stay compact & elegant */}
+      <div className={cn("mx-auto", anyPortrait ? "max-w-5xl" : "max-w-6xl")}>
         <Reveal>
-          <div className="mb-6 flex flex-wrap items-end justify-between gap-3 border-b border-line pb-4 sm:mb-8 sm:pb-5 md:mb-10">
+          <div className="mb-4 flex flex-wrap items-end justify-between gap-2.5 border-b border-line pb-3 sm:mb-6 sm:pb-4 md:mb-8">
             <div>
-              <p className="mb-1.5 text-[10px] uppercase tracking-[0.18em] text-smoke sm:mb-2 sm:text-xs">
+              <p className="mb-1 text-[9px] uppercase tracking-[0.18em] text-smoke sm:text-xs">
                 02 / Curated highlights • {pad(count)} / {pad(MAX_FEATURED)}
               </p>
               <h2
                 id="featured-heading"
-                className="font-display text-3xl leading-none sm:text-5xl"
+                className="font-display text-2xl leading-none sm:text-4xl md:text-5xl"
               >
                 Featured works
               </h2>
             </div>
 
-            <p className="max-w-xs text-[11px] leading-relaxed text-smoke sm:text-right sm:text-xs">
+            <p className="max-w-xs text-[10px] leading-relaxed text-smoke sm:text-right sm:text-xs">
               Hand-picked spotlight projects — up to {MAX_FEATURED} signature works.
             </p>
           </div>
@@ -47,9 +49,9 @@ export function FeaturedWork({ projects }: { projects: ProjectCardData[] }) {
 
         <div
           className={cn(
-            "project-focus-deck grid gap-3 sm:gap-5",
-            count === 1 && "mx-auto max-w-2xl grid-cols-1",
-            count === 2 && "mx-auto max-w-5xl grid-cols-2",
+            "project-focus-deck grid gap-2.5 sm:gap-4 md:gap-5",
+            count === 1 && "mx-auto max-w-md grid-cols-1",
+            count === 2 && "mx-auto max-w-2xl grid-cols-2",
             count === 3 && "grid-cols-2 lg:grid-cols-3",
             count >= 4 && "grid-cols-2 lg:grid-cols-4",
           )}
@@ -60,22 +62,22 @@ export function FeaturedWork({ projects }: { projects: ProjectCardData[] }) {
             const isPoster = cat === "POSTER_GRAPHICS";
             const directVideo = project.videoUrl ? getDirectVideoUrl(project.videoUrl) : null;
             const summary = project.description?.trim()
-              ? truncate(project.description, 85)
+              ? truncate(project.description, 70)
               : project.roles.length > 0
                 ? rolesLabel(project.roles)
                 : `${categoryLabel(cat)} project`;
 
             return (
-              <Reveal key={project.id} delay={index * 70}>
-                <article className="project-focus-item group relative flex h-full flex-col justify-between border border-white/12 bg-gradient-to-b from-white/[0.03] to-[#070707] p-2.5 transition-colors hover:border-bone/65 sm:p-4">
+              <Reveal key={project.id} delay={index * 60}>
+                <article className="project-focus-item group relative flex h-full flex-col justify-between border border-white/12 bg-gradient-to-b from-white/[0.03] to-[#070707] p-2 transition-colors hover:border-bone/65 sm:p-3 md:p-3.5">
                   <div>
                     {/* Editorial Index + Category Top Bar */}
-                    <div className="mb-2 flex items-center justify-between gap-1.5 text-[8px] uppercase tracking-[0.12em] sm:mb-3 sm:gap-2 sm:text-[10px] sm:tracking-[0.16em]">
+                    <div className="mb-1.5 flex items-center justify-between gap-1 text-[7px] uppercase tracking-[0.1em] sm:mb-2.5 sm:gap-1.5 sm:text-[9px] sm:tracking-[0.14em]">
                       <span className="inline-flex items-center gap-1 font-medium text-bone/90 sm:gap-1.5">
                         <span className="h-1 w-1 rounded-full bg-bone sm:h-1.5 sm:w-1.5" />
                         {pad(index + 1)} / Featured
                       </span>
-                      <span className="truncate border border-white/15 bg-black/70 px-1.5 py-0.5 text-[7px] text-smoke sm:px-2 sm:text-[9px]">
+                      <span className="truncate border border-white/15 bg-black/70 px-1 py-0.5 text-[6.5px] text-smoke sm:px-1.5 sm:text-[8px]">
                         {categoryLabel(cat)}
                       </span>
                     </div>
@@ -91,14 +93,14 @@ export function FeaturedWork({ projects }: { projects: ProjectCardData[] }) {
                           isPortrait
                             ? "aspect-[9/16]"
                             : isPoster
-                              ? "aspect-[4/5] max-h-[14rem] sm:max-h-[20rem]"
+                              ? "aspect-[4/5]"
                               : "aspect-video",
                         )}
                       >
                         {directVideo ? (
                           <SmartAutoplayVideo
                             src={directVideo}
-                            className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+                            className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                           />
                         ) : (
                           <Cover
@@ -106,47 +108,47 @@ export function FeaturedWork({ projects }: { projects: ProjectCardData[] }) {
                             alt={`${project.title} thumbnail`}
                             sizes={
                               count >= 4
-                                ? "(min-width: 1024px) 24vw, 48vw"
-                                : "(min-width: 768px) 44vw, 48vw"
+                                ? "(min-width: 1024px) 20vw, 44vw"
+                                : "(min-width: 768px) 38vw, 44vw"
                             }
                             priority={index < 4}
                             className={cn(
-                              "transition-transform duration-700 ease-out group-hover:scale-[1.04]",
+                              "transition-transform duration-700 ease-out group-hover:scale-[1.03]",
                               isPortrait || !isPoster ? "object-cover" : "object-contain",
                             )}
                           />
                         )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent opacity-60 transition-opacity duration-300 group-hover:opacity-85 pointer-events-none" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60 transition-opacity duration-300 group-hover:opacity-85 pointer-events-none" />
 
-                        {/* Subtle Play / View Badge */}
-                        <span className="absolute bottom-1.5 right-1.5 inline-flex items-center gap-1 border border-white/20 bg-black/80 px-1.5 py-0.5 text-[7px] uppercase tracking-[0.12em] text-bone backdrop-blur-sm transition-colors group-hover:border-bone group-hover:bg-bone group-hover:text-black sm:bottom-2.5 sm:right-2.5 sm:gap-1.5 sm:px-2.5 sm:py-1 sm:text-[9px] sm:tracking-[0.16em]">
+                        {/* Compact Watch / View Badge */}
+                        <span className="absolute bottom-1 right-1 inline-flex items-center gap-0.5 border border-white/20 bg-black/80 px-1 py-0.5 text-[6.5px] uppercase tracking-[0.1em] text-bone backdrop-blur-sm transition-colors group-hover:border-bone group-hover:bg-bone group-hover:text-black sm:bottom-1.5 sm:right-1.5 sm:gap-1 sm:px-2 sm:py-0.5 sm:text-[8px] sm:tracking-[0.14em]">
                           {directVideo ? "Watch" : project.videoUrl ? "Watch" : "View"} &rarr;
                         </span>
                       </div>
                     </Link>
 
-                    {/* Compact Title + Year + Summary */}
-                    <div className="mt-2 flex items-baseline justify-between gap-1.5 sm:mt-3.5 sm:gap-2.5">
+                    {/* Compact Title + Year */}
+                    <div className="mt-1.5 flex items-baseline justify-between gap-1 sm:mt-2.5 sm:gap-2">
                       <Link
                         href={`/projects/${project.slug}`}
                         className="min-w-0"
                       >
-                        <h3 className="font-display truncate text-sm leading-tight text-bone transition-colors group-hover:text-white sm:whitespace-normal sm:text-xl md:text-2xl">
+                        <h3 className="font-display truncate text-xs leading-tight text-bone transition-colors group-hover:text-white sm:whitespace-normal sm:text-sm md:text-base">
                           {project.title}
                         </h3>
                       </Link>
-                      <span className="shrink-0 text-[9px] tabular-nums text-smoke sm:text-[11px]">
+                      <span className="shrink-0 text-[8px] tabular-nums text-smoke sm:text-[10px]">
                         {project.year}
                       </span>
                     </div>
 
-                    <p className="mt-1 line-clamp-1 text-[10px] leading-relaxed text-smoke/90 sm:mt-1.5 sm:line-clamp-2 sm:text-xs">
+                    <p className="mt-0.5 line-clamp-1 text-[9px] leading-relaxed text-smoke/90 sm:mt-1 sm:text-[11px]">
                       {summary}
                     </p>
                   </div>
 
                   {/* Compact Footer Meta */}
-                  <div className="mt-2 flex items-center justify-between border-t border-white/10 pt-2 text-[9px] sm:mt-3.5 sm:pt-2.5 sm:text-[11px]">
+                  <div className="mt-1.5 flex items-center justify-between border-t border-white/10 pt-1.5 text-[8px] sm:mt-2.5 sm:pt-2 sm:text-[10px]">
                     <span className="truncate text-muted">
                       {project.client
                         ? project.client
@@ -160,7 +162,7 @@ export function FeaturedWork({ projects }: { projects: ProjectCardData[] }) {
                     </span>
                     <Link
                       href={`/projects/${project.slug}`}
-                      className="shrink-0 inline-flex items-center gap-0.5 uppercase tracking-[0.12em] text-bone transition-colors hover:text-white sm:gap-1 sm:tracking-[0.14em]"
+                      className="shrink-0 inline-flex items-center gap-0.5 uppercase tracking-[0.1em] text-bone transition-colors hover:text-white sm:tracking-[0.12em]"
                     >
                       <span>Open</span>
                       <span

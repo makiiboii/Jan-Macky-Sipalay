@@ -49,7 +49,7 @@ export function ProjectCard({
     <div
       className={cn(
         "group relative flex flex-col",
-        isPortraitFrame && !compact && "mx-auto w-full max-w-[16rem] sm:max-w-[21rem]",
+        isPortraitFrame && !compact && "mx-auto w-full max-w-[13rem] sm:max-w-[15.5rem] md:max-w-[17rem]",
       )}
     >
       <Link
