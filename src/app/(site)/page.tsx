@@ -4,6 +4,7 @@ import { FeaturedWork } from "@/components/FeaturedWork";
 import { Hero } from "@/components/Hero";
 import { LocationJourney } from "@/components/LocationJourney";
 import { Portfolio } from "@/components/Portfolio";
+import { RealEstateWalkthrough } from "@/components/RealEstateWalkthrough";
 import { Reveal } from "@/components/Reveal";
 import { ToolsShowcase } from "@/components/ToolsShowcase";
 import { MAX_FEATURED } from "@/lib/constants";
@@ -39,13 +40,15 @@ export default async function HomePage() {
 
       <About />
 
+      <RealEstateWalkthrough />
+
       {!unavailable && featuredList.length > 0 && <FeaturedWork projects={featuredList} />}
 
       <section id="work" className="scroll-mt-16 border-t border-line px-5 py-20 md:px-10 md:py-28 max-w-full overflow-x-clip">
         <Reveal>
           <div className="mb-10 flex flex-col justify-between gap-5 border-b border-line pb-7 md:mb-14 md:flex-row md:items-end">
             <div>
-              <p className="mb-3 text-xs uppercase tracking-[0.18em] text-smoke">03 / Selected Work</p>
+              <p className="mb-3 text-xs uppercase tracking-[0.18em] text-smoke">04 / Selected Work</p>
               <h2 className="font-display text-5xl leading-none sm:text-6xl">Project Archive</h2>
             </div>
             <p className="max-w-sm text-sm leading-relaxed text-smoke md:text-right">

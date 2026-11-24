@@ -110,13 +110,13 @@ export function AdminDashboardClient({
 
         <div className="border border-line bg-white/[0.02] p-4">
           <p className="text-[11px] uppercase tracking-[0.16em] text-smoke">
-            Featured Works
+            AI Generated Projects
           </p>
           <p className="font-display mt-1 text-3xl text-bone sm:text-4xl">
             {pad(featuredCount)} / {pad(MAX_FEATURED)}
           </p>
           <p className="mt-1 text-xs text-muted">
-            Curated showcase above Selected Work
+            Curated AI showcase above Selected Work
           </p>
         </div>
 
@@ -150,15 +150,15 @@ export function AdminDashboardClient({
         <div className="mb-5 flex flex-wrap items-end justify-between gap-3 border-b border-line pb-4">
           <div>
             <p className="text-[11px] uppercase tracking-[0.18em] text-smoke">
-              02 / Homepage Curated Showcase · {pad(featuredCount)} /{" "}
+              03 / Homepage AI Showcase · {pad(featuredCount)} /{" "}
               {pad(MAX_FEATURED)}
             </p>
             <h2 className="font-display mt-1 text-2xl leading-none sm:text-3xl">
-              Featured works slots
+              AI Generated Projects slots
             </h2>
           </div>
           <p className="text-xs text-smoke">
-            Maximum {MAX_FEATURED} projects appear in the Featured Works section
+            Maximum {MAX_FEATURED} projects appear in the AI Generated Projects section
             above Selected Work.
           </p>
         </div>

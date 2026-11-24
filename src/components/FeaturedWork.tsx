@@ -21,28 +21,30 @@ export function FeaturedWork({ projects }: { projects: ProjectCardData[] }) {
 
   return (
     <section
-      id="featured"
-      aria-labelledby="featured-heading"
-      className="scroll-mt-16 border-t border-line px-3.5 py-10 sm:px-6 sm:py-16 md:px-10 md:py-20"
+      id="ai-projects"
+      aria-labelledby="ai-projects-heading"
+      className="relative scroll-mt-16 border-t border-line px-3.5 py-10 sm:px-6 sm:py-16 md:px-10 md:py-20"
     >
+      {/* Anchor for backward compatibility with #featured */}
+      <span id="featured" className="absolute -top-16" aria-hidden="true" />
       {/* Deck container: responsive max width keeping 6 portrait cards compact & elegant */}
       <div className={cn("mx-auto", anyPortrait ? (count >= 6 ? "max-w-7xl" : "max-w-5xl") : "max-w-6xl")}>
         <Reveal>
           <div className="mb-4 flex flex-wrap items-end justify-between gap-2.5 border-b border-line pb-3 sm:mb-6 sm:pb-4 md:mb-8">
             <div>
               <p className="mb-1 text-[9px] uppercase tracking-[0.18em] text-smoke sm:text-xs">
-                02 / Curated highlights • {pad(count)} / {pad(MAX_FEATURED)}
+                03 / AI Creative Productions • {pad(count)} / {pad(MAX_FEATURED)}
               </p>
               <h2
-                id="featured-heading"
+                id="ai-projects-heading"
                 className="font-display text-2xl leading-none sm:text-4xl md:text-5xl"
               >
-                Featured works
+                AI GENERATED PROJECTS
               </h2>
             </div>
 
             <p className="max-w-xs text-[10px] leading-relaxed text-smoke sm:text-right sm:text-xs">
-              Hand-picked spotlight projects — up to {MAX_FEATURED} signature works.
+              Signature AI creative productions, synthetic visuals &amp; commercial video ads.
             </p>
           </div>
         </Reveal>
@@ -77,7 +79,7 @@ export function FeaturedWork({ projects }: { projects: ProjectCardData[] }) {
                     <div className="mb-1.5 flex items-center justify-between gap-1 text-[7px] uppercase tracking-[0.1em] sm:mb-2.5 sm:gap-1.5 sm:text-[9px] sm:tracking-[0.14em]">
                       <span className="inline-flex items-center gap-1 font-medium text-bone/90 sm:gap-1.5">
                         <span className="h-1 w-1 rounded-full bg-bone sm:h-1.5 sm:w-1.5" />
-                        {pad(index + 1)} / Featured
+                        {pad(index + 1)} / AI Project
                       </span>
                       <span className="truncate border border-white/15 bg-black/70 px-1 py-0.5 text-[6.5px] text-smoke sm:px-1.5 sm:text-[8px]">
                         {categoryLabel(cat)}

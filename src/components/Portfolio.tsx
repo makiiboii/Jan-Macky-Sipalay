@@ -87,6 +87,21 @@ export function Portfolio({
           });
         }
 
+        // Pin direct autoplay real estate videos to the front of Videography category
+        if (category === "VIDEOGRAPHY") {
+          items = [...items].sort((a, b) => {
+            const aIsPinned = Boolean(
+              a.videoUrl && a.videoUrl.startsWith("/videos/real-estate/"),
+            );
+            const bIsPinned = Boolean(
+              b.videoUrl && b.videoUrl.startsWith("/videos/real-estate/"),
+            );
+            if (aIsPinned && !bIsPinned) return -1;
+            if (!aIsPinned && bIsPinned) return 1;
+            return 0;
+          });
+        }
+
         return {
           category,
           projects: items,
