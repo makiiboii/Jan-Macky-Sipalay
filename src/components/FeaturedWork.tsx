@@ -33,7 +33,7 @@ export function FeaturedWork({ projects }: { projects: ProjectCardData[] }) {
           <div className="mb-4 flex flex-wrap items-end justify-between gap-2.5 border-b border-line pb-3 sm:mb-6 sm:pb-4 md:mb-8">
             <div>
               <p className="mb-1 text-[9px] uppercase tracking-[0.18em] text-smoke sm:text-xs">
-                03 / AI Creative Productions • {pad(count)} / {pad(MAX_FEATURED)}
+                02 / AI Creative Productions • {pad(count)} / {pad(MAX_FEATURED)}
               </p>
               <h2
                 id="ai-projects-heading"

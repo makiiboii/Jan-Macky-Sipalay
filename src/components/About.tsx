@@ -191,7 +191,7 @@ export function About() {
 
           <div className="about-cinematic__copy">
             <p ref={eyebrow} className="about-cinematic__eyebrow">
-              01 / THE CREATIVE BEHIND THE WORK
+              04 / THE CREATIVE BEHIND THE WORK
             </p>
             <h2 ref={heading} className="font-display about-cinematic__title">
               About me

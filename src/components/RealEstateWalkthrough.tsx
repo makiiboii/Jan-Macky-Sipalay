@@ -105,7 +105,7 @@ export function RealEstateWalkthrough({
           <div className="mb-6 flex flex-wrap items-end justify-between gap-3 border-b border-line pb-4 sm:mb-8 sm:pb-6 md:mb-10">
             <div>
               <p className="mb-1 text-[9px] uppercase tracking-[0.18em] text-smoke sm:text-xs">
-                02 / Architectural Cinematography • 04 Walkthrough Films
+                01 / Architectural Cinematography • 04 Walkthrough Films
               </p>
               <h2
                 id="real-estate-heading"

@@ -269,7 +269,7 @@ export function ToolsShowcase() {
     >
       <div className="tools-showcase__inner mx-auto max-w-6xl">
         <div className="tools-showcase__intro">
-          <p className="tools-showcase__eyebrow">04 / CREATIVE PRACTICE</p>
+          <p className="tools-showcase__eyebrow">05 / CREATIVE PRACTICE</p>
           <h2 id="tools-heading" className="font-display">
             Tools behind the work
           </h2>
