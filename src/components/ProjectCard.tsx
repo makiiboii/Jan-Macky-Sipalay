@@ -87,7 +87,7 @@ export function ProjectCard({
                     <SmartAutoplayVideo
                       src={directVideo}
                       poster={project.thumbnailUrl ? resolveImageUrl(project.thumbnailUrl, 700) : undefined}
-                      className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                      className="h-full w-full object-cover"
                     />
                   ) : (
                     <Cover
@@ -104,10 +104,7 @@ export function ProjectCard({
               <SmartAutoplayVideo
                 src={directVideo}
                 poster={project.thumbnailUrl ? resolveImageUrl(project.thumbnailUrl, 700) : undefined}
-                className={cn(
-                  "h-full w-full transition-transform duration-700 ease-out group-hover:scale-[1.03]",
-                  isPortraitFrame ? "object-cover" : "object-cover",
-                )}
+                className="h-full w-full object-cover"
               />
             ) : (
               <Cover

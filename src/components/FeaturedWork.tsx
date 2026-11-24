@@ -51,7 +51,7 @@ export function FeaturedWork({ projects }: { projects: ProjectCardData[] }) {
 
         <div
           className={cn(
-            "project-focus-deck grid gap-2.5 sm:gap-3.5 md:gap-4",
+            "grid gap-2.5 sm:gap-3.5 md:gap-4",
             count === 1 && "mx-auto max-w-md grid-cols-1",
             count === 2 && "mx-auto max-w-2xl grid-cols-2",
             count === 3 && "grid-cols-2 lg:grid-cols-3",
@@ -73,7 +73,7 @@ export function FeaturedWork({ projects }: { projects: ProjectCardData[] }) {
 
             return (
               <Reveal key={project.id} delay={index * 60}>
-                <article className="project-focus-item group relative flex h-full flex-col justify-between border border-white/12 bg-gradient-to-b from-white/[0.03] to-[#070707] p-2 transition-colors hover:border-bone/65 sm:p-3 md:p-3.5">
+                <article className="group relative flex h-full flex-col justify-between border border-white/12 bg-gradient-to-b from-white/[0.03] to-[#070707] p-2 sm:p-3 md:p-3.5">
                   <div>
                     {/* Editorial Index + Category Top Bar */}
                     <div className="mb-1.5 flex items-center justify-between gap-1 text-[7px] uppercase tracking-[0.1em] sm:mb-2.5 sm:gap-1.5 sm:text-[9px] sm:tracking-[0.14em]">
@@ -104,7 +104,7 @@ export function FeaturedWork({ projects }: { projects: ProjectCardData[] }) {
                         {directVideo ? (
                           <SmartAutoplayVideo
                             src={directVideo}
-                            className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                            className="h-full w-full object-cover"
                           />
                         ) : (
                           <Cover
@@ -124,10 +124,10 @@ export function FeaturedWork({ projects }: { projects: ProjectCardData[] }) {
                             )}
                           />
                         )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60 transition-opacity duration-300 group-hover:opacity-85 pointer-events-none" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60 pointer-events-none" />
 
                         {/* Compact Watch / View Badge */}
-                        <span className="absolute bottom-1 right-1 inline-flex items-center gap-0.5 border border-white/20 bg-black/80 px-1 py-0.5 text-[6.5px] uppercase tracking-[0.1em] text-bone backdrop-blur-sm transition-colors group-hover:border-bone group-hover:bg-bone group-hover:text-black sm:bottom-1.5 sm:right-1.5 sm:gap-1 sm:px-2 sm:py-0.5 sm:text-[8px] sm:tracking-[0.14em]">
+                        <span className="absolute bottom-1 right-1 inline-flex items-center gap-0.5 border border-white/20 bg-black/80 px-1 py-0.5 text-[6.5px] uppercase tracking-[0.1em] text-bone backdrop-blur-sm sm:bottom-1.5 sm:right-1.5 sm:gap-1 sm:px-2 sm:py-0.5 sm:text-[8px] sm:tracking-[0.14em]">
                           {directVideo ? "Watch" : project.videoUrl ? "Watch" : "View"} &rarr;
                         </span>
                       </div>

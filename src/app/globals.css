@@ -1000,30 +1000,9 @@ html.cursor-none input[type="radio"] {
   display: none;
 }
 
-/* Project card hover/touch focus: scale up focused project minimally, blur & grayscale unhovered siblings */
+/* Project card: clean, stable presentation without hover distortion or sibling blur */
 .project-focus-item {
   position: relative;
-  transition:
-    transform 420ms cubic-bezier(0.22, 1, 0.36, 1),
-    filter 420ms cubic-bezier(0.22, 1, 0.36, 1),
-    opacity 420ms cubic-bezier(0.22, 1, 0.36, 1),
-    border-color 300ms ease;
-  will-change: transform, filter, opacity;
-}
-
-.project-focus-deck:has(.project-focus-item:hover, .project-focus-item:active)
-  .project-focus-item:not(:hover):not(:active) {
-  filter: grayscale(1) blur(2px);
-  opacity: 0.52;
-  transform: scale(0.985);
-}
-
-.project-focus-deck .project-focus-item:hover,
-.project-focus-deck .project-focus-item:active {
-  z-index: 10;
-  filter: grayscale(0) blur(0);
-  opacity: 1;
-  transform: scale(1.035);
 }
 
 @media (prefers-reduced-motion: reduce) {

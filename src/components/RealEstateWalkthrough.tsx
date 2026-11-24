@@ -121,7 +121,7 @@ export function RealEstateWalkthrough({
         <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2 lg:gap-8">
           {REAL_ESTATE_ITEMS.map((item, index) => (
             <Reveal key={item.id} delay={index * 80}>
-              <article className="group relative flex h-full flex-col justify-between border border-white/12 bg-gradient-to-b from-white/[0.03] to-[#070707] p-2.5 transition-colors hover:border-bone/65 sm:p-4">
+              <article className="group relative flex h-full flex-col justify-between border border-white/12 bg-gradient-to-b from-white/[0.03] to-[#070707] p-2.5 sm:p-4">
                 <div>
                   {/* Editorial Index + Category Top Bar */}
                   <div className="mb-2 flex items-center justify-between gap-1 text-[8px] uppercase tracking-[0.12em] sm:mb-3 sm:text-[10px] sm:tracking-[0.14em]">
@@ -139,10 +139,10 @@ export function RealEstateWalkthrough({
                     <SmartAutoplayVideo
                       src={item.videoUrl}
                       poster={item.thumbnailUrl}
-                      className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                      className="h-full w-full object-cover"
                     />
 
-                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-60 transition-opacity duration-300 group-hover:opacity-85" />
+                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-60" />
 
                     {/* Autoplay status badge */}
                     <div className="pointer-events-none absolute bottom-2 left-2 inline-flex items-center gap-1 border border-white/15 bg-black/75 px-1.5 py-0.5 text-[7px] uppercase tracking-[0.12em] text-bone backdrop-blur-sm sm:bottom-2.5 sm:left-2.5 sm:gap-1.5 sm:px-2 sm:text-[9px]">
