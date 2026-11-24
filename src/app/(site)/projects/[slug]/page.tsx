@@ -68,45 +68,45 @@ export default async function ProjectPage({ params }: Props) {
         : [];
 
   return (
-    <article className="max-w-full overflow-hidden px-5 pb-24 pt-24 sm:pt-28 md:px-10 md:pb-36 md:pt-36">
+    <article className="max-w-full overflow-hidden px-4 pb-20 pt-20 sm:px-6 sm:pb-28 sm:pt-28 md:px-10 md:pb-36 md:pt-36">
       <Link
         href="/#work"
-        className="text-sm text-smoke transition-colors hover:text-bone"
+        className="text-xs sm:text-sm text-smoke transition-colors hover:text-bone"
       >
         &larr; Back to work
       </Link>
 
-      <header className="mt-8 border-b border-line pb-8 sm:mt-12 sm:pb-10">
-        <p className="text-xs uppercase tracking-[0.18em] text-smoke">
+      <header className="mt-5 border-b border-line pb-6 sm:mt-10 sm:pb-8">
+        <p className="text-[10px] sm:text-xs uppercase tracking-[0.18em] text-smoke">
           {categoryLabel(normalizedCat)} <span aria-hidden="true">/</span>{" "}
           {project.year}
         </p>
-        <h1 className="font-display mt-5 max-w-6xl break-words text-4xl leading-[0.92] sm:text-6xl lg:text-7xl">
+        <h1 className="font-display mt-2.5 max-w-6xl break-words text-2xl leading-[1.08] sm:text-4xl md:text-5xl lg:text-7xl">
           {project.title}
         </h1>
       </header>
 
-      <dl className="grid grid-cols-2 gap-x-4 gap-y-6 border-b border-line py-7 sm:gap-x-6 sm:gap-y-8 sm:py-8 md:grid-cols-4">
+      <dl className="grid grid-cols-2 gap-x-3 gap-y-4 border-b border-line py-5 sm:gap-x-6 sm:gap-y-8 sm:py-8 md:grid-cols-4">
         <div>
-          <dt className="text-sm text-smoke">Year</dt>
-          <dd className="mt-2 text-lg">{project.year}</dd>
+          <dt className="text-xs text-smoke">Year</dt>
+          <dd className="mt-1 text-base sm:text-lg">{project.year}</dd>
         </div>
         <div>
-          <dt className="text-sm text-smoke">Category</dt>
-          <dd className="mt-2 break-words text-lg">
+          <dt className="text-xs text-smoke">Category</dt>
+          <dd className="mt-1 break-words text-base sm:text-lg">
             {categoryLabel(normalizedCat)}
           </dd>
         </div>
         {project.client && (
           <div>
-            <dt className="text-sm text-smoke">Client</dt>
-            <dd className="mt-2 break-words text-lg">{project.client}</dd>
+            <dt className="text-xs text-smoke">Client</dt>
+            <dd className="mt-1 break-words text-base sm:text-lg">{project.client}</dd>
           </div>
         )}
         {project.roles.length > 0 && (
           <div>
-            <dt className="text-sm text-smoke">My role</dt>
-            <dd className="mt-2 space-y-1 text-lg">
+            <dt className="text-xs text-smoke">My role</dt>
+            <dd className="mt-1 space-y-0.5 text-base sm:text-lg">
               {project.roles.map((role) => (
                 <span key={role} className="block">
                   {ROLE_LABELS[role]}
@@ -120,12 +120,12 @@ export default async function ProjectPage({ params }: Props) {
       {paragraphs.length > 0 && (
         <section
           aria-label="Description"
-          className="mt-8 grid gap-6 md:grid-cols-12 md:gap-10"
+          className="mt-6 sm:mt-8 grid gap-4 sm:gap-6 md:grid-cols-12 md:gap-10"
         >
           <h2 className="text-xs uppercase tracking-[0.18em] text-smoke md:col-span-3">
             About this project
           </h2>
-          <div className="max-w-2xl space-y-5 text-base leading-relaxed text-bone/80 md:col-span-8 md:col-start-5 md:text-lg">
+          <div className="max-w-2xl space-y-4 sm:space-y-5 text-sm sm:text-base leading-relaxed text-bone/80 md:col-span-8 md:col-start-5 md:text-lg">
             {paragraphs.map((paragraph, index) => (
               <p key={index} className="whitespace-pre-line">
                 {paragraph}
@@ -136,7 +136,7 @@ export default async function ProjectPage({ params }: Props) {
       )}
 
       {project.videoUrl && (
-        <section aria-label="Video" className="mt-12 md:mt-16">
+        <section aria-label="Video" className="mt-6 sm:mt-10 md:mt-16">
           <VideoEmbed
             url={project.videoUrl}
             title={project.title}

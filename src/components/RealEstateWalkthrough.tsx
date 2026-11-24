@@ -32,7 +32,7 @@ export const REAL_ESTATE_ITEMS: RealEstateItem[] = [
     thumbnailUrl: "/videos/real-estate/acp004-1-4-thumb.jpg",
     duration: "0:40",
     description: "",
-    location: "Commercial Real Estate",
+    location: "Walkthrough Film",
     roles: ["Videographer", "Editor", "Colorist"],
   },
   {
@@ -45,7 +45,7 @@ export const REAL_ESTATE_ITEMS: RealEstateItem[] = [
     thumbnailUrl: "/videos/real-estate/acp004-2-3-thumb.jpg",
     duration: "0:39",
     description: "",
-    location: "Commercial Real Estate",
+    location: "Walkthrough Film",
     roles: ["Videographer", "Editor", "Colorist"],
   },
   {
@@ -58,7 +58,7 @@ export const REAL_ESTATE_ITEMS: RealEstateItem[] = [
     thumbnailUrl: "/videos/real-estate/acp004-4-4-thumb.jpg",
     duration: "0:41",
     description: "",
-    location: "Commercial Real Estate",
+    location: "Walkthrough Film",
     roles: ["Videographer", "Editor", "Colorist"],
   },
   {
@@ -71,7 +71,7 @@ export const REAL_ESTATE_ITEMS: RealEstateItem[] = [
     thumbnailUrl: "/videos/real-estate/acp004-5-4-thumb.jpg",
     duration: "0:55",
     description: "",
-    location: "Commercial Real Estate",
+    location: "Walkthrough Film",
     roles: ["Videographer", "Editor", "Colorist"],
   },
 ];
@@ -109,7 +109,7 @@ export function RealEstateWalkthrough({
               </p>
               <h2
                 id="real-estate-heading"
-                className="font-display text-2xl leading-none sm:text-4xl md:text-5xl"
+                className="font-display text-xl leading-none sm:text-3xl md:text-4xl lg:text-5xl"
               >
                 Real Estate Walkthroughs
               </h2>
@@ -210,11 +210,11 @@ export function RealEstateWalkthrough({
           role="dialog"
           aria-modal="true"
           aria-label={activeModalVideo.title}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 p-3 backdrop-blur-md sm:p-6"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/95 p-2 sm:p-6 backdrop-blur-md overflow-y-auto"
           onClick={() => setActiveModalVideo(null)}
         >
           <div
-            className="relative w-full max-w-4xl border border-white/20 bg-[#0d0d0d] p-3 shadow-2xl sm:p-6"
+            className="relative w-full max-w-4xl max-h-[94svh] overflow-y-auto border border-white/20 bg-[#0d0d0d] p-3 shadow-2xl sm:p-6"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}

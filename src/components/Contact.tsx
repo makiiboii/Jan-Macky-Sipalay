@@ -202,7 +202,7 @@ export function Contact() {
     <section
       ref={sectionRef}
       id="contact"
-      className="relative scroll-mt-16 overflow-hidden border-t border-line px-5 pb-16 pt-24 md:px-10 md:pb-20 md:pt-32"
+      className="relative scroll-mt-16 overflow-hidden border-t border-line px-4 pb-14 pt-16 sm:px-6 md:px-10 md:pb-20 md:pt-32"
     >
       <div className="mx-auto max-w-[90rem]">
         <div className="grid items-start gap-14 lg:grid-cols-12 lg:gap-12">
@@ -212,12 +212,12 @@ export function Contact() {
               data-contact-left
               className="mb-5 text-xs uppercase tracking-[0.2em] text-smoke"
             >
-              05 / LET&rsquo;S MAKE SOMETHING
+              07 / LET&rsquo;S MAKE SOMETHING
             </p>
 
             <h2
               data-contact-left
-              className="font-display text-[clamp(3.6rem,8vw,6.75rem)] leading-[0.9] tracking-tight text-bone"
+              className="font-display text-[clamp(2.35rem,8vw,6.75rem)] leading-[0.9] tracking-tight text-bone"
             >
               HAVE A PROJECT
               <br />
@@ -260,7 +260,7 @@ export function Contact() {
             <p
               ref={watermarkRef}
               aria-hidden="true"
-              className="font-display pointer-events-none mt-10 select-none text-[clamp(4.5rem,11vw,9.5rem)] leading-[0.82] tracking-tight text-white/[0.045] sm:mt-12"
+              className="font-display pointer-events-none mt-10 select-none text-[clamp(2.8rem,11vw,9.5rem)] leading-[0.82] tracking-tight text-white/[0.045] sm:mt-12"
             >
               LET&rsquo;S TALK
             </p>

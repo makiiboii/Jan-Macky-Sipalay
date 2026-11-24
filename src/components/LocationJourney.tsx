@@ -112,7 +112,7 @@ export function LocationJourney() {
         </svg>
 
         <header className="earth-stage__intro">
-          <p className="earth-stage__eyebrow">04 / MY LOCATION</p>
+          <p className="earth-stage__eyebrow">06 / MY LOCATION</p>
           <h2 className="font-display">CREATIVE,<br />BASED IN THE PHILIPPINES.</h2>
           <p className="earth-stage__support">Working worldwide from Digos City, Philippines.</p>
         </header>

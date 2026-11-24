@@ -96,11 +96,11 @@ export function Nav() {
       </header>
 
       {open && (
-        <div id="mobile-menu" className="site-mobile-menu animate-fade-in fixed inset-0 z-40 flex flex-col justify-center px-6 md:hidden">
-          <ul className="space-y-4">
+        <div id="mobile-menu" className="site-mobile-menu animate-fade-in fixed inset-0 z-40 flex flex-col justify-center px-6 overflow-y-auto md:hidden">
+          <ul className="my-auto space-y-2.5 sm:space-y-4 py-8">
             {links.map((link) => (
               <li key={link.href}>
-                <Link href={link.href} onClick={(event) => navigate(link, event)} className="font-display block py-2 text-5xl sm:text-6xl leading-none">
+                <Link href={link.href} onClick={(event) => navigate(link, event)} className="font-display block py-1.5 sm:py-2 text-3xl sm:text-5xl leading-none">
                   {link.label}
                 </Link>
               </li>

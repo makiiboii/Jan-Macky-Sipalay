@@ -3,10 +3,10 @@
 import Link from "next/link";
 import { MAX_FEATURED, isProjectPortrait, normalizeCategory } from "@/lib/constants";
 import type { ProjectCardData } from "@/lib/projects";
-import { cn, truncate } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { getDirectVideoUrl } from "@/lib/video";
 import { Cover } from "./Cover";
-import { categoryLabel, rolesLabel } from "./ProjectMeta";
+import { categoryLabel } from "./ProjectMeta";
 import { Reveal } from "./Reveal";
 import { SmartAutoplayVideo } from "./SmartAutoplayVideo";
 
@@ -37,7 +37,7 @@ export function FeaturedWork({ projects }: { projects: ProjectCardData[] }) {
               </p>
               <h2
                 id="ai-projects-heading"
-                className="font-display text-2xl leading-none sm:text-4xl md:text-5xl"
+                className="font-display text-xl leading-none sm:text-3xl md:text-4xl lg:text-5xl"
               >
                 AI GENERATED PROJECTS
               </h2>
@@ -65,11 +65,6 @@ export function FeaturedWork({ projects }: { projects: ProjectCardData[] }) {
             const isPortrait = isProjectPortrait(project);
             const isPoster = cat === "POSTER_GRAPHICS";
             const directVideo = project.videoUrl ? getDirectVideoUrl(project.videoUrl) : null;
-            const summary = project.description?.trim()
-              ? truncate(project.description, 70)
-              : project.roles.length > 0
-                ? rolesLabel(project.roles)
-                : `${categoryLabel(cat)} project`;
 
             return (
               <Reveal key={project.id} delay={index * 60}>
@@ -81,8 +76,8 @@ export function FeaturedWork({ projects }: { projects: ProjectCardData[] }) {
                         <span className="h-1 w-1 rounded-full bg-bone sm:h-1.5 sm:w-1.5" />
                         {pad(index + 1)} / AI Project
                       </span>
-                      <span className="truncate border border-white/15 bg-black/70 px-1 py-0.5 text-[6.5px] text-smoke sm:px-1.5 sm:text-[8px]">
-                        {categoryLabel(cat)}
+                      <span className="shrink-0 border border-white/15 bg-black/70 px-1 py-0.5 text-[6.5px] text-smoke sm:px-1.5 sm:text-[8px]">
+                        {cat === "AI_GENERATED" ? "AI Video" : categoryLabel(cat)}
                       </span>
                     </div>
 
@@ -147,10 +142,6 @@ export function FeaturedWork({ projects }: { projects: ProjectCardData[] }) {
                         {project.year}
                       </span>
                     </div>
-
-                    <p className="mt-0.5 line-clamp-1 text-[9px] leading-relaxed text-smoke/90 sm:mt-1 sm:text-[11px]">
-                      {summary}
-                    </p>
                   </div>
 
                   {/* Compact Footer Meta */}

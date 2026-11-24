@@ -80,7 +80,7 @@ export function VideoEmbed({
         )}
       </div>
 
-      <div className="flex items-center justify-between text-xs text-smoke">
+      <div className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between text-[11px] sm:text-xs text-smoke">
         <span className="uppercase tracking-[0.14em] text-muted">
           {isPortrait ? "9:16 Portrait Format" : "16:9 Landscape Format"}
           {autoPlay && (

@@ -169,12 +169,6 @@ export function ProjectCard({
           <span className="shrink-0 text-[10px] tabular-nums text-smoke sm:text-xs">{project.year}</span>
         </div>
 
-        {project.description && (
-          <p className="mt-1 line-clamp-1 text-[11px] leading-relaxed text-smoke/90 sm:mt-1.5 sm:line-clamp-2 sm:text-sm">
-            {project.description}
-          </p>
-        )}
-
         <p className="mt-1 truncate text-[10px] leading-relaxed text-muted sm:mt-2 sm:whitespace-normal sm:text-xs">
           {categoryLabel(project.category)}
           {project.roles.length > 0 && <> • {rolesLabel(project.roles)}</>}

@@ -223,7 +223,7 @@ export function Hero({ projects = [] }: { projects?: ProjectCardData[] }) {
 
       {/* Open visual window on mobile so the moving thumbnail wall is prominently visible */}
       <div className="relative z-10 mt-auto grid items-end gap-6 pt-28 sm:pt-36 md:my-auto md:grid-cols-12 md:gap-8 md:py-6">
-        <h1 className="font-display text-[clamp(2.85rem,11vw,7.25rem)] leading-[0.88] text-bone drop-shadow-[0_12px_36px_rgba(0,0,0,0.95)] md:col-span-8">
+        <h1 className="font-display text-[clamp(2.25rem,10.5vw,7.25rem)] leading-[0.88] text-bone drop-shadow-[0_12px_36px_rgba(0,0,0,0.95)] md:col-span-8">
           {lines.map((line) => (
             <span key={line} className="hero-line">
               <span>{line}</span>

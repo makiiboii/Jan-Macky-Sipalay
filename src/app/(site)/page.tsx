@@ -42,14 +42,14 @@ export default async function HomePage() {
 
       {!unavailable && featuredList.length > 0 && <FeaturedWork projects={featuredList} />}
 
-      <section id="work" className="scroll-mt-16 border-t border-line px-5 py-20 md:px-10 md:py-28 max-w-full overflow-x-clip">
+      <section id="work" className="scroll-mt-16 border-t border-line px-3.5 py-10 sm:px-6 sm:py-16 md:px-10 md:py-28 max-w-full overflow-x-clip">
         <Reveal>
-          <div className="mb-10 flex flex-col justify-between gap-5 border-b border-line pb-7 md:mb-14 md:flex-row md:items-end">
+          <div className="mb-8 flex flex-col justify-between gap-4 border-b border-line pb-5 sm:mb-10 sm:pb-7 md:mb-14 md:flex-row md:items-end">
             <div>
-              <p className="mb-3 text-xs uppercase tracking-[0.18em] text-smoke">03 / Selected Work</p>
-              <h2 className="font-display text-5xl leading-none sm:text-6xl">Project Archive</h2>
+              <p className="mb-2 text-[9px] uppercase tracking-[0.18em] text-smoke sm:text-xs">03 / Selected Work</p>
+              <h2 className="font-display text-2xl leading-none sm:text-4xl md:text-5xl lg:text-6xl">Project Archive</h2>
             </div>
-            <p className="max-w-sm text-sm leading-relaxed text-smoke md:text-right">
+            <p className="max-w-sm text-xs leading-relaxed text-smoke sm:text-right sm:text-sm">
               Browse by category — video editing, 9:16 portrait videos, still photography, posters & graphics, and AI productions.
             </p>
           </div>
