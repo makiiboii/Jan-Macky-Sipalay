@@ -43,7 +43,7 @@ export const CATEGORY_LABELS: Record<CategoryValue, string> = {
   AI_GENERATED: "AI Generated Hybrid Editing",
   PHOTOGRAPHY: "Photography",
   POSTER_GRAPHICS: "Posters & Graphics",
-  PORTRAIT_VIDEOS: "Portrait Videos",
+  PORTRAIT_VIDEOS: "Vertical Videos",
 };
 
 /**
@@ -101,7 +101,10 @@ export function normalizeCategory(value?: string | null): CategoryValue {
   if (
     upper === "PORTRAIT" ||
     upper === "PORTRAIT VIDEO" ||
-    upper === "PORTRAIT VIDEOS"
+    upper === "PORTRAIT VIDEOS" ||
+    upper === "VERTICAL" ||
+    upper === "VERTICAL VIDEO" ||
+    upper === "VERTICAL VIDEOS"
   ) {
     return "PORTRAIT_VIDEOS";
   }

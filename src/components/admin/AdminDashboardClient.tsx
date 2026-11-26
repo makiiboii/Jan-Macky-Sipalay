@@ -366,7 +366,7 @@ export function AdminDashboardClient({
                         </Link>
                         {isPortrait && (
                           <span className="border border-white/20 bg-white/[0.05] px-2 py-0.5 text-[10px] uppercase tracking-[0.14em] text-smoke">
-                            9:16 Portrait
+                            9:16 Vertical
                           </span>
                         )}
                         {project.featured && (

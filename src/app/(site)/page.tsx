@@ -50,7 +50,7 @@ export default async function HomePage() {
               <h2 className="font-display text-2xl leading-none sm:text-4xl md:text-5xl lg:text-6xl">Project Archive</h2>
             </div>
             <p className="max-w-sm text-xs leading-relaxed text-smoke sm:text-right sm:text-sm">
-              Browse by category — video editing, 9:16 portrait videos, still photography, posters & graphics, and AI productions.
+              Browse by category — video editing, vertical videos, still photography, posters & graphics, and AI productions.
             </p>
           </div>
         </Reveal>

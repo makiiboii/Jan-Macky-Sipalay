@@ -82,7 +82,7 @@ export function VideoEmbed({
 
       <div className="flex flex-col gap-1.5 sm:flex-row sm:items-center sm:justify-between text-[11px] sm:text-xs text-smoke">
         <span className="uppercase tracking-[0.14em] text-muted">
-          {isPortrait ? "9:16 Portrait Format" : "16:9 Landscape Format"}
+          {isPortrait ? "9:16 Vertical Format" : "16:9 Landscape Format"}
           {autoPlay && (
             <span className="ml-2 lowercase text-smoke/70 tracking-normal">
               • autoplays muted

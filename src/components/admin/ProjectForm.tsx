@@ -294,7 +294,7 @@ export function ProjectForm({
           </div>
           <p className="mt-1.5 text-xs text-muted">
             {isPortraitActive
-              ? "Portrait mode active: 9:16 vertical frame for Reels, TikTok, Shorts, and vertical thumbnails."
+              ? "Vertical mode active: 9:16 vertical frame for Reels, TikTok, Shorts, and vertical thumbnails."
               : category === "AI_GENERATED"
                 ? "AI Generated Hybrid Editing highlights AI-assisted video, UGC, and generative visual projects."
                 : category === "POSTER_GRAPHICS"
@@ -316,7 +316,7 @@ export function ProjectForm({
                 Video &amp; Thumbnail Orientation
               </span>
               <p className="mt-1 text-xs text-muted">
-                Choose <strong>9:16 Portrait</strong> to post vertical Reels, TikToks, Shorts, or vertical thumbnails in <em>any</em> category (Videoshoot, Video Editing, AI Generated Hybrid Editing, etc.).
+                Choose <strong>9:16 Vertical</strong> to post vertical Reels, TikToks, Shorts, or vertical thumbnails in <em>any</em> category (Videoshoot, Video Editing, AI Generated Hybrid Editing, etc.).
               </p>
             </div>
 
@@ -347,7 +347,7 @@ export function ProjectForm({
                 )}
               >
                 <span className="inline-block h-3.5 w-2 border border-current" aria-hidden="true" />
-                9:16 Portrait
+                9:16 Vertical
               </button>
             </div>
           </div>
@@ -456,7 +456,7 @@ export function ProjectForm({
               </div>
               <div className="space-y-1">
                 <span className="block border border-white/15 bg-white/[0.03] px-2.5 py-1 text-[11px] uppercase tracking-[0.14em] text-smoke">
-                  Format: {isPortraitActive ? "9:16 Portrait" : "16:9 Landscape"}
+                  Format: {isPortraitActive ? "9:16 Vertical" : "16:9 Landscape"}
                 </span>
                 <span className="block border border-white/15 bg-white/[0.03] px-2.5 py-1 text-[11px] uppercase tracking-[0.14em] text-smoke">
                   {published ? "Active in Hero Thumbnail Wall" : "Will appear in Hero Wall when published"}
@@ -505,7 +505,7 @@ export function ProjectForm({
                   </strong>
                 </span>
                 <span className="uppercase tracking-wider text-smoke">
-                  {isPortraitActive ? "9:16 Portrait Preview" : "16:9 Landscape Preview"}
+                  {isPortraitActive ? "9:16 Vertical Preview" : "16:9 Landscape Preview"}
                 </span>
               </div>
               <div
